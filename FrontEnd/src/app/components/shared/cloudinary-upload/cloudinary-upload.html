@@ -1,0 +1,54 @@
+<div class="upload-container">
+  <label class="upload-label">
+    <input 
+      type="file" 
+      [accept]="acceptedTypes"
+      (change)="onFileSelected($event)"
+      [disabled]="isUploading"
+      class="file-input">
+    
+    @if (!isUploading && !previewUrl && !(defer && hasFileSelected())) {
+      <div class="upload-prompt">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="upload-icon">
+          <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/>
+        </svg>
+        <span class="upload-text">{{ label }}</span>
+        <span class="upload-hint">Haz clic para seleccionar</span>
+      </div>
+    }
+
+    @if (previewUrl && !isUploading) {
+      <div class="preview-container">
+        <img [src]="previewUrl" alt="Preview" class="preview-image">
+        <button 
+          type="button"
+          class="clear-btn" 
+          (click)="clearPreview(); $event.stopPropagation()">
+          ✕
+        </button>
+      </div>
+    }
+
+    @if (defer && hasFileSelected() && !previewUrl && !isUploading) {
+      <div class="selected-file">
+        <span class="upload-text">Archivo listo para subir</span>
+        <button 
+          type="button"
+          class="clear-btn"
+          (click)="clearPreview(); $event.stopPropagation()">
+          ✕
+        </button>
+      </div>
+    }
+
+    @if (isUploading) {
+      <div class="uploading-state">
+        <div class="spinner"></div>
+        <span class="upload-text">Subiendo... {{ uploadProgress }}%</span>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="uploadProgress"></div>
+        </div>
+      </div>
+    }
+  </label>
+</div>

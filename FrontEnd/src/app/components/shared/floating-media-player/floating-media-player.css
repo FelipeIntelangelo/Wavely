@@ -1,0 +1,313 @@
+/* From Uiverse.io by Vosoone - Adapted for Floating Media Player */
+:host {
+  --accent: #9D65D7;
+  --accent-rgb: 157, 101, 215;
+}
+
+.main-music-card {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  max-width: 420px;
+  width: 90%;
+  padding: 18px;
+  border-radius: 0;
+  background: #000000;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 10px rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  font-family: -apple-system, system-ui, sans-serif;
+  color: white;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.main-music-card.minimized {
+  padding: 14px 18px;
+}
+
+.main-music-card.minimized .playback-controls {
+  display: none;
+}
+
+.main-music-card.minimized .minimize-btn {
+  display: block;
+}
+
+.track-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.album-art {
+  width: 64px;
+  height: 64px;
+  border-radius: 0;
+  background: linear-gradient(135deg, #9D65D7, #7c3aed);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+  overflow: hidden;
+}
+
+.album-art:hover {
+  transform: scale(1.05);
+}
+
+.album-art-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+}
+
+.track-details {
+  flex-grow: 1;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.track-title {
+  font-size: 1.3em;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.artist-name {
+  font-size: 0.9em;
+  color: #d1d1d6;
+  margin-top: 2px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.artist-name:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+
+.playback-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.time-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8em;
+  color: #8e8e93;
+}
+
+.current-time,
+.remaining-time {
+  font-variant-numeric: tabular-nums;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 0;
+  position: relative;
+  overflow: visible;
+  cursor: pointer;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), #7c3aed);
+  border-radius: 0;
+  transition: width 0.1s linear;
+}
+
+.progress-handle {
+  position: absolute;
+  top: 50%;
+  left: 0%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  background-color: white;
+  border-radius: 0;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+  transition: left 0.1s linear;
+  opacity: 0;
+}
+
+.progress-bar:hover .progress-handle {
+  opacity: 1;
+}
+
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.control-button {
+  margin-top: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 0;
+  border: none;
+  background: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  color: #fff;
+}
+
+.control-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.control-button.play-pause-button,
+.control-button.close-button {
+  transition: background 0.2s;
+}
+
+.control-button.play-pause-button:hover,
+.control-button.close-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: none;
+  border-radius: 50%;
+}
+
+.control-button.back,
+.control-button.next {
+  transition: background 0.2s;
+}
+
+.control-button.back:hover,
+.control-button.next:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: none;
+  border-radius: 50%;
+}
+
+.main-control-btns {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  margin-left: 0;
+  gap: 8px;
+  flex: 1;
+}
+
+.play-pause-button .icon-pause {
+  display: none;
+}
+
+.play-pause-button .icon-play {
+  display: block;
+}
+
+/* Cuando está checked (reproduciendo), mostrar pausa */
+#play-toggle:checked ~ .playback-controls .play-pause-button .icon-play {
+  display: none;
+}
+
+#play-toggle:checked ~ .playback-controls .play-pause-button .icon-pause {
+  display: block;
+}
+
+/* Cuando no está checked (pausado), mostrar play */
+#play-toggle:not(:checked) ~ .playback-controls .play-pause-button .icon-play {
+  display: block;
+}
+
+#play-toggle:not(:checked) ~ .playback-controls .play-pause-button .icon-pause {
+  display: none;
+}
+
+.minimize-btn {
+  position: absolute;
+  top: 14px;
+  right: 54px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 10;
+  width: 32px;
+  height: 32px;
+}
+
+.main-music-card.minimized .minimize-btn {
+  display: flex;
+}
+
+.minimize-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.close-button {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 10;
+  width: 32px;
+  height: 32px;
+}
+
+.close-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .main-music-card {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    width: auto;
+    max-width: none;
+  }
+}
+
+/* Animación de entrada */
+@keyframes slideIn {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.main-music-card {
+  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

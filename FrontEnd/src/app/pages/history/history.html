@@ -1,0 +1,46 @@
+<div class="history-container">
+  <header class="page-header">
+    <h1>Historial de Reproducción</h1>
+  </header>
+
+  @if (isLoading) {
+    <div class="loading-container">
+      <p>Cargando tu historial...</p>
+    </div>
+  } @else if (history.length === 0) {
+    <div class="empty-state">
+      <h2>No tienes historial aún</h2>
+      <p>Los episodios que reproduzcas aparecerán aquí</p>
+    </div>
+  } @else {
+    <div class="history-list">
+      @for (item of history; track item.episode.id + item.listenedAt) {
+        <article class="episode-card" (click)="viewEpisode(item.episode.id)">
+          <div class="episode-image">
+            <img [src]="item.episode.imageUrl" [alt]="item.episode.title" (error)="onImageError($event)">
+            <div class="image-placeholder" style="display: none;"></div>
+          </div>
+          
+          <div class="episode-content">
+            <div class="episode-header">
+              <div class="episode-info">
+                <h3 class="episode-title">{{ item.episode.title }}</h3>
+                <p class="episode-meta">
+                  <span class="season-chapter">S{{ item.episode.season }} · E{{ item.episode.chapter }}</span>
+                  <span class="separator">•</span>
+                  <span class="duration">{{ formatDuration(item.episode.duration) }}</span>
+                </p>
+              </div>
+              <div class="listened-date">
+                <span class="date-label">Reproducido</span>
+                <span class="date-value">{{ formatDate(item.listenedAt) }}</span>
+              </div>
+            </div>
+            
+            <p class="episode-description">{{ item.episode.description }}</p>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</div>

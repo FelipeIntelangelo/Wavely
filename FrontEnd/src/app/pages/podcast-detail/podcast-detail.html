@@ -1,0 +1,179 @@
+@if (isLoading) {
+  <div class="loading-container">
+    <p>Cargando podcast...</p>
+  </div>
+} @else if (podcast) {
+  <div class="podcast-detail">
+    <!-- Header similar a Profile -->
+    <div class="podcast-header-main">
+      <div class="podcast-image-wrapper">
+        <img [src]="podcast.imageUrl" [alt]="podcast.title" class="podcast-main-image" (error)="onImageError($event)">
+        <div class="image-placeholder" style="display: none;"></div>
+      </div>
+      <div class="podcast-info-section">
+        <div class="title-actions-wrapper">
+          <h1 class="podcast-main-title">{{ podcast.title }}</h1>
+          <div class="podcast-actions-main">
+            <input type="checkbox" id="toggle-heart" [checked]="isFavorited" (change)="toggleFavorite()" style="display: none;">
+            <label for="toggle-heart" [attr.aria-label]="isFavorited ? 'Quitar de favoritos' : 'Agregar a favoritos'">❤</label>
+            @if (canDeletePodcast()) {
+            <button type="button" class="edit-button" (click)="editPodcast()" title="Edit podcast">
+              <svg class="edit-svgIcon" viewBox="0 0 512 512">
+                <path d="M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1v32c0 8.8 7.2 16 16 16h32zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z"></path>
+              </svg>
+            </button>
+            <button type="button" class="delete-button"
+              (click)="deletePodcast()"
+              [disabled]="episodes.length > 0"
+              [attr.title]="episodes.length > 0 ? 'First delete all episodes' : 'Delete podcast'">
+              <svg viewBox="0 0 448 512" class="svgIcon">
+                <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"></path>
+              </svg>
+            </button>
+            }
+          </div>
+        </div>
+        
+        <a [routerLink]="['/profile', podcast.user.id]" class="creator-link-main">
+          <div class="creator-avatar-small">
+            @if (podcast.user.profilePicture) {
+              <img [src]="podcast.user.profilePicture" [alt]="podcast.user.nickname">
+            } @else {
+              <div class="avatar-fallback-small">{{ getUserInitial() }}</div>
+            }
+          </div>
+          <span class="creator-name">{{ podcast.user.nickname }}</span>
+        </a>
+        <div class="podcast-stats-main">
+          <div class="stat-item-main">
+            <span class="icon-star"></span>
+            <span>{{ podcast.averageRating || 0 }}</span>
+          </div>
+          <div class="stat-item-main">
+            <span class="views-count-main">
+              <svg class="icon-eye" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/>
+              </svg>
+              {{ formatViews(getTotalViews()) }}
+            </span>
+          </div>
+          @if (podcast.categories.length) {
+            @for (cat of podcast.categories.slice(0, 4); track $index) {
+              <button type="button" class="chip chip-btn" (click)="goToCategory(cat, $event)" [attr.title]="'Ver podcast de ' + cat">{{ cat }}</button>
+            }
+            @if (podcast.categories.length > 4) {
+              <div class="categories-popup-container">
+                <button type="button" class="chip chip-more" (click)="toggleCategoriesPopup($event)" title="Ver todas las categorías">+{{ podcast.categories.length - 4 }}</button>
+                @if (showCategoriesPopup) {
+                  <div class="categories-popup">
+                    @for (cat of podcast.categories.slice(4); track $index) {
+                      <button type="button" class="popup-category" (click)="goToCategory(cat, $event)" [attr.title]="'Ver podcast de ' + cat">{{ cat }}</button>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          }
+        </div>
+        
+        <!-- Descripción -->
+        <div class="description-section-main">
+          <p>{{ podcast.description }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección de Episodios -->
+    <section class="episodes-section">
+      <div class="episodes-header">
+        <h2>Episodes</h2>
+        @if (canAddEpisode()) {
+          <button type="button" class="add-episode-btn" (click)="goToAddEpisode()" title="Create episode" aria-label="Create episode">
+            <span class="icon-plus"></span>
+            <span class="btn-text">Create Episode</span>
+          </button>
+        }
+      </div>
+      
+      <!-- Selector de temporadas -->
+      @if (!isLoadingEpisodes && episodes.length > 0 && availableSeasons.length > 0) {
+        <div class="season-selector">
+          <button 
+            type="button" 
+            class="season-tab" 
+            [class.active]="selectedSeason === 0"
+            (click)="setSelectedSeason(0)">
+            All
+          </button>
+          @for (season of availableSeasons; track season) {
+            <button 
+              type="button" 
+              class="season-tab" 
+              [class.active]="selectedSeason === season"
+              (click)="setSelectedSeason(season)">
+              Season {{ season }}
+            </button>
+          }
+        </div>
+      }
+      
+      @if (isLoadingEpisodes) {
+        <div class="loading-episodes">
+          <p>Cargando episodios...</p>
+        </div>
+      } @else if (episodes.length === 0) {
+        <div class="no-episodes">
+          <p>Este podcast aún no tiene episodios</p>
+        </div>
+      } @else {
+        <div class="episodes-list">
+          @for (episode of filteredEpisodes; track episode.id) {
+            <article class="episode-card" (click)="viewEpisode(episode.id)">
+              <div class="episode-image">
+                <img [src]="episode.imageUrl || podcast.imageUrl" [alt]="episode.title" (error)="onImageError($event)">
+                <div class="image-placeholder" style="display: none;"></div>
+              </div>
+              <div class="episode-content">
+                <div class="episode-header">
+                  <div class="episode-info">
+                    <h3 class="episode-title">{{ episode.title }}</h3>
+                    <span class="episode-meta">S{{ episode.season }} · E{{ episode.chapter }}</span>
+                  </div>
+                  @if (canDeleteEpisode(episode)) {
+                    <div class="episode-actions">
+                      <button type="button" class="episode-edit-btn" (click)="editEpisode(episode, $event)" title="Editar episodio" aria-label="Editar episodio">
+                        <svg class="edit-svgIcon" viewBox="0 0 512 512">
+                          <path d="M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1v32c0 8.8 7.2 16 16 16h32zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z"></path>
+                        </svg>
+                      </button>
+                      <button type="button" class="episode-delete-btn" (click)="deleteEpisode(episode, $event)" title="Eliminar episodio" aria-label="Eliminar episodio">
+                        <svg viewBox="0 0 448 512" class="svgIcon">
+                          <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"></path>
+                        </svg>
+                      </button>
+                    </div>
+                  }
+                </div>
+                <p class="episode-description">{{ episode.description }}</p>
+                <div class="episode-footer">
+                  <span class="episode-views">
+                    <span class="icon-eye-small"></span>
+                    {{ formatViews(episode.views) }}
+                  </span>
+                  <span class="episode-date">
+                    <span class="icon-calendar"></span>
+                    {{ episode.publicationDate | date:'dd/MM/yyyy' }}
+                  </span>
+                </div>
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+  </div>
+} @else {
+  <div class="error-container">
+    <p>No se pudo cargar el podcast</p>
+  </div>
+}

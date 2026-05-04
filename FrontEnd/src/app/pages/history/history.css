@@ -1,0 +1,108 @@
+:host {
+  --bg-root: #131313;
+  --bg-surface: #181818;
+  --accent: #9D65D7;
+  --accent-rgb: 157, 101, 215;
+  --text-primary: #fff;
+  --text-secondary: #ddd;
+  --text-tertiary: #999;
+  --radius-md: 10px;
+  --radius-pill: 999px;
+
+  background-color: var(--bg-root);
+  display: block;
+  min-height: 100vh;
+}
+
+.history-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: var(--text-primary);
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  font-size: 1.2rem;
+  color: var(--text-tertiary);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 500px;
+  text-align: center;
+  padding: 2rem;
+}
+
+.empty-state h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.8rem;
+  color: var(--text-primary);
+}
+
+.empty-state p {
+  margin: 0;
+  color: var(--text-tertiary);
+  font-size: 1rem;
+  max-width: 400px;
+}
+
+/* Los estilos de .history-list, .episode-card, .episode-image, .episode-content, 
+   .episode-header, .episode-info, .episode-title, .episode-meta están ahora 
+   en styles.css como estilos compartidos */
+
+/* Estilos específicos del historial */
+/* Estilos específicos del historial */
+.listened-date {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.date-label {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.date-value {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Media queries - Los estilos básicos están en styles.css */
+@media (max-width: 767px) {
+  .history-container {
+    padding: 1rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.6rem;
+  }
+
+  /* Los estilos de .episode-card, .episode-image, etc. están en styles.css */
+  /* Solo ajustes específicos del historial */
+  .listened-date {
+    align-items: flex-start;
+    order: 2;
+  }
+}

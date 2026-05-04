@@ -1,0 +1,16 @@
+<aside role="navigation" aria-label="Main navigation" [class.open]="layoutService.sidebarOpen()" [class.closed]="!layoutService.sidebarOpen()">
+    <ul>
+        @for (item of navItems; track item.route + item.label; let isFirst = $first) {
+                        <li [id]="isFirst ? 'liFirst' : ''"
+                            routerLinkActive="active"
+                            [routerLinkActiveOptions]="{ exact: item.route === '/' }">
+                            <a
+                                [routerLink]="item.route"
+                                (click)="onNavClick()"
+                                [attr.data-label]="item.label">
+                                <i [class]="item.icon"></i>
+                                <span class="sidebar-label">{{ item.label }}</span>
+                            </a>
+                        </li>        }
+    </ul>
+</aside>

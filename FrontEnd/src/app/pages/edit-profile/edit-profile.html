@@ -1,0 +1,89 @@
+<div class="edit-profile-container">
+    @if (isLoading) {
+      <div class="loading-spinner">Loading profile...</div>
+    }
+  
+    @if (error) {
+      <div class="error-message">{{ error }}</div>
+    }
+  
+    @if (currentUser) {
+      <form [formGroup]="editProfileForm" (ngSubmit)="onSave()" class="edit-profile-form">
+        <h2>Edit Profile</h2>
+
+        <div class="form-group">
+          <label for="nickname">Nickname:</label>
+          <input type="text" id="nickname" formControlName="nickname" placeholder="Nickname"
+                 [class.error-input]="editProfileForm.get('nickname')?.invalid && editProfileForm.get('nickname')?.touched">
+          <app-form-error controlName="nickname" [customMessages]="customErrors['nickname']"></app-form-error>
+        </div>
+  
+        <div class="form-group">
+          <label for="bio">Bio:</label>
+          <textarea id="bio" formControlName="bio" style="resize: none;" placeholder="Tell me about you..."
+                    [class.error-input]="editProfileForm.get('bio')?.invalid && editProfileForm.get('bio')?.touched"></textarea>
+          <app-form-error controlName="bio" [customMessages]="customErrors['bio']"></app-form-error>
+        </div>
+
+        <div class="form-group">
+          <label>Profile Picture:</label>
+          <app-cloudinary-upload
+            acceptedTypes="image/*"
+            resourceType="image"
+            label="Subir imagen de perfil"
+            [maxSizeMB]="5"
+            [defer]="true"
+            #profilePictureUpload
+            (uploadComplete)="onImageUploaded($event)"
+            (uploadError)="onUploadError($event)">
+          </app-cloudinary-upload>
+          
+          @if (editProfileForm.get('profilePicture')?.value) {
+            <div class="current-profile-picture">
+              <img [src]="editProfileForm.get('profilePicture')?.value" alt="Profile preview" class="profile-preview">
+              <p class="image-url-label">URL actual:</p>
+              <a [href]="editProfileForm.get('profilePicture')?.value" target="_blank" class="image-url-link">
+                {{ editProfileForm.get('profilePicture')?.value }}
+              </a>
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" id="email" formControlName="email" placeholder="Email"
+                 [class.error-input]="editProfileForm.get('email')?.invalid && editProfileForm.get('email')?.touched">
+          <app-form-error controlName="email" [customMessages]="customErrors['email']"></app-form-error>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Nueva Contraseña (opcional):</label>
+          <div class="password-input-wrapper">
+            <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password" placeholder="Nueva contraseña"
+                   [class.error-input]="editProfileForm.get('password')?.invalid && editProfileForm.get('password')?.touched">
+            <button type="button" class="password-toggle" (click)="togglePasswordVisibility()" tabindex="-1">
+              <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+            </button>
+          </div>
+          <app-form-error controlName="password" [customMessages]="customErrors['password']"></app-form-error>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirmar Nueva Contraseña:</label>
+          <div class="password-input-wrapper">
+            <input [type]="showConfirmPassword ? 'text' : 'password'" id="confirmPassword" formControlName="confirmPassword" placeholder="Confirmar nueva contraseña"
+                   [class.error-input]="editProfileForm.get('confirmPassword')?.invalid && editProfileForm.get('confirmPassword')?.touched">
+            <button type="button" class="password-toggle" (click)="toggleConfirmPasswordVisibility()" tabindex="-1">
+              <i [class]="showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+            </button>
+          </div>
+          <app-form-error controlName="confirmPassword" [customMessages]="customErrors['confirmPassword']"></app-form-error>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" [disabled]="editProfileForm.invalid">Save Changes</button>
+          <button type="button" (click)="onCancel()">Cancel</button>
+        </div>
+      </form>
+    }
+  </div>

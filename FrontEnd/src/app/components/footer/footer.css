@@ -1,0 +1,179 @@
+:host {
+    display: block;
+    margin-left: var(--sidebar-width);
+    transition: margin-left 0.15s ease;
+}
+
+footer{
+    background-color: var(--background-dark);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 3rem 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Tablet - Ajustes de tamaño */
+@media (min-width: 768px) and (max-width: 1024px) {
+    footer {
+        padding: 3rem 2rem;
+    }
+
+    #logoFooter {
+        height: 60px;
+    }
+
+    #footerRedes {
+        gap: 0.75rem;
+    }
+
+    .button {
+        width: 32px;
+        height: 32px;
+    }
+
+    .button svg {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+/* Mobile - Contenidos envueltos y ajustes de tamaño */
+@media (max-width: 767px) {
+    footer {
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 3rem 2rem;
+        text-align: center;
+    }
+
+    #logoFooter {
+        height: 50px;
+    }
+
+    p {
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    #footerRedes {
+        gap: 0.5rem;
+        justify-content: center;
+    }
+
+    .button {
+        width: 30px;
+        height: 30px;
+        margin-left: 0;
+    }
+
+    .button svg {
+        width: 14px;
+        height: 14px;
+    }
+}
+
+/* Desktop - Ajustar margin según estado del sidebar */
+@media (min-width: 1025px) {
+    :host {
+        margin-left: var(--sidebar-width); /* Abierto por defecto: 250px */
+    }
+    
+    :host.sidebar-closed {
+        margin-left: 80px; /* Cerrado: 80px */
+    }
+}
+
+/* Tablet - Sidebar de iconos siempre visible (80px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+    :host {
+        margin-left: 80px; /* Siempre 80px porque el sidebar completo aparece encima */
+    }
+}
+
+/* Mobile - Sin sidebar */
+@media (max-width: 767px) {
+    :host {
+        margin-left: 0; /* Sin sidebar */
+    }
+}
+
+a{
+    text-decoration: none;
+    color: white;
+}
+
+p{
+    color: white;
+}
+
+#logoFooter{
+    height: 80px;
+}
+
+#footerRedes {
+    display: flex;
+    gap: 1rem;
+}
+
+.button {
+  cursor: pointer;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(120deg, #833ab4, #fd1d1d, #fcb045);
+  position: relative;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+  transition: 0.1s;
+}
+.button svg {
+  color: white;
+  width: 18px;
+  height: 18px;
+  z-index: 9;
+}
+
+/* button:nth-child(2) was WhatsApp, now it's Twitter */
+.button:nth-child(2) {
+  background: #1DA1F2; /* Twitter Blue */
+}
+
+/* button:nth-child(3) was Twitter, now it's YouTube */
+.button:nth-child(3) {
+  background: #FF0000; /* YouTube Red */
+}
+
+/* button:nth-child(4) was YouTube, now it's GitHub */
+.button:nth-child(4) {
+  background: #4C1D95; /* GitHub Dark Violet */
+}
+
+/* button:nth-child(5) was GitHub (no explicit rule), now it's the 5th button, which does not exist*/
+/* button:nth-child(6) removed as it is out of bounds */
+
+
+.button:active {
+  transform: scale(0.85);
+}
+
+.button::before {
+  content: "";
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background-color: #212121;
+  border-radius: 50%;
+  z-index: -1;
+  border: 0px solid rgba(255, 255, 255, 0.411);
+  transition: 0.4s;
+}
+
+.button:hover::before {
+  width: 0px;
+  height: 0px;
+}

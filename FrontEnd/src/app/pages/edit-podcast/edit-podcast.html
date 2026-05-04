@@ -1,0 +1,8 @@
+<div class="edit-podcast-container">
+  <app-podcast-form
+    [podcast]="podcast"
+    (formSubmit)="onUpdatePodcast($event)"
+    [isSubmitting]="isSubmitting"
+    [errorMessage]="errorMessage"
+  ></app-podcast-form>
+</div>

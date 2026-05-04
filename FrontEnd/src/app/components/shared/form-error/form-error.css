@@ -1,0 +1,14 @@
+:host {
+    display: block;
+    /* Reserva espacio para el mensaje aunque no exista, evitando que se muevan los campos */
+    min-height: 1.2rem;
+    margin-top: 0.25rem;
+}
+
+.form-error {
+    color: rgba(255, 90, 90, 0.623);
+    font-size: 0.75rem;
+    line-height: 1.1;
+    max-width: 100%;
+    word-break: break-word;
+}

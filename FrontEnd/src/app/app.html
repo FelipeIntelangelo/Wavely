@@ -1,0 +1,10 @@
+<app-header></app-header>
+<app-sidebar></app-sidebar>
+@if (layoutService.sidebarOpen()) {
+  <div class="sidebar-overlay" [class.show]="layoutService.sidebarOpen()" (click)="layoutService.closeSidebar()"></div>
+}
+<main [class.sidebar-closed]="!layoutService.sidebarOpen()">
+  <router-outlet></router-outlet>
+</main>
+<app-footer [class.sidebar-closed]="!layoutService.sidebarOpen()"></app-footer>
+<app-floating-media-player></app-floating-media-player>
