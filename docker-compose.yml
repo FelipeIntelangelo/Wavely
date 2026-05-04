@@ -1,0 +1,67 @@
+
+services:
+  # ==========================================
+  # Database Service (MySQL)
+  # ==========================================
+  database:
+    image: mysql:9.3.0 # Usando una versión compatible con el conector del pom.xml
+    container_name: podcast_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: podcastutn
+    ports:
+      - "3307:3306" # Usamos el 3307 en tu PC para que no choque con tu MySQL local
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - podcast_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # ==========================================
+  # Backend Service (Spring Boot)
+  # ==========================================
+  backend:
+    build:
+      context: ./BackEnd/PodcastProject
+      dockerfile: Dockerfile
+    container_name: podcast_backend
+    restart: always
+    environment:
+      # Sobrescribimos la URL para que apunte al contenedor de la base de datos
+      - SPRING_DATASOURCE_URL=jdbc:mysql://database:3306/podcastutn?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+    ports:
+      - "8080:8080"
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - podcast_network
+
+  # ==========================================
+  # Frontend Service (Angular + Nginx)
+  # ==========================================
+  frontend:
+    build:
+      context: ./FrontEnd
+      dockerfile: Dockerfile
+    container_name: podcast_frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - podcast_network
+
+volumes:
+  db_data:
+
+networks:
+  podcast_network:
+    driver: bridge
