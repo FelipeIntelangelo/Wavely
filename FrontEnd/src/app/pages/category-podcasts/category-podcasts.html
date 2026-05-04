@@ -1,0 +1,36 @@
+<div class="category-podcasts-container">
+  <header class="page-header">
+    <h1>Explorar: {{ category }}</h1>
+  </header>
+
+  @if (isLoading) {
+    <div class="loading-container">
+      <p>Cargando podcasts...</p>
+    </div>
+  } @else if (podcasts.length === 0) {
+    <div class="empty-state">
+      <p>No se encontraron podcasts en esta categoría.</p>
+    </div>
+  } @else {
+    <div class="podcasts-list">
+      @for (p of podcasts; track p.id) {
+        <article class="podcast-card" (click)="viewPodcast(p.id)">
+          <div class="podcast-image">
+            <img [src]="p.imageUrl" [alt]="p.title" (error)="onImageError($event)">
+            <div class="image-placeholder" style="display: none;">
+              <i class="fas fa-podcast"></i>
+            </div>
+          </div>
+          <div class="podcast-content">
+            <div class="podcast-header">
+              <div class="podcast-info">
+                <h3 class="podcast-title">{{ p.title }}</h3>
+                <p class="podcast-description">{{ p.description }}</p>
+              </div>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</div>

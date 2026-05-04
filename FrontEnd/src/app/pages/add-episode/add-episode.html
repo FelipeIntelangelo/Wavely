@@ -1,0 +1,152 @@
+@if (podcast) {
+  <div class="add-episode-page">
+  <h2>Nuevo episodio para: {{ podcast.title }}</h2>
+
+  @if (!isAuthorized && errorMessage) {
+    <div class="error">{{ errorMessage }}</div>
+  }
+
+  @if (isAuthorized) {
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <fieldset>
+      <label>Título</label>
+      <input type="text" formControlName="title" />
+      @if (form.get('title')?.invalid && form.get('title')?.touched) {
+        <div class="field-error">
+          @if (form.get('title')?.errors?.['required']) {
+            El título es obligatorio
+          }
+          @if (form.get('title')?.errors?.['minlength']) {
+            El título debe tener al menos 3 caracteres
+          }
+          @if (form.get('title')?.errors?.['maxlength']) {
+            El título no puede superar 50 caracteres
+          }
+        </div>
+      }
+    </fieldset>
+
+    <fieldset>
+      <label>Descripción</label>
+      <textarea formControlName="description" style="resize: none;"></textarea>
+      @if (form.get('description')?.invalid && form.get('description')?.touched) {
+        <div class="field-error">
+          @if (form.get('description')?.errors?.['required']) {
+            La descripción es obligatoria
+          }
+          @if (form.get('description')?.errors?.['minlength']) {
+            La descripción debe tener al menos 5 caracteres
+          }
+          @if (form.get('description')?.errors?.['maxlength']) {
+            La descripción no puede superar 500 caracteres
+          }
+        </div>
+      }
+    </fieldset>
+
+    <div class="grid">
+      <fieldset>
+        <label>Temporada</label>
+        <input type="number" formControlName="season" min="1" (change)="onSeasonChange()" />
+        @if (validationErrors['season']) {
+          <div class="field-error">
+            {{ validationErrors['season'] }}
+          </div>
+        }
+        @if (form.get('season')?.invalid && form.get('season')?.touched) {
+          <div class="field-error">
+            La temporada debe ser al menos 1
+          </div>
+        }
+      </fieldset>
+      <fieldset>
+        <label>Episodio</label>
+        <input type="number" formControlName="chapter" min="1" (change)="onChapterChange()" />
+        @if (validationErrors['chapter']) {
+          <div class="field-error">
+            {{ validationErrors['chapter'] }}
+          </div>
+        }
+        @if (form.get('chapter')?.invalid && form.get('chapter')?.touched) {
+          <div class="field-error">
+            El episodio debe ser al menos 1
+          </div>
+        }
+      </fieldset>
+    </div>
+
+    <fieldset>
+      <label>Imagen</label>
+      <app-cloudinary-upload
+        acceptedTypes="image/*"
+        resourceType="image"
+        label="Subir portada"
+        [maxSizeMB]="10"
+        [defer]="true"
+        #imageUp
+        (uploadComplete)="onImageUploaded($event)"
+        (uploadError)="onUploadError($event)">
+      </app-cloudinary-upload>
+    </fieldset>
+
+    <fieldset>
+      <label>Video/Audio</label>
+      @if (!form.value.audioPath) {
+        <app-cloudinary-upload
+          acceptedTypes="video/*,audio/*,.mp3,.wav,.ogg,.m4a,.aac,.flac,.mp4,.webm,.mov,.avi"
+          resourceType="auto"
+          label="Subir video/audio del episodio"
+          [maxSizeMB]="500"
+          [defer]="true"
+          #mediaUp
+          (uploadComplete)="onAudioUploaded($event)"
+          (uploadError)="onUploadError($event)"
+          (durationDetected)="onDurationDetected($event)">
+        </app-cloudinary-upload>
+        <div class="hint">Sube un archivo para habilitar el envío.</div>
+        @if (detectedDuration > 0) {
+          <div class="duration-info">Duración detectada: {{ getFormattedDuration() }}</div>
+          @if (detectedDuration > 0 && detectedDuration < 30) {
+            <div class="field-error">El archivo debe durar al menos 30 segundos para poder subirlo.</div>
+          }
+        }
+        @if (form.get('title')?.touched && form.get('description')?.touched && !canSubmit()) {
+          <div class="field-error">
+            Debes seleccionar un archivo de audio/video válido
+          </div>
+        }
+      } @else {
+        <div class="media-preview">
+          <div class="player">
+            @if (isVideo(form.value.audioPath)) {
+              <video [src]="form.value.audioPath" controls playsinline></video>
+            } @else {
+              <audio [src]="form.value.audioPath" controls></audio>
+            }
+          </div>
+          <div class="meta">
+            <span class="ok">Archivo cargado ✔</span>
+            <span class="name">{{ getFileName(form.value.audioPath) }}</span>
+            <button type="button" class="link-btn" (click)="clearAudio()">Reemplazar archivo</button>
+          </div>
+        </div>
+      }
+    </fieldset>
+
+    <div class="actions">
+      <button type="submit" [disabled]="isSubmitting || form.invalid || !canSubmit()">{{ isSubmitting ? 'Creando…' : 'Crear episodio' }}</button>
+      <a [routerLink]="['/podcast', podcast.id]" class="cancel">Cancelar</a>
+    </div>
+
+    @if (errorMessage) {
+      <div class="error">{{ errorMessage }}</div>
+    }
+  </form>
+  }
+  </div>
+} @else {
+  <p>Cargando podcast…</p>
+  @if (errorMessage) {
+    <div class="error">{{ errorMessage }}</div>
+  }
+}

@@ -1,0 +1,181 @@
+:host {
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+
+main {
+    background: radial-gradient(circle at top left, #2a0050 0%, #0A0A0A 30%);
+    padding: 1rem;
+    min-height: calc(100vh - var(--header-height) - var(--footer-height));
+}
+
+h2, h3, h4{
+    color: white;
+}
+
+h2{
+    margin: 0;
+    margin-bottom: 0.5rem;
+}
+
+.containerCards{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 2rem 0rem;
+    background: linear-gradient(to right, rgba(19,19,19,0.8), rgba(0,0,0,0.5));
+    border-radius: 0;
+    border-right: 1px solid rgb(69, 69, 69); 
+}
+
+.cardHome {
+    width: 220px;
+    min-width: 200px;
+    max-width: 220px;
+    border-radius: 0;
+    scroll-snap-align: start;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.cardHome:hover .ejampleImg {
+    opacity: 0.7;
+}
+
+/* Los estilos de carrusel (.carouselSection, .carouselContainer, .carouselWrapper, 
+   .carouselContent, .arrowButton, .verTodosButton) están ahora en styles.css 
+   como estilos compartidos */
+
+.ejampleImg {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    height: auto;
+    background-color: var(--primary-color);
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    transition: opacity 0.3s ease;
+    flex-shrink: 0;
+}
+
+.cardHome h3 {
+    font-size: 1.2rem;
+    margin: 0;
+    margin-top: 0.5rem;
+    font-weight: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+    max-width: 220px;
+    display: block;
+    box-sizing: border-box;
+}
+
+.cardHome h4 {
+    font-size: 1.1rem;
+    color: #999;
+    margin: 0;
+    margin-top: 0.25rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+    max-width: 220px;
+    display: block;
+    box-sizing: border-box;
+}
+
+.podcastImage {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    height: auto;
+    object-fit: cover;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    transition: opacity 0.3s ease;
+    flex-shrink: 0;
+    display: block;
+}
+
+.cardHome:hover .podcastImage {
+    opacity: 0.7;
+}
+
+.image-placeholder-home {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    height: auto;
+    background: rgba(157, 101, 215, 0.2);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239D65D7' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z'/%3E%3Cpath d='M19 10v2a7 7 0 0 1-14 0v-2'/%3E%3Cline x1='12' y1='19' x2='12' y2='23'/%3E%3Cline x1='8' y1='23' x2='16' y2='23'/%3E%3C/svg%3E");
+    background-size: 50%;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: opacity 0.3s ease;
+}
+
+.cardHome:hover .image-placeholder-home {
+    opacity: 0.7;
+}
+
+.cardHome {
+    cursor: pointer;
+}
+
+/* Estilos para tablet */
+@media (min-width: 768px) and (max-width: 1024px) {
+  main {
+    padding: 1rem;
+  }
+
+  .cardHome h3 {
+    font-size: 1.1rem;
+    max-width: 200px;
+  }
+
+  .cardHome h4 {
+    font-size: 1rem;
+    max-width: 200px;
+  }
+
+  .cardHome {
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+  }
+
+
+}
+
+/* Estilos para smartphone */
+@media (max-width: 767px) {
+  main {
+    padding: 0.5rem;
+  }
+
+  .cardHome h3 {
+    font-size: 1rem;
+    max-width: 180px;
+  }
+
+  .cardHome h4 {
+    font-size: 0.9rem;
+    max-width: 180px;
+  }
+
+  .cardHome {
+    width: 180px;
+    min-width: 180px;
+    max-width: 180px;
+  }
+
+
+}

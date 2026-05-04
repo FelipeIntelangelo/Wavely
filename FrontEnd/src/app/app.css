@@ -1,0 +1,67 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+  margin-top: var(--header-height);
+  margin-left: var(--sidebar-width);
+  transition: margin-left 0.15s ease;
+}
+
+/* Desktop - Ajustar margin cuando sidebar está cerrado */
+@media (min-width: 1025px) {
+  main.sidebar-closed {
+    margin-left: 80px;
+  }
+}
+
+.sidebar-overlay {
+  display: none;
+}
+
+/* Tablet - Sidebar de iconos siempre visible */
+@media (min-width: 768px) and (max-width: 1024px) {
+  main {
+    margin-left: 80px;
+  }
+
+  .sidebar-overlay {
+    display: none;
+  }
+
+  /* Mostrar overlay cuando sidebar completo está abierto */
+  .sidebar-overlay.show {
+    display: block;
+    position: fixed;
+    top: var(--header-height);
+    left: 80px;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    backdrop-filter: blur(2px);
+  }
+}
+
+/* Mobile - Sin sidebar */
+@media (max-width: 767px) {
+  main {
+    margin-left: 0;
+    margin-top: var(--header-height);
+  }
+
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    backdrop-filter: blur(2px);
+  }
+}

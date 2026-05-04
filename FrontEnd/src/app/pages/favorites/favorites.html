@@ -1,0 +1,65 @@
+<div class="favorites-container">
+  <header class="page-header">
+    <h1>Mis Favoritos</h1>
+  </header>
+
+  @if (isLoading) {
+    <div class="loading-container">
+      <p>Cargando tus podcasts favoritos...</p>
+    </div>
+  } @else if (favorites.length === 0) {
+    <div class="empty-state">
+      <h2>No tienes favoritos aún</h2>
+      <p>Empieza a explorar y agrega podcasts a tus favoritos</p>
+    </div>
+  } @else {
+    <div class="podcasts-list">
+      @for (podcast of favorites; track podcast.id) {
+        <article class="podcast-card" (click)="viewPodcast(podcast.id)">
+          <div class="podcast-image">
+            <img [src]="podcast.imageUrl" [alt]="podcast.title" (error)="onImageError($event)">
+            <div class="image-placeholder" style="display: none;"></div>
+          </div>
+          
+          <div class="podcast-content">
+            <div class="podcast-header">
+              <div class="podcast-info">
+                <h3 class="podcast-title">{{ podcast.title }}</h3>
+                <div class="podcast-stats">
+                  <div class="stat">
+                    <span class="icon-star-small"></span>
+                    <span>{{ podcast.averageRating || 0 }}</span>
+                  </div>
+                  <div class="stat">
+                    <span class="icon-eye-small"></span>
+                    <span>{{ formatViews(podcast.averageViews || 0) }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="podcast-actions-main" (click)="$event.stopPropagation()">
+                <input type="checkbox" [id]="'toggle-heart-fav-' + podcast.id" 
+                       [checked]="true" 
+                       (change)="toggleFavorite(podcast.id)" 
+                       style="display: none;">
+                <label [for]="'toggle-heart-fav-' + podcast.id" 
+                       [attr.aria-label]="'Quitar de favoritos'">❤</label>
+              </div>
+            </div>
+            <p class="podcast-description">{{ podcast.description }}</p>
+            
+            @if (podcast.category && podcast.category.length) {
+              <div class="podcast-categories">
+                @for (cat of podcast.category.slice(0, 3); track $index) {
+                  <span class="chip">{{ cat }}</span>
+                }
+                @if (podcast.category.length > 3) {
+                  <span class="chip chip-more">+{{ podcast.category.length - 3 }}</span>
+                }
+              </div>
+            }
+          </div>
+        </article>
+      }
+    </div>
+  }
+</div>

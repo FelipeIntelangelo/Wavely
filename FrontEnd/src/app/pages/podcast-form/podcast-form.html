@@ -1,0 +1,83 @@
+<form [formGroup]="podcastForm" (ngSubmit)="onSubmit()">
+  <div class="form-container">
+    <h2>{{ podcast ? 'Edit Podcast' : 'Create Podcast' }}</h2>
+
+    <fieldset>
+      <label for="title">Title</label>
+      <input type="text" id="title" formControlName="title" placeholder="My Awesome Podcast"
+             [class.error-input]="podcastForm.get('title')?.invalid && podcastForm.get('title')?.touched">
+      <app-form-error controlName="title" [customMessages]="customErrors['title']"></app-form-error>
+    </fieldset>
+
+    <fieldset>
+      <label for="description">Description</label>
+      <textarea id="description" formControlName="description" placeholder="A podcast about..." style="resize: none;"
+                [class.error-input]="podcastForm.get('description')?.invalid && podcastForm.get('description')?.touched"></textarea>
+      <app-form-error controlName="description" [customMessages]="customErrors['description']"></app-form-error>
+    </fieldset>
+
+    <fieldset>
+      <label>Imagen del Podcast</label>
+      <app-cloudinary-upload
+        acceptedTypes="image/*"
+        resourceType="image"
+        label="Subir imagen del podcast"
+        [maxSizeMB]="10"
+        [defer]="true"
+        #imageUp
+        (uploadComplete)="onImageUploaded($event)"
+        (uploadError)="onUploadError($event)">
+      </app-cloudinary-upload>
+      
+      @if (podcastForm.get('imageUrl')?.value) {
+        <div class="current-image">
+          <p class="image-url-label">URL actual:</p>
+          <a [href]="podcastForm.get('imageUrl')?.value" target="_blank" class="image-url-link">
+            {{ podcastForm.get('imageUrl')?.value }}
+          </a>
+        </div>
+      }
+    </fieldset>
+
+    <fieldset>
+      <label class="categories-label">Categories</label>
+      <div class="categories-combobox" [class.open]="categoriesOpen" (click)="toggleCategories()" tabindex="0"
+           (keydown.enter)="toggleCategories()" (keydown.space)="toggleCategories()" role="button"
+           [attr.aria-expanded]="categoriesOpen">
+        <div class="categories-display" *ngIf="selectedCategories.length > 0; else placeholder">
+          @for (cat of selectedCategories; track cat) {
+            <span class="category-chip">{{ cat }}</span>
+          }
+        </div>
+        <ng-template #placeholder>
+          <span class="categories-placeholder">Seleccionar categorías...</span>
+        </ng-template>
+        <span class="caret" aria-hidden="true">▾</span>
+      </div>
+      <div class="categories-dropdown" *ngIf="categoriesOpen" (click)="$event.stopPropagation()">
+        @for (category of categoryKeys; track category) {
+          <div class="dropdown-item" (click)="onCategoryToggle(category)" [class.selected]="isCategorySelected(category)">
+            <input type="checkbox" [checked]="isCategorySelected(category)" tabindex="-1" />
+            <span>{{ category }}</span>
+          </div>
+        }
+      </div>
+      @if (podcastForm.get('categories')?.invalid && podcastForm.get('categories')?.touched) {
+        <div class="server-error">{{ customErrors['categories']['required'] }}</div>
+      }
+    </fieldset>
+
+    <div class="button-container">
+      <button type="submit" [disabled]="isSubmitting || podcastForm.invalid">
+        {{ isSubmitting ? 'Saving...' : (podcast ? 'Save Changes' : 'Create Podcast') }}
+        @if (isSubmitting) {
+          <span class="spinner"></span>
+        }
+      </button>
+    </div>
+
+    @if (errorMessage) {
+      <p class="server-error">{{ errorMessage }}</p>
+    }
+  </div>
+</form>

@@ -1,0 +1,680 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Varela+Round&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+*{
+    box-sizing: border-box;
+    font-family: "Roboto", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --header-height: 84px;
+    --footer-height: 176px; /* Aproximadamente: padding (3rem*2) + logo (80px) */
+    --sidebar-width: 250px;
+    
+    /* Colors */
+    --primary-color: #9D65D7;
+    --primary-color-rgb: 157, 101, 215;
+    --secondary-color: #7c3aed;
+    --background-dark: #050307;
+    
+    /* Gradients */
+    --primary-gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+/* Utility Classes */
+.btn-primary {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.75rem;
+    border-radius: 0.6rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(var(--primary-color-rgb), 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #8B4FC5, #6a2dc9);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(var(--primary-color-rgb), 0.5);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+
+html, body {
+    background-color: #131313;
+    color: #fff;
+    min-height: 100%;
+}
+
+/* ============================================
+   MEDIA CARD HORIZONTAL - Estilos Compartidos
+   Cards genéricas para Podcasts y Episodios
+   ============================================ */
+
+/* Lista contenedora - funciona para podcasts y episodios */
+.podcasts-list,
+.history-list,
+.episodes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+/* Card genérica - funciona para podcasts y episodios */
+.podcast-card,
+.episode-card,
+.media-card {
+  background: rgba(0, 0, 0, 0.3);
+  border: none;
+  border-radius: 0;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  width: 100%;
+  padding: 0 1rem 0 0;
+  gap: 1.25rem;
+  height: 160px;
+}
+
+/* Imagen genérica - funciona para podcasts y episodios */
+.podcast-image,
+.episode-image,
+.media-image {
+  width: 160px;
+  height: 160px;
+  min-width: 160px;
+  max-width: 160px;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 0;
+  flex-shrink: 0;
+}
+
+.podcast-image img,
+.episode-image img,
+.media-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.3s ease;
+  display: block;
+}
+
+/* Imagen por defecto cuando hay error o no hay imagen */
+.podcast-image img[src=""],
+.podcast-image img:not([src]),
+.podcast-image img[src*="error"],
+.episode-image img[src=""],
+.episode-image img:not([src]),
+.episode-image img[src*="error"],
+.media-image img[src=""],
+.media-image img:not([src]),
+.media-image img[src*="error"] {
+  display: none;
+}
+
+.podcast-image img[src=""] + .image-placeholder,
+.podcast-image img:not([src]) + .image-placeholder,
+.podcast-image img[src*="error"] + .image-placeholder,
+.episode-image img[src=""] + .image-placeholder,
+.episode-image img:not([src]) + .image-placeholder,
+.episode-image img[src*="error"] + .image-placeholder,
+.media-image img[src=""] + .image-placeholder,
+.media-image img:not([src]) + .image-placeholder,
+.media-image img[src*="error"] + .image-placeholder {
+  display: flex;
+}
+
+.podcast-card:hover .podcast-image img,
+.episode-card:hover .episode-image img,
+.media-card:hover .media-image img {
+  opacity: 0.7;
+}
+
+/* Placeholder genérico - Imagen por defecto para podcasts */
+.image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(157, 101, 215, 0.2);
+  color: rgba(255, 255, 255, 0.5);
+  position: relative;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239D65D7' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z'/%3E%3Cpath d='M19 10v2a7 7 0 0 1-14 0v-2'/%3E%3Cline x1='12' y1='19' x2='12' y2='23'/%3E%3Cline x1='8' y1='23' x2='16' y2='23'/%3E%3C/svg%3E");
+  background-size: 50%;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.6;
+}
+
+.image-placeholder i {
+  display: none;
+}
+
+.image-placeholder .icon-episode-placeholder {
+  width: 40px;
+  height: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239D65D7' stroke-width='1.5'%3E%3Cpolygon points='5 3 19 12 5 21 5 3'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.4;
+  position: relative;
+  z-index: 1;
+}
+
+/* Placeholder para usuarios - Imagen por defecto para perfiles */
+.user-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(157, 101, 215, 0.2);
+  position: relative;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12.12 12.78C12.05 12.77 11.96 12.77 11.88 12.78C10.12 12.72 8.71997 11.28 8.71997 9.50998C8.71997 7.69998 10.18 6.22998 12 6.22998C13.81 6.22998 15.28 7.69998 15.28 9.50998C15.27 11.28 13.88 12.72 12.12 12.78Z' stroke='%239D65D7' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M18.74 19.3801C16.96 21.0101 14.6 22.0001 12 22.0001C9.40001 22.0001 7.04001 21.0101 5.26001 19.3801C5.36001 18.4401 5.96001 17.5201 7.03001 16.8001C9.77001 14.9801 14.25 14.9801 16.97 16.8001C18.04 17.5201 18.64 18.4401 18.74 19.3801Z' stroke='%239D65D7' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z' stroke='%239D65D7' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-size: 50%;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.6;
+}
+
+/* Contenido genérico */
+.podcast-content,
+.episode-content,
+.media-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+  padding: 1rem 1rem 1rem 0;
+}
+
+/* Header genérico */
+.podcast-header,
+.episode-header,
+.media-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  width: 100%;
+}
+
+/* Info genérica */
+.podcast-info,
+.episode-info,
+.media-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Título genérico */
+.podcast-title,
+.episode-title,
+.media-title {
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.3;
+}
+
+/* Stats genéricos */
+.podcast-stats {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+.icon-star-small,
+.icon-eye-small {
+  width: 14px;
+  height: 14px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.icon-star-small {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239D65D7'%3E%3Cpath d='M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/%3E%3C/svg%3E");
+}
+
+.icon-eye-small {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239D65D7'%3E%3Cpath d='M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10z'/%3E%3C/svg%3E");
+}
+
+/* Descripción genérica */
+.podcast-description,
+.episode-description,
+.media-description {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.95rem;
+  margin: 0.5rem 0 0 0;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Categorías (solo para podcasts) */
+.podcast-categories {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.chip {
+  font-size: 0.65rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(157, 101, 215, 0.18);
+  border: 1px solid rgba(157, 101, 215, 0.25);
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+}
+
+.chip-more {
+  font-weight: 600;
+  background: rgba(157, 101, 215, 0.25);
+  border-color: rgba(157, 101, 215, 0.35);
+}
+
+/* Meta información para episodios */
+.episode-meta,
+.media-meta {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+.season-chapter {
+  font-weight: 500;
+  color: #9D65D7;
+}
+
+.separator {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.duration {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Tablet - Mantener layout horizontal */
+/* Los estilos por defecto se aplican automáticamente */
+
+/* Mobile - Layout vertical con imagen arriba */
+@media (max-width: 767px) {
+  .podcasts-list,
+  .history-list,
+  .episodes-list {
+    gap: 1.5rem;
+  }
+
+  .podcast-card,
+  .episode-card,
+  .media-card {
+    flex-direction: column;
+    padding: 0;
+    gap: 0;
+    height: auto;
+  }
+
+  .podcast-image,
+  .episode-image,
+  .media-image {
+    width: 100%;
+    height: auto;
+    min-width: 100%;
+    max-width: 100%;
+    aspect-ratio: 1 / 1;
+  }
+
+  .podcast-content,
+  .episode-content,
+  .media-content {
+    padding: 0.75rem;
+  }
+
+  .podcast-header,
+  .episode-header,
+  .media-header {
+    display: contents;
+  }
+
+  .podcast-info,
+  .episode-info,
+  .media-info {
+    order: 0;
+  }
+
+  .podcast-header .action-buttons,
+  .episode-header .action-buttons,
+  .media-header .action-buttons {
+    order: 2;
+    display: flex !important;
+    margin-top: 1rem;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .podcast-title,
+  .episode-title,
+  .media-title {
+    font-size: 1.1rem;
+  }
+  
+  .podcast-description,
+  .episode-description,
+  .media-description {
+    font-size: 0.875rem;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    order: 1;
+  }
+  
+  .podcast-categories {
+    order: 3;
+  }
+}
+
+/* ============================================
+   CAROUSEL - Estilos Compartidos
+   Carruseles horizontales reutilizables
+   ============================================ */
+
+.carousel-section {
+  margin-top: 0.5rem;
+}
+
+.carousel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  margin: 0;
+}
+
+.carousel-header h2 {
+  margin: 0;
+  margin-top: 0;
+  font-size: 3.5rem;
+  font-family: 'Roboto', sans-serif;
+  padding: 0;
+}
+
+.carousel-navigation {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.carousel-container {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 4rem;
+  border-radius: 0;
+}
+
+.carousel-wrapper {
+  flex: 1;
+  overflow-x: auto;
+  border-radius: 0;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  /* Hide scrollbar */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.carousel-wrapper::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, and Opera */
+}
+
+.carousel-content {
+  display: flex;
+  gap: 3.2rem;
+  padding: 0;
+}
+
+.arrow-button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.arrow-button:hover:not(:disabled) {
+  background-color: #b88dd9;
+  transform: scale(1.1);
+}
+
+.arrow-button:disabled {
+  background-color: #666;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.arrow-initial {
+  position: relative;
+  left: 0;
+}
+
+.ver-todos-button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 2rem;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ver-todos-button:hover:not(:disabled) {
+  background-color: #b88dd9;
+}
+
+.ver-todos-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Compatibilidad con nombres antiguos (para migración gradual) */
+.carouselSection {
+  margin-top: 0.5rem;
+}
+
+.carouselContainer {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 4rem;
+  border-radius: 0;
+}
+
+.carouselWrapper {
+  flex: 1;
+  overflow-x: auto;
+  border-radius: 0;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.carouselWrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.carouselContent {
+  display: flex;
+  gap: 3.2rem;
+  padding: 0;
+}
+
+.arrowButton {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.arrowButton:hover:not(:disabled) {
+  background-color: #b88dd9;
+  transform: scale(1.1);
+}
+
+.arrowButton:disabled {
+  background-color: #666;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.arrowInitial {
+  position: relative;
+  left: 0;
+}
+
+.verTodosButton {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 2rem;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.verTodosButton:hover:not(:disabled) {
+  background-color: #b88dd9;
+}
+
+.verTodosButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Estilos de carrusel para tablet */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .carousel-container,
+  .carouselContainer {
+    padding: 1.5rem 2rem;
+  }
+
+  .carousel-header {
+    padding: 0.75rem 1rem;
+  }
+
+  .carousel-header h2 {
+    font-size: 2.5rem;
+  }
+
+  .carousel-content,
+  .carouselContent {
+    gap: 2rem;
+    padding: 0 1rem;
+  }
+
+  .arrow-button,
+  .arrowButton {
+    width: 2.2rem;
+    height: 2.2rem;
+    font-size: 0.9rem;
+  }
+
+  .ver-todos-button,
+  .verTodosButton {
+    padding: 0.7rem 1.8rem;
+    font-size: 0.95rem;
+  }
+}
+
+/* Estilos de carrusel para smartphone */
+@media (max-width: 767px) {
+  .carousel-container,
+  .carouselContainer {
+    padding: 1rem 0.5rem;
+  }
+
+  .carousel-header {
+    padding: 0.5rem 0.5rem;
+  }
+
+  .carousel-header h2 {
+    font-size: 1.8rem;
+  }
+
+  .carousel-content,
+  .carouselContent {
+    gap: 1.5rem;
+    padding: 0 0.5rem;
+  }
+
+  .arrow-button,
+  .arrowButton {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.8rem;
+  }
+
+  .ver-todos-button,
+  .verTodosButton {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.9rem;
+  }
+}

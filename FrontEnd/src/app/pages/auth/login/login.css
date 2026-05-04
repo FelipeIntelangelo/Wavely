@@ -1,0 +1,132 @@
+input::placeholder {
+  font-size: 14px;
+  transition: font-size .2s ease; /* animación suave */
+}
+
+input:focus::placeholder {
+  font-size: 10px; /* tamaño más chico cuando hacés click */
+}
+
+form {
+  /* background: linear-gradient(180deg, #000000 0%, #1a1a1a 100%);  DEGRADE LINEAL 90°- 180°- 270° - 360° */  
+  background: radial-gradient(circle, #1a1a1a 0%, #000000 100%);
+  height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-container {
+  padding: 0rem 3rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 2rem;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(76, 76, 76, 0.5);
+  color: white;
+}
+
+h2 {
+  margin: 2rem 0rem;
+  font-size: 40px;
+  letter-spacing: 6px;
+}
+
+input {
+  width: 100%;
+  padding: 1rem;
+  margin: 0.4rem 0;
+  border: 1px solid transparent;
+  border-radius: 0.7rem;
+  outline: none;
+  transition: box-shadow 0.3s ease;
+}
+
+.password-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-input-wrapper input {
+  padding-right: 3rem;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: rgba(157, 101, 215, 0.6);
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+.password-toggle:hover {
+  color: #9D65D7;
+}
+
+.password-toggle:focus {
+  outline: none;
+  color: #9D65D7;
+}
+
+.password-toggle i {
+  font-size: 1rem;
+}
+
+input:focus {
+  box-shadow: 0 0 0 5px #9D65D7;
+}
+
+fieldset{
+  border: none;
+  text-align: start;
+  margin: 1rem 0rem;
+}
+
+button{
+  width: 100%;
+  padding: 0.4rem;
+  border: none;
+  border-radius: 1rem;
+  background-color: #9D65D7;
+  color: white;
+  font-size: 15px;
+  margin-bottom: 0.5rem;
+}
+
+#buttonContainer{
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+#registerRoute{
+  text-decoration: none;
+  font-weight: 600;
+  color: #9D65D7;
+}
+
+.error-input {
+  box-shadow: 0 0 0 5px rgb(255, 82, 82);
+}
+
+.error-message{
+  color: rgba(255, 90, 90, 0.623);
+  margin-bottom: 1rem;
+  font-size: 16px;
+}
+
+#error-span{
+  color: rgba(255, 90, 90, 0.623);
+  font-size: 13px;
+  margin-left: 0.3rem;
+}

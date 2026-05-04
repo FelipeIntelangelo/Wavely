@@ -1,0 +1,108 @@
+<div class="search-page">
+    <div class="search-content">
+        <div class="search-header">
+        <h1>Resultados de búsqueda</h1>
+        @if (term) {
+            <p class="search-term">Buscando: <strong>{{ term }}</strong></p>
+        }
+        </div>
+
+        @if (isLoading) {
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Cargando resultados...</p>
+        </div>
+        }
+
+        @if (error) {
+        <div class="error-message">
+            <p>{{ error }}</p>
+        </div>
+        }
+
+        @if (!isLoading && !error && !hasResults && term) {
+        <div class="no-results">
+            <p>No se encontraron resultados que coincidan con "{{ term }}"</p>
+        </div>
+        }
+
+        @if (!isLoading && !error && hasResults) {
+            <div class="results-summary">
+                <p class="results-count">{{ totalResults }} resultado(s) encontrado(s)</p>
+            </div>
+
+            <!-- Sección de Podcasts -->
+            @if (filteredPodcasts.length > 0) {
+            <div class="results-section">
+                <div class="section-header">
+                    <h2>Podcasts ({{ filteredPodcasts.length }})</h2>
+                    <div class="sort-controls">
+                        <button 
+                            class="sort-button" 
+                            [class.active]="isOrderedByViews"
+                            (click)="toggleSortByViews()">
+                            @if (isOrderedByViews) {
+                                Ordenado por popularidad
+                            } @else {
+                                Ordenar por popularidad
+                            }
+                        </button>
+                    </div>
+                </div>
+                <div class="podcasts-grid">
+                    @for (podcast of filteredPodcasts; track podcast.id) {
+                        <div class="podcast-card" (click)="navigateToPodcast(podcast.id)">
+                            <div class="podcast-image">
+                                <img [src]="podcast.imageUrl" [alt]="podcast.title" (error)="onImageError($event)">
+                                <div class="image-placeholder" style="display: none;"></div>
+                            </div>
+                            <div class="podcast-info">
+                                <h3 class="podcast-title">{{ podcast.title }}</h3>
+                                <div class="podcast-stats">
+                                    <span class="views-count">
+                                        <svg class="icon-eye" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/>
+                                        </svg>
+                                        {{ formatViews(podcast.averageViews) }} vistas
+                                    </span>
+                                </div>
+                                @if (podcast.description) {
+                                    <p class="podcast-description">{{ podcast.description.length > 80 ? (podcast.description.slice(0, 80) + '…') : podcast.description }}</p>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            }
+
+            <!-- Sección de Usuarios -->
+            @if (filteredUsers.length > 0) {
+            <div class="results-section">
+                <div class="section-header">
+                    <h2>Usuarios ({{ filteredUsers.length }})</h2>
+                </div>
+                <div class="users-grid">
+                    @for (user of filteredUsers; track user.id) {
+                        <div class="user-card" (click)="navigateToProfile(user.id)">
+                            <div class="user-image">
+                                @if (user.profilePicture) {
+                                    <img [src]="user.profilePicture" [alt]="user.nickname" (error)="onUserImageError($event)">
+                                } @else {
+                                    <div class="user-image-placeholder"></div>
+                                }
+                            </div>
+                            <div class="user-info">
+                                <h3 class="user-nickname">{{ user.nickname }}</h3>
+                                @if (user.bio) {
+                                    <p class="user-bio">{{ user.bio.length > 80 ? (user.bio.slice(0, 80) + '…') : user.bio }}</p>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            }
+        }
+    </div>
+</div>

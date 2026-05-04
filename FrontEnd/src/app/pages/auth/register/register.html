@@ -1,0 +1,80 @@
+<form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <div id="form-container">
+        <h2>Sign Up</h2>
+        @if (currentStep === 1) {
+            <h3>Account Data</h3>
+            <div id="fieldsetContainer">
+                <div class="fieldsetUp">
+                    <fieldset>
+                        <label for="usernameIn">Username:</label>
+                        <input type="text" id="usernameIn" placeholder="Username" formControlName="username"
+                        [class.error-input]="registerForm.get('username')?.invalid && registerForm.get('username')?.touched">
+                        <app-form-error controlName="username" [customMessages]="customErrors['username']" />
+                    </fieldset>
+                    <fieldset>
+                        <label for="passwordIn">Password:</label>
+                        <div class="password-input-wrapper">
+                            <input [type]="showPassword ? 'text' : 'password'" id="passwordIn" placeholder="Password" formControlName="password"
+                            [class.error-input]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+                            <button type="button" class="password-toggle" (click)="togglePasswordVisibility()" tabindex="-1">
+                                <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                            </button>
+                        </div>
+                        <app-form-error controlName="password" [customMessages]="customErrors['password']" />
+                    </fieldset>
+                    <fieldset>
+                        <label for="emailIn">Email:</label>
+                        <input type="email" id="emailIn" placeholder="Email" formControlName="email"
+                        [class.error-input]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+                        <app-form-error controlName="email" [customMessages]="customErrors['email']"/>
+                    </fieldset>
+                </div>
+            </div>
+            <div id="buttonContainer">
+                <button type="button" id="buttonNext" [disabled]="isSubmitting || 
+                    !registerForm.get('username')?.valid
+                    || !registerForm.get('email')?.valid
+                    || !registerForm.get('password')?.valid"
+                    (click)="nextStep()">Next Step</button>
+                <p>Have an account?<a routerLink="/auth/login" id="loginRoute"> Sign in</a></p>
+            </div>
+        } @else if (currentStep === 2) {
+            <h3>Personal Information</h3>
+            <div id="buttonContainer">
+                <button type="button" (click)="prevStep()">Back</button>
+            </div>
+            <div id="fieldsetContainer">
+                <div class="fieldsetUp">
+                    <fieldset>
+                        <label for="nameIn">Name:</label>
+                        <input type="text" id="nameIn" placeholder="First Name" formControlName="name"
+                        [class.error-input]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">
+                        <app-form-error controlName="name" [customMessages]="customErrors['name']" />
+                    </fieldset>
+                    <fieldset>
+                        <label for="lastNameIn">Last Name:</label>
+                        <input type="text" id="lastNameIn" placeholder="Last Name" formControlName="lastName"
+                        [class.error-input]="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched">
+                        <app-form-error controlName="lastName" [customMessages]="customErrors['lastName']" />
+                    </fieldset>
+                    <fieldset>
+                        <label for="nickname">Nickname:</label>
+                        <input type="text" id="nicknameIn" placeholder="Nickname" formControlName="nickname"
+                        [class.error-input]="registerForm.get('nickname')?.invalid && registerForm.get('nickname')?.touched">
+                        <app-form-error controlName="nickname" [customMessages]="customErrors['nickname']" />
+                    </fieldset>
+                </div>
+            </div>
+            <div id="buttonContainer">
+                <button type="submit"  id="buttonSubmit" [disabled]="isSubmitting">{{ isSubmitting ? 'Registrando...' : 'Register' }}</button>
+                @if (isSubmitting) {
+                    <span class="spinner" aria-hidden="true"></span>
+                }
+                @if (errorMessage) {
+                    <p class="server-error">{{ errorMessage }}</p>
+                }
+                <p>Have an account?<a routerLink="/auth/login" id="loginRoute"> Sign in</a></p>
+            </div>
+        }
+    </div>
+</form>

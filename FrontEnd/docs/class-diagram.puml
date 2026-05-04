@@ -1,0 +1,146 @@
+@startuml PodcastFront Class Diagram
+
+' Configuración del diagrama
+skinparam classAttributeIconSize 0
+skinparam roundcorner 10
+skinparam linetype ortho
+hide empty members
+
+' =============== ENUMS ===============
+enum Category {
+  Categories
+}
+
+' =============== CLASE USER ===============
+class User {
+  - id: number
+  - name: string
+  - lastName: string
+  - nickname: string
+  - profilePicture: string
+  - bio: string
+  --
+  + getPodcasts(): Podcast[]
+  + getFavorites(): Podcast[]
+  + getRatings(): Rating[]
+}
+
+class Credential {
+  - email: string
+  - username: string
+  - roles: string[]
+  - resetToken: string
+  - createdAt: Date
+}
+
+' =============== CLASE PODCAST ===============
+class Podcast {
+  - id: number
+  - title: string
+  - description: string
+  - imageUrl: string
+  - isActive: boolean
+  - createdAt: string
+  - updatedAt: string
+  - averageRating: number
+  --
+  + getEpisodes(): Episode[]
+  + getCategories(): Category[]
+  + getFavoritedBy(): User[]
+  + calculateAverageRating(): number
+}
+
+' =============== CLASE EPISODE ===============
+class Episode {
+  - id: number
+  - title: string
+  - description: string
+  - publicationDate: string
+  - views: number
+  - imageUrl: string
+  - season: number
+  - chapter: number
+  - audioPath: string
+  - duration: string
+  - createdAt: string
+  --
+  + getCommentaries(): Commentary[]
+  + getRatings(): Rating[]
+  + incrementViews(): void
+}
+
+' =============== CLASE COMMENTARY ===============
+class Commentary {
+  - id: number
+  - content: string
+  - createdAt: string
+  --
+  + getUser(): User
+  + getEpisode(): Episode
+}
+
+' =============== CLASE RATING ===============
+class Rating {
+  - id: number
+  - score: number
+  - ratedAt: string
+  --
+  + getUser(): User
+  + getEpisode(): Episode
+}
+
+' =============== RELACIONES ===============
+
+' User <-> Credential (1:1)
+User "1" -- "1" Credential : Tiene >
+
+' User <-> Podcast (1:N - Creador)
+User "1" -- "0..*" Podcast : Crea >
+
+' User <-> Podcast (M:N - Favoritos)
+User "0..*" -- "0..*" Podcast : Fav >
+
+' Podcast <-> Episode (1:N)
+Podcast "1" -- "0..*" Episode : Contiene >
+
+' Podcast <-> Category (M:N)
+Podcast "0..*" -- "1..*" Category : Pertenece a >
+
+' Episode <-> Commentary (1:N)
+Episode "1" -- "0..*" Commentary : Contiene >
+
+' Episode <-> Rating (1:N)
+Episode "1" -- "0..*" Rating : Contiene >
+
+' User <-> Commentary (1:N)
+User "1" -- "0..*" Commentary : Escribe >
+
+' User <-> Rating (1:N)
+User "1" -- "0..*" Rating : Valora >
+
+' =============== NOTAS ===============
+note right of Podcast
+  Un podcast puede tener:
+  - Múltiples episodios
+  - Múltiples categorías
+  - Ser favorito de varios usuarios
+  - Calificación promedio calculada
+end note
+
+note right of Episode
+  Un episodio:
+  - Pertenece a un podcast
+  - Puede tener comentarios
+  - Puede tener calificaciones
+  - Rastrea vistas y duración
+end note
+
+note right of User
+  Un usuario puede:
+  - Crear podcasts
+  - Marcar favoritos
+  - Comentar episodios
+  - Calificar episodios
+end note
+
+@enduml

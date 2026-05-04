@@ -1,0 +1,8 @@
+.create-podcast-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Adjust as needed */
+    background: radial-gradient(circle, #1a1a1a 0%, #000000 100%);
+    padding: 20px;
+}

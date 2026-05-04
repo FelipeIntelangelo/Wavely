@@ -1,0 +1,117 @@
+@if (isLoading) {
+  <div class="loading-container">
+    <p>Cargando episodio...</p>
+  </div>
+} @else if (episode) {
+  <div class="edit-episode-page">
+    <h2>Editar episodio: {{ episode.title }}</h2>
+
+    @if (!isAuthorized && errorMessage) {
+      <div class="error">{{ errorMessage }}</div>
+    }
+
+    @if (isAuthorized) {
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <fieldset>
+          <label>Título</label>
+          <input type="text" formControlName="title" />
+          @if (form.get('title')?.invalid && form.get('title')?.touched) {
+            <div class="field-error">
+              @if (form.get('title')?.errors?.['required']) {
+                El título es obligatorio
+              }
+              @if (form.get('title')?.errors?.['minlength']) {
+                El título debe tener al menos 3 caracteres
+              }
+              @if (form.get('title')?.errors?.['maxlength']) {
+                El título no puede superar 50 caracteres
+              }
+            </div>
+          }
+        </fieldset>
+
+        <fieldset>
+          <label>Descripción</label>
+          <textarea formControlName="description" style="resize: none;"></textarea>
+          @if (form.get('description')?.invalid && form.get('description')?.touched) {
+            <div class="field-error">
+              @if (form.get('description')?.errors?.['required']) {
+                La descripción es obligatoria
+              }
+              @if (form.get('description')?.errors?.['minlength']) {
+                La descripción debe tener al menos 5 caracteres
+              }
+              @if (form.get('description')?.errors?.['maxlength']) {
+                La descripción no puede superar 500 caracteres
+              }
+            </div>
+          }
+        </fieldset>
+
+        <!-- Mostrar info de temporada y episodio (no editable) -->
+        <div class="info-row">
+          <div class="info-item">
+            <label>Temporada</label>
+            <p class="info-value">{{ episode.season }}</p>
+          </div>
+          <div class="info-item">
+            <label>Episodio</label>
+            <p class="info-value">{{ episode.chapter }}</p>
+          </div>
+          <div class="info-item">
+            <label>Duración</label>
+            <p class="info-value">{{ getFormattedDuration() }}</p>
+          </div>
+        </div>
+
+        <fieldset>
+          <label>Imagen del episodio</label>
+          @if (form.value.imageUrl && !imageUp?.hasFileSelected()) {
+            <div class="current-image">
+              <img [src]="form.value.imageUrl" [alt]="episode.title">
+              <button type="button" class="link-btn" (click)="form.patchValue({ imageUrl: '' })">Cambiar imagen</button>
+            </div>
+          } @else {
+            <app-cloudinary-upload
+              acceptedTypes="image/*"
+              resourceType="image"
+              label="Subir nueva portada"
+              [maxSizeMB]="10"
+              [defer]="true"
+              #imageUp
+              (uploadComplete)="onImageUploaded($event)"
+              (uploadError)="onUploadError($event)">
+            </app-cloudinary-upload>
+          }
+        </fieldset>
+
+        <!-- Mostrar info del archivo de audio/video (no editable) -->
+        <fieldset>
+          <label>Archivo de audio/video (no editable)</label>
+          <div class="audio-info">
+            <p class="info-note">El archivo de audio/video no se puede cambiar después de crear el episodio.</p>
+            <p class="audio-path">{{ episode.audioPath }}</p>
+          </div>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" [disabled]="isSubmitting || form.invalid">
+            {{ isSubmitting ? 'Guardando…' : 'Guardar cambios' }}
+          </button>
+          <button type="button" class="cancel-btn" (click)="cancel()">Cancelar</button>
+        </div>
+
+        @if (errorMessage) {
+          <div class="error">{{ errorMessage }}</div>
+        }
+      </form>
+    }
+  </div>
+} @else {
+  <div class="error-container">
+    <p>No se pudo cargar el episodio</p>
+    @if (errorMessage) {
+      <div class="error">{{ errorMessage }}</div>
+    }
+  </div>
+}

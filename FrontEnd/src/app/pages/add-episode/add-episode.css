@@ -1,0 +1,95 @@
+.add-episode-page {
+  max-width: 800px;
+  margin: 2rem auto;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+h2 { color: #fff; margin-top: 0; }
+
+fieldset { border: none; margin-bottom: 1rem; }
+label { display: block; color: #bbb; margin-bottom: .25rem; }
+input[type="text"], input[type="number"], textarea {
+  width: 100%;
+  padding: .6rem .8rem;
+  border-radius: 8px;
+  background: rgba(0,0,0,.3);
+  border: 1px solid rgba(255,255,255,.15);
+  color: #fff;
+}
+textarea { min-height: 100px; }
+
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+.actions { display: flex; gap: .75rem; align-items: center; }
+button { background: #9D65D7; color: #fff; border: none; padding: .6rem 1rem; border-radius: 8px; cursor: pointer; }
+button[disabled] { opacity: .6; cursor: not-allowed; }
+.cancel { color: #ddd; text-decoration: none; }
+.hint { color: #aaa; font-size: .9rem; margin-top: .25rem; }
+.duration-info { 
+  color: #9D65D7; 
+  font-size: .9rem; 
+  margin-top: .5rem; 
+  font-weight: 500;
+}
+.field-error {
+  color: #ff6b6b;
+  font-size: .85rem;
+  margin-top: .4rem;
+  display: block;
+}
+.error { color: #ffb3b3; margin-top: .5rem; }
+
+/* Media preview sizing */
+.media-preview {
+  margin-top: .5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+.media-preview .player {
+  width: 100%;
+  max-width: 640px;
+}
+.media-preview .player video {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+}
+.media-preview .player audio {
+  width: 100%;
+  display: block;
+}
+.media-preview .meta {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.media-preview .meta .name {
+  color: #ddd;
+  font-size: 0.95rem;
+}
+.media-preview .meta .ok {
+  color: #8bd88b;
+  font-weight: 600;
+}
+.media-preview .meta .link-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary, #9d9d9d);
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0.15rem 0.4rem;
+}
+.media-preview .meta .link-btn:hover {
+  color: var(--accent, #9D65D7);
+}

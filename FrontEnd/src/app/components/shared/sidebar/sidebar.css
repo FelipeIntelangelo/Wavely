@@ -1,0 +1,251 @@
+aside {
+    background-color: var(--background-dark);
+    color: white;
+    padding-top: 1rem;
+    padding-bottom: 3rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    position: fixed;
+    left: 0;
+    top: var(--header-height);
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
+    max-width: var(--sidebar-width);
+    height: calc(100vh - var(--header-height));
+    overflow-y: auto;
+    z-index: 1000;
+    transition: width 0.15s ease, padding 0.15s ease;
+}
+
+/* Desktop - Sidebar reducido a iconos cuando está cerrado */
+@media (min-width: 1025px) {
+    aside:not(.open) {
+        width: 80px;
+        min-width: 80px;
+        max-width: 80px;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    aside:not(.open) ul li {
+        padding: 0.6rem 0 !important;
+        margin: 0.5rem 0;
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+    }
+
+    aside:not(.open) ul li a {
+        flex-direction: column;
+        gap: 0;
+        padding-left: 0;
+        padding-right: 0;
+        justify-content: flex-start;
+        align-items: center;
+        width: 100%;
+        margin: 0;
+    }
+
+    aside:not(.open) ul li a i {
+        margin: 0 auto;
+        width: 1.5rem;
+        font-size: 1.5rem;
+        display: block;
+    }
+
+    aside:not(.open) .sidebar-label {
+        display: none;
+    }
+
+    aside.open {
+        width: var(--sidebar-width);
+        min-width: var(--sidebar-width);
+        max-width: var(--sidebar-width);
+    }
+
+    aside.open ul li {
+        padding: 0.6rem 0 !important;
+        margin: 0.5rem 0;
+    }
+
+    aside.open ul li a {
+        flex-direction: row;
+        gap: 1rem;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    /* Mantener la misma posición horizontal del icono que en modo cerrado */
+    /* En modo cerrado: sidebar 80px, padding 0.5rem (8px) cada lado = 64px disponible */
+    /* Icono centrado: posición desde borde izquierdo del contenido = (64px - 24px)/2 = 20px */
+    /* Posición desde borde izquierdo del sidebar = 8px + 20px = 28px */
+    /* En modo abierto: mantener 28px desde borde izquierdo, menos padding 8px = 20px desde contenido */
+    aside.open ul li a i {
+        margin-left: 1.25rem; /* 20px = posición exacta del icono centrado */
+        margin-right: 0;
+        width: 1.5rem;
+        flex-shrink: 0;
+    }
+}
+
+/* Tablet - Sidebar solo con iconos (siempre visible) */
+@media (min-width: 768px) and (max-width: 1024px) {
+    aside {
+        width: 80px;
+        min-width: 80px;
+        max-width: 80px;
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+
+    aside ul {
+        padding: 0;
+        margin: 0;
+        width: 100%;
+    }
+
+    /* Estilos del sidebar cerrado - iguales a desktop */
+    aside:not(.open) ul li {
+        padding: 0.6rem 0 !important;
+        margin: 0.5rem 0;
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+    }
+
+    aside:not(.open) ul li a {
+        flex-direction: column;
+        gap: 0;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        justify-content: flex-start;
+        align-items: center;
+        width: 100%;
+        margin: 0;
+    }
+
+    aside:not(.open) ul li a i {
+        margin: 0 auto;
+        width: 1.5rem;
+        font-size: 1.5rem;
+        display: block;
+    }
+
+    /* Ocultar texto en tablet cuando está cerrado */
+    aside:not(.open) .sidebar-label {
+        display: none;
+    }
+
+    /* Cuando está abierto, mostrar sidebar completo encima */
+    aside.open {
+        width: var(--sidebar-width) !important;
+        min-width: var(--sidebar-width) !important;
+        max-width: var(--sidebar-width) !important;
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+        z-index: 1001;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    aside.open .sidebar-label {
+        display: inline;
+    }
+
+    aside.open ul li {
+        padding: 0.6rem 0 !important;
+        margin: 0.5rem 0;
+    }
+
+    aside.open ul li a {
+        flex-direction: row !important;
+        gap: 1rem !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    /* Mantener la misma posición horizontal del icono que en modo cerrado */
+    /* En modo cerrado: sidebar 80px, padding 0.5rem (8px) cada lado = 64px disponible */
+    /* Icono centrado: posición desde borde izquierdo del contenido = (64px - 24px)/2 = 20px */
+    /* Posición desde borde izquierdo del sidebar = 8px + 20px = 28px */
+    /* En modo abierto: mantener 28px desde borde izquierdo, menos padding 8px = 20px desde contenido */
+    aside.open ul li a i {
+        margin-left: 1.25rem !important; /* 20px = posición exacta del icono centrado */
+        margin-right: 0 !important;
+        width: 1.5rem;
+        flex-shrink: 0;
+    }
+}
+
+/* Mobile - Sidebar oculta por defecto */
+@media (max-width: 767px) {
+    aside {
+        width: var(--sidebar-width);
+        min-width: var(--sidebar-width);
+        max-width: var(--sidebar-width);
+        top: var(--header-height);
+        height: calc(100vh - var(--header-height));
+        transform: translateX(-100%);
+    }
+
+    aside.open {
+        transform: translateX(0);
+    }
+
+    aside.closed {
+        transform: translateX(-100%);
+    }
+}
+
+aside ul li{
+    list-style: none;
+    margin: 0.5rem 0;
+    padding: 0.6rem 0;
+}
+
+aside ul li a {
+    display: flex;
+    gap: 1rem;
+    color: #ffffff;
+    text-decoration: none;
+    padding-left: 0;
+    position: relative;
+    transition: color 0.3s ease;
+    font-size: 1.2rem;
+    align-items: center;
+}
+
+aside ul li a i {
+    color: var(--primary-color);
+    transition: color 0.3s ease, margin 0.3s ease;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    width: 1.5rem;
+    margin-left: 1rem;
+}
+
+.sidebar-label {
+    display: inline;
+}
+
+aside ul li:hover {
+    background-color: #333333; /* Darker Gray color */
+    border-radius: 8px; /* Rounded borders */
+}
+
+
+
+
+
+
+
+a{
+    text-decoration: none;
+    color: white;
+}
+
+/* Active link styles */
+aside ul li.active {
+    background-color: #1a1a1a; /* Even Darker Gray color */
+    border-radius: 8px; /* Rounded borders */
+}

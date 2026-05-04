@@ -1,0 +1,232 @@
+:host {
+  --bg-root: #131313;
+  --bg-surface: #181818;
+  --accent: #9D65D7;
+  --accent-rgb: 157, 101, 215;
+  --text-primary: #fff;
+  --text-secondary: #ddd;
+  --text-tertiary: #999;
+  --radius-md: 10px;
+  --radius-pill: 999px;
+
+  background: radial-gradient(circle at top, #1d1d1d 0%, #0d0d0d 100%);
+  display: block;
+  min-height: 100vh;
+}
+
+.my-podcasts-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: var(--text-primary);
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  font-size: 1.2rem;
+  color: var(--text-tertiary);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 500px;
+  text-align: center;
+  padding: 2rem;
+}
+
+.empty-state h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.8rem;
+  color: var(--text-primary);
+}
+
+.empty-state p {
+  margin: 0;
+  color: var(--text-tertiary);
+  font-size: 1rem;
+  max-width: 400px;
+}
+
+/* Los estilos de .podcasts-list, .podcast-card, .podcast-image, etc. 
+   están ahora en styles.css como estilos compartidos */
+
+.podcast-actions-main {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* Botón de editar animado */
+.edit-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgb(40, 40, 40);
+  border: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.164);
+  cursor: pointer;
+  transition-duration: 0.3s;
+  overflow: hidden;
+  position: relative;
+  text-decoration: none !important;
+}
+
+.edit-svgIcon {
+  width: 17px;
+  transition-duration: 0.3s;
+}
+
+.edit-svgIcon path {
+  fill: white;
+}
+
+.edit-button:hover {
+  width: 120px;
+  border-radius: 50px;
+  transition-duration: 0.3s;
+  background-color: rgb(66, 153, 225);
+  align-items: center;
+}
+
+.edit-button:hover .edit-svgIcon {
+  width: 20px;
+  transition-duration: 0.3s;
+  transform: translateY(60%);
+  -webkit-transform: rotate(360deg);
+  -moz-transform: rotate(360deg);
+  -o-transform: rotate(360deg);
+  -ms-transform: rotate(360deg);
+  transform: rotate(360deg);
+}
+
+.edit-button::before {
+  display: none;
+  content: "Edit";
+  color: white;
+  transition-duration: 0.3s;
+  font-size: 2px;
+}
+
+.edit-button:hover::before {
+  display: block;
+  padding-right: 10px;
+  font-size: 13px;
+  opacity: 1;
+  transform: translateY(0px);
+  transition-duration: 0.3s;
+}
+
+/* Botón de eliminar animado */
+.delete-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgb(40, 40, 40);
+  border: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.164);
+  cursor: pointer;
+  transition-duration: 0.3s;
+  overflow: hidden;
+  position: relative;
+}
+
+.delete-button .svgIcon {
+  width: 15px;
+  transition-duration: 0.3s;
+}
+
+.delete-button .svgIcon path {
+  fill: white;
+}
+
+.delete-button:hover:not(:disabled) {
+  width: 120px;
+  border-radius: 50px;
+  transition-duration: 0.3s;
+  background-color: rgb(255, 69, 69);
+  align-items: center;
+}
+
+.delete-button:hover:not(:disabled) .svgIcon {
+  width: 40px;
+  transition-duration: 0.3s;
+  transform: translateY(60%);
+}
+
+.delete-button::before {
+  position: absolute;
+  top: -20px;
+  content: "Delete";
+  color: white;
+  transition-duration: 0.3s;
+  font-size: 2px;
+}
+
+.delete-button:hover:not(:disabled)::before {
+  font-size: 13px;
+  opacity: 1;
+  transform: translateY(30px);
+  transition-duration: 0.3s;
+}
+
+.delete-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background-color: rgb(50, 50, 50);
+}
+
+/* Los estilos de .stat, .icon-star-small, .icon-eye-small, .podcast-description, 
+   .podcast-categories, .chip están ahora en styles.css como estilos compartidos */
+
+/* Tablet - Mantener layout horizontal */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .my-podcasts-container {
+    padding: 1.5rem;
+  }
+}
+
+/* Mobile - Layout vertical con imagen arriba */
+@media (max-width: 767px) {
+  .my-podcasts-container {
+    padding: 1rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.6rem;
+  }
+
+  /* Los estilos de .podcasts-list, .podcast-card, .podcast-image, etc. 
+     están en styles.css, pero necesitamos ajustes específicos para los botones */
+  .podcast-header .podcast-actions-main {
+    order: 2;
+    display: flex !important;
+    margin-top: 1rem;
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
