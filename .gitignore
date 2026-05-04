@@ -1,0 +1,38 @@
+# =========================
+# GENERAL
+# =========================
+.idea/
+.vscode/
+*.iml
+*.log
+.env
+.DS_Store
+
+# =========================
+# FRONTEND (Angular / Node)
+# =========================
+node_modules/
+dist/
+.angular/
+FrontEnd/node_modules/
+FrontEnd/dist/
+FrontEnd/.angular/
+FrontEnd/.env
+
+# =========================
+# BACKEND (Spring Boot / Java)
+# =========================
+target/
+*.class
+*.jar
+*.war
+BackEnd/PodcastProject/target/
+
+# Ignorar archivos con credenciales
+application.properties
+application-dev.properties
+application-prod.properties
+application-test.properties
+
+# Rutas especificas por si acaso
+BackEnd/PodcastProject/src/main/resources/application.properties
