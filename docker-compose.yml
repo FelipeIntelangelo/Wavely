@@ -29,7 +29,6 @@ services:
       context: ./BackEnd/PodcastProject
       dockerfile: Dockerfile
     container_name: podcast_backend
-    restart: always
     environment:
       # Sobrescribimos la URL para que apunte al contenedor de la base de datos
       - SPRING_DATASOURCE_URL=jdbc:mysql://database:3306/podcastutn?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
@@ -51,7 +50,6 @@ services:
       context: ./FrontEnd
       dockerfile: Dockerfile
     container_name: podcast_frontend
-    restart: always
     ports:
       - "80:80"
     depends_on:
