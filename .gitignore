@@ -39,3 +39,4 @@ BackEnd/PodcastProject/src/main/resources/application.properties
 
 # Scripts locales solo para el host de la bd
 levantarBdd.bat
+docker-compose-db.yml
