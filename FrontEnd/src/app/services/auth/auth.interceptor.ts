@@ -1,12 +1,12 @@
 import { HttpInterceptorFn, HttpStatusCode } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { inject, Injector } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { AlertService } from '../ui/alert.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
-  const alert = inject(AlertService);
+  const injector = inject(Injector);
   const token = localStorage.getItem('jwt_token');
 
   // Endpoints PÚBLICOS (no adjuntar Authorization)
@@ -35,9 +35,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         try {
           localStorage.removeItem('jwt_token');
         } catch {}
-        // Avisar al usuario con un toast
+        // Avisar al usuario con un toast (inyección lazy para evitar NG0200)
         try {
-          alert.sessionExpiredAlert();
+          injector.get(AlertService).sessionExpiredAlert();
         } catch {}
         // Evitar bucle si ya estamos en /auth/login
         if (location.pathname !== '/auth/login') {
