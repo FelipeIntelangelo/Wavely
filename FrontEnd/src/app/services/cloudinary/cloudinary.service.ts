@@ -1,17 +1,18 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CloudinaryService {
-  private cloudName = (import.meta.env['VITE_CLOUDINARY_CLOUD_NAME'] ?? '').trim();
-  private uploadPreset = (import.meta.env['VITE_CLOUDINARY_UPLOAD_PRESET'] ?? '').trim();
+  private cloudName = environment.cloudinary.cloudName;
+  private uploadPreset = environment.cloudinary.uploadPreset;
 
   constructor() {
     if (!this.cloudName || !this.uploadPreset) {
-      console.error('[Cloudinary] Variables de entorno faltantes. Ejecutá: .\\start-dev.ps1');
-      console.error('  VITE_CLOUDINARY_CLOUD_NAME:', this.cloudName || 'FALTA');
-      console.error('  VITE_CLOUDINARY_UPLOAD_PRESET:', this.uploadPreset || 'FALTA');
+      console.error('[Cloudinary] Variables de entorno faltantes en environment.ts');
+      console.error('  cloudName:', this.cloudName || 'FALTA');
+      console.error('  uploadPreset:', this.uploadPreset || 'FALTA');
     }
   }
 
