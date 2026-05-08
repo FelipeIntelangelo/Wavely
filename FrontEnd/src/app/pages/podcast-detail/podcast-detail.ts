@@ -176,9 +176,6 @@ export class PodcastDetail implements OnInit{
     action.subscribe({
       next: () => {
         this.isFavorited = !this.isFavorited;
-        const message = this.isFavorited 
-          ? 'Podcast agregado a favoritos' 
-          : 'Podcast eliminado de favoritos';
       },
       error: (err) => {
         this.alertService.error('Error', err.message || 'No se pudo actualizar favoritos');
