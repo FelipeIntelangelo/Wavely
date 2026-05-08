@@ -105,6 +105,8 @@ export class PodcastDetail implements OnInit{
       },
       error: (error) => {
         console.error('Error loading episodes:', error);
+        this.episodes = []; // Limpiamos la lista si el backend devuelve un error (como el 404)
+        this.updateAvailableSeasons();
         this.isLoadingEpisodes = false;
       }
     });
@@ -177,7 +179,6 @@ export class PodcastDetail implements OnInit{
         const message = this.isFavorited 
           ? 'Podcast agregado a favoritos' 
           : 'Podcast eliminado de favoritos';
-        this.alertService.success('¡Listo!', message);
       },
       error: (err) => {
         this.alertService.error('Error', err.message || 'No se pudo actualizar favoritos');
@@ -245,7 +246,12 @@ export class PodcastDetail implements OnInit{
         this.episodeService.deleteEpisode(episode.id).subscribe({
           next: () => {
             this.alertService.success('Episodio eliminado', 'El episodio fue eliminado correctamente.');
-            this.loadEpisodes(this.podcast!.id);
+            // Actualización local (Optimistic Update)
+            this.episodes = this.episodes.filter(e => e.id !== episode.id);
+            if (this.podcast?.episodes) {
+              this.podcast.episodes = this.podcast.episodes.filter(e => e.id !== episode.id);
+            }
+            this.updateAvailableSeasons();
           },
           error: (err) => {
             this.alertService.error('Error', err.message || 'No se pudo eliminar el episodio.');

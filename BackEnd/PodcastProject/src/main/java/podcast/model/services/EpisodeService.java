@@ -165,12 +165,12 @@ private final CloudinaryService cloudinaryService;
         } else if (podcastId != null) {
             filtered = episodeRepository.findByPodcast_Id(podcastId);
             if (filtered.isEmpty()) {
-                throw new PodcastNotFoundException("No episodes found for podcast ID " + podcastId);
+                throw new EpisodeNotFoundException("No episodes found for podcast ID " + podcastId);
             }
         } else {
             filtered = episodeRepository.findByTitleIgnoreCase(title);
             if (filtered.isEmpty()) {
-                throw new PodcastNotFoundException("No episodes found with title " + title);
+                throw new EpisodeNotFoundException("No episodes found with title " + title);
             }
         }
         return filtered;

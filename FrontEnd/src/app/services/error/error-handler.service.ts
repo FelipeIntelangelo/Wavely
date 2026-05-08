@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { EMPTY, Observable, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +27,7 @@ export class ErrorHandlerService {
       // Check if it's a successful response with an empty body (common for DELETE)
       if (error.status === 200 && (error.error === null || (typeof error.error === 'string' && error.error.length === 0))) {
         console.log('Successful response with empty body, not treating as error.');
-        return new Observable<never>(); // Return an empty observable to complete the stream
+        return EMPTY; // Complete the stream so subscribers finish normally
       }
       // Error del lado del servidor
       errorMessage = `Código de error: ${error.status}\nMensaje: ${error.error?.message || error.error || 'Error del servidor'}`;
@@ -51,7 +51,7 @@ export class ErrorHandlerService {
     } else {
       if (error.status === 200 && (error.error === null || (typeof error.error === 'string' && error.error.length === 0))) {
         console.log('Successful response with empty body, not treating as error.');
-        return new Observable<never>();
+        return EMPTY;
       }
       errorMessage = `Error ${context} - Código: ${error.status}, Mensaje: ${error.error?.message || error.error || 'Error del servidor'}`;
     }

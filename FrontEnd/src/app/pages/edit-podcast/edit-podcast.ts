@@ -53,7 +53,7 @@ export class EditPodcastComponent implements OnInit {
     this.podcastService.updatePodcast(this.podcastId, updates).subscribe({
       next: (res) => {
         this.isSubmitting = false;
-        this.alertService.successAlert();
+        this.alertService.success('Podcast actualizado', 'El podcast fue actualizado correctamente.');
         this.router.navigate([`/podcast/${this.podcastId}`]);
       },
       error: (err) => {

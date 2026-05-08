@@ -45,7 +45,6 @@ public class PodcastService {
         if (user.getCredential().getRoles() == null) {
             user.getCredential().setRoles(new java.util.HashSet<>());
         }
-
         user.getCredential().getRoles().add(Role.ROLE_CREATOR);
         userRepository.save(user);
         podcastRepository.save(podcast);
@@ -139,7 +138,7 @@ public class PodcastService {
             podcast.setImageUrl(updates.getImageUrl());
         }
         if (updates.getCategories() != null && !updates.getCategories().isEmpty()) {
-            podcast.getCategories().addAll(updates.getCategories());
+            podcast.setCategories(updates.getCategories());
         }
         podcastRepository.save(podcast);
         return podcast.toUpdateDTO();
