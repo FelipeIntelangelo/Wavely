@@ -22,11 +22,13 @@ public class PodcastService {
 
     private final IPodcastRepository podcastRepository;
     private final IUserRepository userRepository;
+    private final CloudinaryService cloudinaryService;
 
     @Autowired
-    public PodcastService(IPodcastRepository podcastRepository, IUserRepository userRepository) {
+    public PodcastService(IPodcastRepository podcastRepository, IUserRepository userRepository, CloudinaryService cloudinaryService) {
         this.podcastRepository = podcastRepository;
         this.userRepository = userRepository;
+        this.cloudinaryService = cloudinaryService;
     }
 
     public void save(Podcast podcast) {
@@ -114,6 +116,9 @@ public class PodcastService {
         if (!podcast.getUser().getCredential().getUsername().equals(username) && !user.getCredential().getRoles().contains(Role.ROLE_ADMIN)) {
             throw new UnauthorizedException("Podcast with ID " + podcastId + " does not belong to YOU" + username + "and you are not an admin");
         }
+        // Eliminar la imagen del podcast de Cloudinary para liberar espacio
+        cloudinaryService.deleteFile(podcast.getImageUrl());
+
         podcast.setIsActive(false);
         podcastRepository.save(podcast);
     }
