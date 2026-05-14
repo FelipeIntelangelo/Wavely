@@ -22,4 +22,5 @@ public class EpisodeDTO {
     private Integer chapter;
     private LocalDateTime publicationDate;
     private String podcastTitle;
+    private Long podcastId;
 }

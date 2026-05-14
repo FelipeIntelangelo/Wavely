@@ -23,6 +23,9 @@ import podcast.model.entities.Episode;
 import podcast.model.entities.dto.CommentaryDTO;
 import podcast.model.entities.dto.CommentaryRequestDTO;
 import podcast.model.entities.dto.EpisodeDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springdoc.core.annotations.ParameterObject;
 import podcast.model.entities.dto.UpdateEpisodeDTO;
 import podcast.model.exceptions.*;
 import podcast.model.services.EpisodeHistoryService;
@@ -122,12 +125,13 @@ public class EpisodeController {
             @ApiResponse(responseCode = "400", description = "Parámetros de filtro inválidos")
     })
     @GetMapping
-    public ResponseEntity<List<EpisodeDTO>> getAll(
+    public ResponseEntity<Page<EpisodeDTO>> getAll(
             @Parameter(description = "Título del episodio para filtrar") @RequestParam(required = false) String title,
-            @Parameter(description = "ID del podcast") @RequestParam(required = false) Long podcastId
+            @Parameter(description = "ID del podcast") @RequestParam(required = false) Long podcastId,
+            @ParameterObject Pageable pageable
     ) {
-        List<Episode> episodes = episodeService.getAllFiltered(title, podcastId);
-        return ResponseEntity.ok(episodes.stream().map(Episode::toDTO).toList());
+        Page<Episode> episodes = episodeService.getAllFiltered(title, podcastId, pageable);
+        return ResponseEntity.ok(episodes.map(Episode::toDTO));
     }
 
 //* ===================================================================================================================

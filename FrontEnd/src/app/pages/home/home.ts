@@ -87,9 +87,9 @@ export class Home implements OnInit, AfterViewInit {
 
   loadNovedades(): void {
     this.isLoading.novedades = true;
-    this.podcastService.getAll(false).subscribe({
-      next: (podcasts) => {
-        this.novedadesPodcasts = this.sortPodcastsByDate(podcasts as PodcastWithDate[]);
+    this.podcastService.getAll(0, 10, false).subscribe({
+      next: (pageResponse) => {
+        this.novedadesPodcasts = this.sortPodcastsByDate(pageResponse.content as PodcastWithDate[]);
         this.isLoading.novedades = false;
         setTimeout(() => {
           if (this.novedadesWrapper) {
@@ -106,9 +106,9 @@ export class Home implements OnInit, AfterViewInit {
 
   loadMasEscuchados(): void {
     this.isLoading.masEscuchados = true;
-    this.podcastService.getAll(true).subscribe({
-      next: (podcasts) => {
-        this.masEscuchadosPodcasts = this.sortPodcastsByViews(podcasts);
+    this.podcastService.getAll(0, 10, true).subscribe({
+      next: (pageResponse) => {
+        this.masEscuchadosPodcasts = this.sortPodcastsByViews(pageResponse.content);
         this.isLoading.masEscuchados = false;
         setTimeout(() => {
           if (this.masEscuchadosWrapper) {
@@ -125,9 +125,9 @@ export class Home implements OnInit, AfterViewInit {
 
   loadMejoresValorados(): void {
     this.isLoading.mejoresValorados = true;
-    this.podcastService.getAll(false).subscribe({
-      next: (podcasts) => {
-        this.mejoresValoradosPodcasts = this.sortPodcastsByRating(podcasts as PodcastWithDate[]);
+    this.podcastService.getAll(0, 10, false).subscribe({
+      next: (pageResponse) => {
+        this.mejoresValoradosPodcasts = this.sortPodcastsByRating(pageResponse.content as PodcastWithDate[]);
         this.isLoading.mejoresValorados = false;
         setTimeout(() => {
           if (this.mejoresValoradosWrapper) {

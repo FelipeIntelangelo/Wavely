@@ -16,6 +16,9 @@ import podcast.model.repositories.interfaces.IUserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class PodcastService {
@@ -52,33 +55,46 @@ public class PodcastService {
         podcastRepository.save(podcast);
     }
 
-    public List<PodcastDTO> getAllFiltered(String title, Integer userId, Category category, Boolean orderByViews) {
-        List<Podcast> filtered;
-
-        if (title == null && userId == null && category == null) {
-            filtered = podcastRepository.findAll();
-        } else {
-            filtered = podcastRepository.findByUser_IdOrTitleIgnoreCaseOrCategories(userId, title, category);
-            if (filtered.isEmpty()) {
-                filtered = podcastRepository.findAll();
-            }
-        }
-
-        // Filtrar podcasts inactivos
-        List<Podcast> activeFiltered = filtered.stream()
-                .filter(p -> Boolean.TRUE.equals(p.getIsActive()))
-                .toList();
-
-        if (activeFiltered.isEmpty()) {
-            throw new PodcastNotFoundException("No podcasts found");
-        }
-        List<PodcastDTO> filteredDTO = new ArrayList<>(activeFiltered.stream()
-                .map(Podcast::toDTO)
-                .toList());
+    public Page<PodcastDTO> getAllFiltered(String title, Integer userId, Category category, Boolean orderByViews, Pageable pageable) {
         if (orderByViews != null && orderByViews) {
-            filteredDTO.sort((p1, p2) -> Long.compare(p2.getAverageViews(), p1.getAverageViews()));
+            // Paginación y ordenamiento en memoria porque averageViews no está en la base de datos
+            List<Podcast> filtered;
+            if (title == null && userId == null && category == null) {
+                filtered = podcastRepository.findAll();
+            } else {
+                filtered = podcastRepository.findByUser_IdOrTitleIgnoreCaseOrCategories(userId, title, category);
+                if (filtered.isEmpty()) {
+                    filtered = podcastRepository.findAll();
+                }
+            }
+
+            List<PodcastDTO> activeFilteredDTO = filtered.stream()
+                    .filter(p -> Boolean.TRUE.equals(p.getIsActive()))
+                    .map(Podcast::toDTO)
+                    .sorted((p1, p2) -> Long.compare(p2.getAverageViews(), p1.getAverageViews()))
+                    .toList();
+
+            int start = (int) pageable.getOffset();
+            int end = Math.min((start + pageable.getPageSize()), activeFilteredDTO.size());
+            List<PodcastDTO> pageContent = (start <= end && start < activeFilteredDTO.size()) 
+                    ? activeFilteredDTO.subList(start, end) 
+                    : new ArrayList<>();
+            return new PageImpl<>(pageContent, pageable, activeFilteredDTO.size());
+
+        } else {
+            // Paginación a nivel de base de datos
+            Page<Podcast> filteredPage;
+            if (title == null && userId == null && category == null) {
+                filteredPage = podcastRepository.findAllByIsActiveTrue(pageable);
+            } else {
+                filteredPage = podcastRepository.findByUser_IdOrTitleIgnoreCaseOrCategoriesAndIsActiveTrue(userId, title, category, pageable);
+                if (filteredPage.isEmpty()) {
+                    filteredPage = podcastRepository.findAllByIsActiveTrue(pageable);
+                }
+            }
+
+            return filteredPage.map(Podcast::toDTO);
         }
-        return filteredDTO;
     }
 
     public Podcast getPodcastById(Long podcastId) {

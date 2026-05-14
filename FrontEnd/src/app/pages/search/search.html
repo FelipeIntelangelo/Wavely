@@ -1,12 +1,5 @@
 <div class="search-page">
     <div class="search-content">
-        <div class="search-header">
-        <h1>Resultados de búsqueda</h1>
-        @if (term) {
-            <p class="search-term">Buscando: <strong>{{ term }}</strong></p>
-        }
-        </div>
-
         @if (isLoading) {
         <div class="loading">
             <div class="spinner"></div>
@@ -26,16 +19,24 @@
         </div>
         }
 
-        @if (!isLoading && !error && hasResults) {
-            <div class="results-summary">
-                <p class="results-count">{{ totalResults }} resultado(s) encontrado(s)</p>
-            </div>
-
+        @if (!error && hasResults) {
             <!-- Sección de Podcasts -->
-            @if (filteredPodcasts.length > 0) {
+            @if ((currentTab === 'all' || currentTab === 'podcasts') && filteredPodcasts.length > 0) {
             <div class="results-section">
                 <div class="section-header">
-                    <h2>Podcasts ({{ filteredPodcasts.length }})</h2>
+                    <h2 [class.clickable]="true" (click)="currentTab === 'all' ? goToTab('podcasts') : goToTab('all')">
+                        @if(currentTab !== 'all') { 
+                            <svg class="arrow arrow-back" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                        }
+                        Podcasts 
+                        @if(currentTab === 'all') { 
+                            <svg class="arrow arrow-forward" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        }
+                    </h2>
                     <div class="sort-controls">
                         <button 
                             class="sort-button" 
@@ -73,14 +74,91 @@
                         </div>
                     }
                 </div>
+                <!-- Sentinel para Podcasts (solo si estamos en la vista de podcasts) -->
+                @if (currentTab === 'podcasts') {
+                    <div #podcastSentinel id="podcast-sentinel" style="height: 20px; width: 100%;"></div>
+                    @if (isPodcastsLoading && podcastPage > 0) {
+                        <div class="loading-more">
+                            <div class="spinner-small"></div>
+                            <span>Cargando más podcasts...</span>
+                        </div>
+                    }
+                }
+            </div>
+            }
+
+            <!-- Sección de Episodios -->
+            @if ((currentTab === 'all' || currentTab === 'episodes') && filteredEpisodes.length > 0) {
+            <div class="results-section">
+                <div class="section-header">
+                    <h2 [class.clickable]="true" (click)="currentTab === 'all' ? goToTab('episodes') : goToTab('all')">
+                        @if(currentTab !== 'all') { 
+                            <svg class="arrow arrow-back" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                        }
+                        Episodios 
+                        @if(currentTab === 'all') { 
+                            <svg class="arrow arrow-forward" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        }
+                    </h2>
+                </div>
+                <div class="podcasts-grid"> <!-- Usamos la misma clase de grid que podcasts para que se vea bien -->
+                    @for (episode of filteredEpisodes; track episode.id) {
+                        <div class="podcast-card" (click)="navigateToPodcast(episode.podcastId || 0)"> <!-- Asume podcastId -->
+                            <div class="podcast-image">
+                                <img [src]="episode.imageUrl" [alt]="episode.title" (error)="onImageError($event)">
+                                <div class="image-placeholder" style="display: none;"></div>
+                            </div>
+                            <div class="podcast-info">
+                                <h3 class="podcast-title">{{ episode.title }}</h3>
+                                <div class="podcast-stats">
+                                    <span class="views-count">
+                                        <svg class="icon-eye" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M12 5c-7.633 0-10 7-10 7s2.367 7 10 7 10-7 10-7-2.367-7-10-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/>
+                                        </svg>
+                                        {{ formatViews(episode.views || 0) }} vistas
+                                    </span>
+                                </div>
+                                @if (episode.description) {
+                                    <p class="podcast-description">{{ episode.description.length > 80 ? (episode.description.slice(0, 80) + '…') : episode.description }}</p>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+                <!-- Sentinel para Episodios -->
+                @if (currentTab === 'episodes') {
+                    <div #episodeSentinel id="episode-sentinel" style="height: 20px; width: 100%;"></div>
+                    @if (isEpisodesLoading && episodePage > 0) {
+                        <div class="loading-more">
+                            <div class="spinner-small"></div>
+                            <span>Cargando más episodios...</span>
+                        </div>
+                    }
+                }
             </div>
             }
 
             <!-- Sección de Usuarios -->
-            @if (filteredUsers.length > 0) {
+            @if ((currentTab === 'all' || currentTab === 'users') && filteredUsers.length > 0) {
             <div class="results-section">
                 <div class="section-header">
-                    <h2>Usuarios ({{ filteredUsers.length }})</h2>
+                    <h2 [class.clickable]="true" (click)="currentTab === 'all' ? goToTab('users') : goToTab('all')">
+                        @if(currentTab !== 'all') { 
+                            <svg class="arrow arrow-back" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                        }
+                        Usuarios 
+                        @if(currentTab === 'all') { 
+                            <svg class="arrow arrow-forward" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        }
+                    </h2>
                 </div>
                 <div class="users-grid">
                     @for (user of filteredUsers; track user.id) {
@@ -101,6 +179,16 @@
                         </div>
                     }
                 </div>
+                <!-- Sentinel para Usuarios -->
+                @if (currentTab === 'users') {
+                    <div #userSentinel id="user-sentinel" style="height: 20px; width: 100%;"></div>
+                    @if (isUsersLoading && userPage > 0) {
+                        <div class="loading-more">
+                            <div class="spinner-small"></div>
+                            <span>Cargando más usuarios...</span>
+                        </div>
+                    }
+                }
             </div>
             }
         }

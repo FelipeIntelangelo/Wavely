@@ -47,8 +47,8 @@ export class MyPodcasts implements OnInit {
     // Cargar episodios para cada podcast
     this.myPodcasts.forEach(podcast => {
       this.episodeService.getAll(undefined, podcast.id).subscribe({
-        next: (episodes) => {
-          this.episodesCount.set(podcast.id, episodes.length);
+        next: (pageResponse) => {
+          this.episodesCount.set(podcast.id, pageResponse.totalElements);
         },
         error: (error) => {
           console.error(`Error loading episodes for podcast ${podcast.id}:`, error);

@@ -5,6 +5,35 @@
   color: white;
 }
 
+.back-button-container {
+  max-width: 1200px;
+  margin: 0 auto 1.5rem auto;
+}
+
+.back-button {
+  background: transparent;
+  color: var(--primary-color, #a855f7);
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.back-button:hover {
+  color: white;
+  transform: translateX(-4px);
+}
+
+.back-button svg {
+  width: 20px;
+  height: 20px;
+}
+
 .search-content {
   max-width: 1200px;
   margin: 0 auto;
@@ -370,4 +399,60 @@
   .section-header h2 {
     font-size: 1.2rem;
   }
+}
+
+/* Loading more */
+.loading-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1.5rem 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+.spinner-small {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top: 3px solid #9D65D7;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+
+.section-header h2 {
+  font-size: 1.5rem;
+  color: white;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-header h2.clickable {
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.section-header h2.clickable:hover {
+  opacity: 0.8;
+}
+
+.section-header h2.clickable .arrow {
+  color: #333333;
+  width: 24px;
+  height: 24px;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.section-header h2.clickable:hover .arrow-forward {
+  transform: translateX(4px);
+  color: white;
+}
+
+.section-header h2.clickable:hover .arrow-back {
+  transform: translateX(-4px);
+  color: white;
 }

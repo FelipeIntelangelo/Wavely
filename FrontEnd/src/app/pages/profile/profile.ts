@@ -224,9 +224,9 @@ export class Profile implements OnInit, OnDestroy {
   }
 
   private loadUserPodcasts(userId: number): void {
-    this.podcastService.getAllFiltered(undefined, userId).subscribe({
-      next: (podcasts) => {
-        const items = podcasts || [];
+    this.podcastService.getAllFiltered(undefined, userId, undefined, false, 0, 100).subscribe({
+      next: (pageResponse) => {
+        const items = pageResponse.content || [];
 
         // If items already include owner/user info, filter directly by userId
         const hasUserField = items.some((p: any) => p && p.user && (p.user.id !== undefined));

@@ -5,6 +5,7 @@ import { ErrorHandlerService } from '../error/error-handler.service';
 import { EpisodeDTO } from '../../models/episode/episode-dto';
 import { Episode } from '../../models/episode/episode';
 import { EpisodeCreatePayload } from '../../models/episode/episode-create-dto';
+import { PageResponse } from '../../models/page-response';
 
 @Injectable({
   providedIn: 'root'
@@ -17,15 +18,17 @@ export class EpisodeService {
     private errorHandler: ErrorHandlerService
   ) {}
 
-  getAll(title?: string, podcastId?: number): Observable<EpisodeDTO[]> {
+  getAll(title?: string, podcastId?: number, page: number = 0, size: number = 10): Observable<PageResponse<EpisodeDTO>> {
     const params = new URLSearchParams();
     if (title) params.append('title', title);
     if (podcastId) params.append('podcastId', podcastId.toString());
+    params.append('page', page.toString());
+    params.append('size', size.toString());
     
     const queryString = params.toString();
-    const url = queryString ? `${this.API_URL}?${queryString}` : this.API_URL;
+    const url = `${this.API_URL}?${queryString}`;
     
-    return this.http.get<EpisodeDTO[]>(url).pipe(
+    return this.http.get<PageResponse<EpisodeDTO>>(url).pipe(
       catchError(this.errorHandler.handleError.bind(this.errorHandler))
     );
   }

@@ -93,9 +93,9 @@ export class FloatingMediaPlayerComponent implements AfterViewInit, OnDestroy {
     
     // Cargar episodios del podcast
     this.episodeService.getAll(undefined, podcastId).subscribe({
-      next: (episodes) => {
+      next: (pageResponse) => {
         // Ordenar por temporada y capítulo
-        this.episodes = episodes.sort((a, b) => {
+        this.episodes = pageResponse.content.sort((a, b) => {
           if (a.season !== b.season) {
             return a.season - b.season;
           }
