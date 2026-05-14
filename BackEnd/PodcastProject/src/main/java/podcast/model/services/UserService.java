@@ -17,6 +17,8 @@ import podcast.model.repositories.interfaces.IUserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class UserService {
@@ -46,11 +48,11 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado con username: " + username));
     }
 
-    public List<UserDTO> getAllUsersAsDTO() {
-        return userRepository.findAll()
-                .stream()
-                .map(User::toDTO)
-                .toList();
+    public Page<UserDTO> getAllUsersAsDTO(String nickname, Pageable pageable) {
+        if (nickname != null && !nickname.isBlank()) {
+            return userRepository.findByNicknameContainingIgnoreCase(nickname, pageable).map(User::toDTO);
+        }
+        return userRepository.findAll(pageable).map(User::toDTO);
     }
 
     public UserDTO getUserByIdAsDTO(Long id) {

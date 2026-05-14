@@ -79,8 +79,8 @@ export class AddEpisodePage implements OnInit {
 
   private loadExistingEpisodes(podcastId: number): void {
     this.episodeService.getAll(undefined, podcastId).subscribe({
-      next: (episodes) => {
-        this.existingEpisodes = episodes || [];
+      next: (pageResponse) => {
+        this.existingEpisodes = pageResponse.content || [];
         this.processEpisodesBySeasons();
         this.autoFillEpisodeNumber();
       },

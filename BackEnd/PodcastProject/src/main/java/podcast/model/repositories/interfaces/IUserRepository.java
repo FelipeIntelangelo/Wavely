@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 import podcast.model.entities.User;
 
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Repository
 public interface IUserRepository extends JpaRepository <User, Long> {
@@ -26,6 +28,6 @@ public interface IUserRepository extends JpaRepository <User, Long> {
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.credential.roles WHERE u.id = :id")
     Optional<User> findByIdWithCredentialAndRoles(@Param("id") Long id);
 
-
+    Page<User> findByNicknameContainingIgnoreCase(String nickname, Pageable pageable);
 
 }

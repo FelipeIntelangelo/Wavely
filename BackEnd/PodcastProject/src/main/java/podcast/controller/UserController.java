@@ -23,6 +23,9 @@ import podcast.cfg.JwtUtil;
 import podcast.model.entities.User;
 import podcast.model.entities.dto.*;
 import podcast.model.exceptions.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springdoc.core.annotations.ParameterObject;
 import podcast.model.services.EpisodeHistoryService;
 import podcast.model.services.RatingService;
 import podcast.model.services.UserDetailsServiceImpl;
@@ -176,8 +179,11 @@ public class UserController {
         )
     })
     @GetMapping
-    public ResponseEntity<List<UserDTO>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsersAsDTO());
+    public ResponseEntity<Page<UserDTO>> getAllUsers(
+            @RequestParam(required = false) String nickname,
+            @ParameterObject Pageable pageable
+    ) {
+        return ResponseEntity.ok(userService.getAllUsersAsDTO(nickname, pageable));
     }
 
     @Operation(

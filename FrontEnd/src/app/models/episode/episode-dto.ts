@@ -10,4 +10,5 @@ export interface EpisodeDTO {
   chapter: number;
   publicationDate: string; // LocalDateTime en formato ISO 8601
   podcastTitle: string;
+  podcastId: number;
 }

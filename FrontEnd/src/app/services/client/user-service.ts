@@ -9,6 +9,7 @@ import { EpisodeHistoryDTO } from '../../models/episode/episode-history-dto';
 import { ErrorHandlerService } from '../error/error-handler.service';
 import { PodcastDTO } from '../../models/podcast/podcast-dto';
 import { UserUpdateDTO } from '../../models/user/user-update-dto';
+import { PageResponse } from '../../models/page-response';
 
 @Injectable({
   providedIn: 'root'
@@ -23,9 +24,15 @@ export class UserService {
   ) {}
 
   /* -------------------- Login, Register & Profile LOGIC -------------------- */
-  getUsersDTO(){
-    return this.http.get<UserSearchDTO[]>(this.API_URL).pipe(
-      catchError(this.errorHandler.handleError.bind(this.errorHandler)))
+  getUsersDTO(nickname?: string, page: number = 0, size: number = 10): Observable<PageResponse<UserSearchDTO>> {
+    const params = new URLSearchParams();
+    if (nickname) params.append('nickname', nickname);
+    params.append('page', page.toString());
+    params.append('size', size.toString());
+    
+    return this.http.get<PageResponse<UserSearchDTO>>(`${this.API_URL}?${params.toString()}`).pipe(
+      catchError(this.errorHandler.handleError.bind(this.errorHandler))
+    );
   }
 
   getUserById(id: number): Observable<User | UserSearchDTO> {

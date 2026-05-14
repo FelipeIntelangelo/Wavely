@@ -105,6 +105,7 @@ public class Episode {
                 .duration(this.duration)
                 .imageUrl(this.getImageUrl())
                 .podcastTitle(this.podcast.getTitle())
+                .podcastId(this.podcast.getId().longValue())
                 .build();
     }
 

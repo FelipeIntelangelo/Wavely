@@ -16,6 +16,8 @@ import podcast.model.exceptions.*;
 import podcast.model.repositories.interfaces.*;
 
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class EpisodeService {
@@ -157,21 +159,15 @@ private final CloudinaryService cloudinaryService;
         return episode.getAudioPath();
     }
 
-    public List<Episode> getAllFiltered(String title, Long podcastId) {
-        List<Episode> filtered;
+    public Page<Episode> getAllFiltered(String title, Long podcastId, Pageable pageable) {
+        Page<Episode> filtered;
 
         if (title == null && podcastId == null) {
-            filtered = episodeRepository.findAll();
+            filtered = episodeRepository.findAll(pageable);
         } else if (podcastId != null) {
-            filtered = episodeRepository.findByPodcast_Id(podcastId);
-            if (filtered.isEmpty()) {
-                throw new EpisodeNotFoundException("No episodes found for podcast ID " + podcastId);
-            }
+            filtered = episodeRepository.findByPodcast_Id(podcastId, pageable);
         } else {
-            filtered = episodeRepository.findByTitleIgnoreCase(title);
-            if (filtered.isEmpty()) {
-                throw new EpisodeNotFoundException("No episodes found with title " + title);
-            }
+            filtered = episodeRepository.findByTitleContainingIgnoreCase(title, pageable);
         }
         return filtered;
     }

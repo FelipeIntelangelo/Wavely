@@ -123,12 +123,10 @@ export class Header implements OnInit{
       this.showDropdown = true;
       const queryClean = this.searchQuery.trim().toLowerCase();
 
-      // Trae los usuarios y filtra el cliente por nickname
-      this.userService.getUsersDTO().subscribe({
-        next: (users) => {
-          this.searchResults = users.filter(u => 
-            u.nickname.toLowerCase().includes(queryClean)
-          );
+      // Trae los usuarios buscando por nickname
+      this.userService.getUsersDTO(queryClean, 0, 5).subscribe({
+        next: (pageResponse) => {
+          this.searchResults = pageResponse.content;
         },
         error: (err) => {
           this.error = err?.message || 'Error al buscar usuarios';
@@ -136,12 +134,10 @@ export class Header implements OnInit{
         }
       });
 
-      // Trae los podcasts sin ordenar y filtra por título
-      this.podcastService.getAll(false).subscribe({
-        next: (podcasts) => {
-          this.podcastResults = podcasts.filter(p => 
-            p.title.toLowerCase().includes(queryClean)
-          );
+      // Trae los podcasts filtrando por título
+      this.podcastService.getAllFiltered(queryClean, undefined, undefined, false, 0, 5).subscribe({
+        next: (pageResponse) => {
+          this.podcastResults = pageResponse.content;
         },
         error: (err) => {
           this.error = err?.message || 'Error al buscar podcasts';

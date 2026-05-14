@@ -7,6 +7,7 @@ import { Podcast } from '../../models/podcast/podcast';
 import { PodcastTotalDTO } from '../../models/podcast/podcast-total-dto';
 import { PodcastCreateDTO } from '../../models/podcast/podcast-create-dto';
 import { PodcastUpdateDTO } from '../../models/podcast/podcast-update-dto';
+import { PageResponse } from '../../models/page-response';
 
 @Injectable({
   providedIn: 'root'
@@ -20,25 +21,31 @@ export class PodcastService {
     private errorHandler: ErrorHandlerService
   ) {}
 
-  getAll(orderByViews: boolean = false): Observable<PodcastSearchDTO[]> {
-    const params = orderByViews ? '?orderByViews=true' : '';
-    return this.http.get<PodcastSearchDTO[]>(`${this.API_URL}${params}`).pipe(
+  getAll(page: number = 0, size: number = 10, orderByViews: boolean = false): Observable<PageResponse<PodcastSearchDTO>> {
+    const params = new URLSearchParams();
+    params.append('page', page.toString());
+    params.append('size', size.toString());
+    if (orderByViews) params.append('orderByViews', 'true');
+    
+    return this.http.get<PageResponse<PodcastSearchDTO>>(`${this.API_URL}?${params.toString()}`).pipe(
       catchError(this.errorHandler.handleError.bind(this.errorHandler))
     );
   }
 
-  getAllFiltered(title?: string, userId?: number, category?: string, orderByViews: boolean = false): Observable<any[]> {
+  getAllFiltered(title?: string, userId?: number, category?: string, orderByViews: boolean = false, page: number = 0, size: number = 10): Observable<PageResponse<any>> {
     const params = new URLSearchParams();
     
     if (title) params.append('title', title);
     if (userId) params.append('userId', userId.toString());
     if (category) params.append('category', category);
     if (orderByViews) params.append('orderByViews', 'true');
+    params.append('page', page.toString());
+    params.append('size', size.toString());
     
     const queryString = params.toString();
-    const url = queryString ? `${this.API_URL}?${queryString}` : this.API_URL;
+    const url = `${this.API_URL}?${queryString}`;
     
-    return this.http.get<any[]>(url).pipe(
+    return this.http.get<PageResponse<any>>(url).pipe(
       catchError(this.errorHandler.handleError.bind(this.errorHandler))
     );
   }

@@ -34,8 +34,9 @@ export class CategoryPodcasts implements OnInit {
 
   loadPodcasts(): void {
     this.isLoading = true;
-    this.podcastService.getAllFiltered(undefined, undefined, this.category).subscribe({
-      next: (data) => {
+    this.podcastService.getAllFiltered(undefined, undefined, this.category, false, 0, 100).subscribe({
+      next: (pageResponse) => {
+        const data = pageResponse.content;
         // Backend may return all podcasts when none match the category.
         // As a defensive measure, filter client-side to only include podcasts
         // that explicitly list the requested category.

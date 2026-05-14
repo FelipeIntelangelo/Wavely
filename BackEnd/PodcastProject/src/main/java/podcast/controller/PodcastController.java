@@ -29,6 +29,9 @@ import podcast.model.exceptions.UnauthorizedException;
 import podcast.model.services.PodcastService;
 
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springdoc.core.annotations.ParameterObject;
 
 @RestController
 @RequestMapping(path = "podcastUTN/v1/podcasts")
@@ -82,15 +85,15 @@ public class PodcastController {
 
     @Operation(
         summary = "Obtener todos los podcasts",
-        description = "Recupera una lista de podcasts con opciones de filtrado por título, creador, categoría y ordenamiento por vistas"
+        description = "Recupera una página de podcasts con opciones de filtrado por título, creador, categoría y ordenamiento por vistas"
     )
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "Lista de podcasts encontrada exitosamente",
+            description = "Página de podcasts encontrada exitosamente",
             content = @Content(
                 mediaType = "application/json",
-                schema = @Schema(type = "array", implementation = PodcastDTO.class)
+                schema = @Schema(implementation = Page.class)
             )
         ),
         @ApiResponse(
@@ -103,7 +106,7 @@ public class PodcastController {
         )
     })
     @GetMapping
-    public ResponseEntity<List<PodcastDTO>> getAll(
+    public ResponseEntity<Page<PodcastDTO>> getAll(
             @Parameter(description = "Filtrar por título del podcast (búsqueda parcial)")
             @RequestParam(required = false) String title,
             
@@ -114,10 +117,12 @@ public class PodcastController {
             @RequestParam(required = false) String category,
             
             @Parameter(description = "Ordenar resultados por número de vistas (true = descendente)")
-            @RequestParam(required = false) Boolean orderByViews
+            @RequestParam(required = false) Boolean orderByViews,
+            
+            @ParameterObject Pageable pageable
     ) {
         Category categoryEnum = (category != null) ? Category.valueOf(category) : null;
-        List<PodcastDTO> podcasts = podcastService.getAllFiltered(title, userId, categoryEnum, orderByViews);
+        Page<PodcastDTO> podcasts = podcastService.getAllFiltered(title, userId, categoryEnum, orderByViews, pageable);
         return ResponseEntity.ok(podcasts);
     }
 
