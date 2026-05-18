@@ -11,6 +11,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   // Endpoints PÚBLICOS (no adjuntar Authorization)
   const isLogin = req.method === 'POST' && req.url.endsWith('/api/auth/login');
+  const isGoogleLogin = req.method === 'POST' && req.url.endsWith('/api/auth/google');
   const isRegister = req.method === 'POST' && req.url.endsWith('/api/users/register');
   // Listado público de usuarios (UserSearchDTO): GET /api/users y GET /api/users?... solo lista
   const isPublicUsersList =
@@ -21,7 +22,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   // Construir la request final (con o sin Authorization)
   let requestToSend = req;
-  if (!(isLogin || isRegister || isPublicUsersList || isPublicUserDetail) && token) {
+  if (!(isLogin || isGoogleLogin || isRegister || isPublicUsersList || isPublicUserDetail) && token) {
     requestToSend = req.clone({
       headers: req.headers.set('Authorization', `Bearer ${token}`),
     });
@@ -31,7 +32,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return next(requestToSend).pipe(
     catchError((err) => {
       const isUnauthorized = err?.status === HttpStatusCode.Unauthorized;
-      if (isUnauthorized && !(isLogin || isRegister)) {
+      if (isUnauthorized && !(isLogin || isGoogleLogin || isRegister)) {
         try {
           localStorage.removeItem('jwt_token');
         } catch {}

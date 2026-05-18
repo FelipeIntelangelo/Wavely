@@ -8,8 +8,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 import podcast.cfg.JwtUtil;
+import podcast.model.entities.dto.GoogleLoginRequest;
 import podcast.model.entities.dto.LoginRequest;
 import podcast.model.entities.dto.LoginResponse;
+import podcast.model.services.GoogleAuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -36,6 +38,9 @@ public class AuthController {
 
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    private GoogleAuthService googleAuthService;
 
 // ===================================================================================================================
 
@@ -116,4 +121,36 @@ public class AuthController {
 
         return ResponseEntity.ok(new LoginResponse(token));
     }
-}
+
+// ===================================================================================================================
+
+    @Operation(
+        summary = "Iniciar sesión con Google",
+        description = "Autentica al usuario mediante un ID Token de Google. " +
+                     "Si el usuario no existe, se crea automáticamente. " +
+                     "Devuelve un token JWT propio de la aplicación."
+    )
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200",
+            description = "Autenticación con Google exitosa",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = LoginResponse.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Token de Google inválido",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(type = "string", example = "Token de Google inválido")
+            )
+        )
+    })
+    @PostMapping("/google")
+    public ResponseEntity<LoginResponse> loginWithGoogle(@RequestBody GoogleLoginRequest request) {
+        String token = googleAuthService.authenticateWithGoogle(request.getIdToken());
+        return ResponseEntity.ok(new LoginResponse(token));
+    }
+}

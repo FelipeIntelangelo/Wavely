@@ -54,7 +54,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/podcastUTN/v1/auth/login")
+                        .requestMatchers("/podcastUTN/v1/auth/login", "/podcastUTN/v1/auth/google")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET, //Agregar todos los GET que se permitan sin autenticación
                                 "/podcastUTN/v1/podcasts",

@@ -17,7 +17,8 @@ dist/
 FrontEnd/node_modules/
 FrontEnd/dist/
 FrontEnd/.angular/
-FrontEnd/.env
+FrontEnd/src/environments/environment.ts
+FrontEnd/src/environments/environment.prod.ts
 
 # =========================
 # BACKEND (Spring Boot / Java)
