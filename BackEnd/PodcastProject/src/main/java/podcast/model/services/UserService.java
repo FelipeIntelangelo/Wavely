@@ -8,6 +8,7 @@ import podcast.model.entities.User;
 import podcast.model.entities.dto.PodcastDTO;
 import podcast.model.entities.dto.UpdateUserDTO;
 import podcast.model.entities.dto.UserDTO;
+import podcast.model.entities.enums.AuthProvider;
 import podcast.model.entities.enums.Role;
 import podcast.model.exceptions.AlreadyCreatedException;
 import podcast.model.exceptions.PodcastNotFoundException;
@@ -79,12 +80,24 @@ public class UserService {
         if (user.getId() != null) {
             throw new AlreadyCreatedException("No se debe enviar un ID al registrar un usuario nuevo");
         }
+
+        // Validar que los usuarios locales tengan contraseña
+        String rawPassword = user.getCredential().getPassword();
+        if (rawPassword == null || rawPassword.isBlank()) {
+            throw new IllegalArgumentException("La contraseña es obligatoria");
+        }
+        if (rawPassword.length() < 8) {
+            throw new IllegalArgumentException("La contraseña debe tener al menos 8 caracteres");
+        }
+
         // Asigna rol por defecto si no tiene
         user.getCredential().getRoles().clear();
         user.getCredential().getRoles().add(Role.ROLE_USER);
         // Encripta la contraseña
-        String rawPassword = user.getCredential().getPassword();
         user.getCredential().setPassword(passwordEncoder.encode(rawPassword));
+
+        // Asigna proveedor LOCAL por defecto
+        user.getCredential().setAuthProvider(AuthProvider.LOCAL);
 
         // Asigna fecha de creación si es nuevo
         if (user.getCredential().getCreatedAt() == null) {
@@ -96,6 +109,10 @@ public class UserService {
 
     public boolean existsByUsername(String username) {
         return userRepository.existsByCredentialUsername(username);
+    }
+
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByCredentialEmail(email);
     }
 
     public void addPodcastToFavorites(String username, Long podcastId) {

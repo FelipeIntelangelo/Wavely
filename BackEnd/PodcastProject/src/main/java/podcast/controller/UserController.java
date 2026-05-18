@@ -335,9 +335,16 @@ public class UserController {
                 content = @Content(schema = @Schema(implementation = User.class))
             )
             @RequestBody @Valid User user) {
+        
         if (userService.existsByUsername(user.getUsername())) {
             throw new AlreadyCreatedException("El usuario con el nombre de usuario ya existe.");
         }
+        
+        // Validar que el email no esté en uso (ya sea por una cuenta local o de Google)
+        if (userService.existsByEmail(user.getCredential().getEmail())) {
+            throw new AlreadyCreatedException("El email ya se encuentra registrado. Si utilizaste Google anteriormente, iniciá sesión directamente.");
+        }
+
         userService.save(user);
         return ResponseEntity.ok("Usuario registrado correctamente");
     }

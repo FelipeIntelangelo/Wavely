@@ -46,6 +46,12 @@ export class UserService {
       catchError(this.errorHandler.handleError.bind(this.errorHandler))
     );
   }
+
+  loginWithGoogle(idToken: string): Observable<{ token: string }> {
+    return this.http.post<{ token: string }>(`${this.AUTH_API_URL}/google`, { idToken }).pipe(
+      catchError(this.errorHandler.handleError.bind(this.errorHandler))
+    );
+  }
   
   getCurrentUserProfile(): Observable<User> {
     return this.http.get<User>(`${this.API_URL}/myProfile`).pipe(

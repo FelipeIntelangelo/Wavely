@@ -2,12 +2,15 @@ package podcast.model.entities;
 
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import podcast.model.entities.enums.AuthProvider;
 import podcast.model.entities.enums.Role;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -34,7 +37,7 @@ public class Credential {
     @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "El username solo puede contener letras, números y guiones bajos")
     private String username;
 
-    @NotBlank(message = "La contraseña es obligatoria")
+    // Password es nullable para usuarios de Google OAuth
     @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
     private String password;
 
@@ -46,9 +49,15 @@ public class Credential {
 
     private LocalDateTime createdAt;
 
+    // Proveedor de autenticación: LOCAL (usuario/contraseña) o GOOGLE (OAuth)
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private AuthProvider authProvider = AuthProvider.LOCAL;
+
     public Credential(String email, String username, String password) {
         this.email = email;
         this.username = username;
         this.password = password;
+        this.authProvider = AuthProvider.LOCAL;
     }
-}
+}
