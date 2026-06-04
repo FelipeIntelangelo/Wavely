@@ -1,0 +1,19 @@
+<div class="notification-item" [class.unread]="!notification.isRead" (click)="onClick()">
+    <div class="notification-avatar">
+        @if (notification.senderProfilePicture) {
+            <img [src]="notification.senderProfilePicture" [alt]="notification.senderName" />
+        } @else {
+            <div class="avatar-fallback">{{ notification.senderName ? notification.senderName.charAt(0).toUpperCase() : 'U' }}</div>
+        }
+        <div class="notification-icon">{{ getIcon() }}</div>
+    </div>
+    
+    <div class="notification-content">
+        <p class="notification-message">{{ notification.message }}</p>
+        <span class="notification-time">{{ notification.createdAt | date:'short' }}</span>
+    </div>
+    
+    @if (!notification.isRead) {
+        <div class="notification-indicator"></div>
+    }
+</div>

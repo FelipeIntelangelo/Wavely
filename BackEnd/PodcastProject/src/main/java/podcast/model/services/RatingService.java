@@ -12,6 +12,7 @@ import podcast.model.repositories.interfaces.IEpisodeRepository;
 import podcast.model.repositories.interfaces.IPodcastRepository;
 import podcast.model.repositories.interfaces.IRatingRepository;
 import podcast.model.repositories.interfaces.IUserRepository;
+import podcast.model.entities.enums.NotificationType;
 
 import java.util.Optional;
 
@@ -22,16 +23,19 @@ public class RatingService {
     private final IEpisodeRepository episodeRepository;
     private final IUserRepository userRepository;
     private final IPodcastRepository podcastRepository;
+    private final NotificationService notificationService;
 
     @Autowired
     public RatingService(IRatingRepository ratingRepository,
                          IEpisodeRepository episodeRepository,
                          IUserRepository userRepository,
-                         IPodcastRepository podcastRepository) {
+                         IPodcastRepository podcastRepository,
+                         NotificationService notificationService) {
         this.ratingRepository = ratingRepository;
         this.episodeRepository = episodeRepository;
         this.userRepository = userRepository;
         this.podcastRepository = podcastRepository;
+        this.notificationService = notificationService;
     }
 
     public void rateEpisode(Long episodeId, String username, Long score) {
@@ -58,6 +62,11 @@ public class RatingService {
         Podcast podcast = episode.getPodcast();
         podcast.updateAverageRating();
         podcastRepository.save(podcast);
+
+        if (!existing.isPresent()) {
+            String message = "⭐ " + user.getNickname() + " calificó tu episodio '" + episode.getTitle() + "' con " + score + " estrellas";
+            notificationService.notify(NotificationType.NEW_RATING, user, podcast.getUser(), podcast, episode, null, message);
+        }
     }
 
     public Double getAverageRating(Long episodeId) {

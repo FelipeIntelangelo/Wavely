@@ -217,6 +217,7 @@
             </div>
         }
         @if (isLoggedIn && user) {
+            <app-notification-bell></app-notification-bell>
             <button class="create-button" routerLink="/create-podcast" title="Crear Podcast">
                 <span class="create-icon"><i class="fas fa-plus"></i></span>
                 <span class="create-text">Crear</span>

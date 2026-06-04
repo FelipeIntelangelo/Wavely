@@ -14,6 +14,7 @@ import podcast.model.entities.dto.UpdateEpisodeDTO;
 import podcast.model.entities.enums.Role;
 import podcast.model.exceptions.*;
 import podcast.model.repositories.interfaces.*;
+import podcast.model.entities.enums.NotificationType;
 
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -28,6 +29,7 @@ private final IEpisodeHistoryRepository episodeHistoryRepository;
 private final IUserRepository userRepository;
 private final ICommentaryRepository commentaryRepository;
 private final CloudinaryService cloudinaryService;
+private final NotificationService notificationService;
 
     @Autowired
     public EpisodeService(IEpisodeRepository episodeRepository,
@@ -35,13 +37,15 @@ private final CloudinaryService cloudinaryService;
                           IEpisodeHistoryRepository episodeHistoryRepository,
                           IUserRepository userRepository,
                           ICommentaryRepository commentaryRepository,
-                          CloudinaryService cloudinaryService) {
+                          CloudinaryService cloudinaryService,
+                          NotificationService notificationService) {
         this.episodeRepository = episodeRepository;
         this.podcastRepository = podcastRepository;
         this.episodeHistoryRepository = episodeHistoryRepository;
         this.userRepository = userRepository;
         this.commentaryRepository = commentaryRepository;
         this.cloudinaryService = cloudinaryService;
+        this.notificationService = notificationService;
     }
 
     // SAVE
@@ -79,6 +83,8 @@ private final CloudinaryService cloudinaryService;
         episodeRepository.save(episode);
         existingPodcast.getEpisodes().add(episode);
         podcastRepository.save(existingPodcast);
+
+        notificationService.notifyNewEpisode(episode);
     }
 
     // UPDATE
@@ -191,7 +197,11 @@ private final CloudinaryService cloudinaryService;
                 .episode(episode)
                 .build();
 
-        commentaryRepository.save(commentary);
+        commentary = commentaryRepository.save(commentary);
+
+        String message = "💬 " + user.getNickname() + " comentó en tu episodio '" + episode.getTitle() + "': '" + 
+                         (comment.length() > 20 ? comment.substring(0, 20) + "..." : comment) + "'";
+        notificationService.notify(NotificationType.NEW_COMMENTARY, user, episode.getPodcast().getUser(), episode.getPodcast(), episode, commentary, message);
     }
 
 

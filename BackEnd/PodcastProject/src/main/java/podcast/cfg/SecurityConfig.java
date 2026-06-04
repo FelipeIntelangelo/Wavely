@@ -59,6 +59,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, //Agregar todos los GET que se permitan sin autenticación
                                 "/podcastUTN/v1/podcasts",
                                 "/podcastUTN/v1/podcasts/{podcastId}",
+                                "/ws/**",
                                 "/podcastUTN/v1/episodes/{episodeId}",
                                 "/podcastUTN/v1/episodes",
                                 "/podcastUTN/v1/users",

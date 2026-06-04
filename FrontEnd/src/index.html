@@ -7,6 +7,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/icon" href="assets/favicon.ico">
   <script src="https://accounts.google.com/gsi/client" async></script>
+  <script>
+    if (window.global === undefined) {
+      window.global = window;
+    }
+  </script>
 </head>
 <body>
   <app-root></app-root>
