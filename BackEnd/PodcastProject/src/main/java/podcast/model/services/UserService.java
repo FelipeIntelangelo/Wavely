@@ -15,6 +15,7 @@ import podcast.model.exceptions.PodcastNotFoundException;
 import podcast.model.exceptions.UserNotFoundException;
 import podcast.model.repositories.interfaces.IPodcastRepository;
 import podcast.model.repositories.interfaces.IUserRepository;
+import podcast.model.entities.enums.NotificationType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,14 +30,16 @@ public class UserService {
     private final IUserRepository userRepository;
     private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
     private final IPodcastRepository podcastRepository;
+    private final NotificationService notificationService;
 
     // ── Constructor ──────────────────────────────────────────────────────────────────
 
     @Autowired
-    public UserService(IUserRepository userRepository, PasswordEncoder passwordEncoder, IPodcastRepository podcastRepository) {
+    public UserService(IUserRepository userRepository, PasswordEncoder passwordEncoder, IPodcastRepository podcastRepository, NotificationService notificationService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.podcastRepository = podcastRepository;
+        this.notificationService = notificationService;
     }
 
     // ── Logica De Negocio ────────────────────────────────────────────────────────────
@@ -127,6 +130,9 @@ public class UserService {
 
         user.getFavorites().add(podcast);
         userRepository.save(user);
+
+        String message = "📢 " + user.getNickname() + " se suscribió a tu podcast '" + podcast.getTitle() + "'";
+        notificationService.notify(NotificationType.NEW_SUBSCRIPTION, user, podcast.getUser(), podcast, null, null, message);
     }
 
     // ── Patch ────────────────────────────────────────────────────────────────────────

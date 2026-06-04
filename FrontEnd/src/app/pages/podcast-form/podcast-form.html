@@ -44,24 +44,27 @@
       <div class="categories-combobox" [class.open]="categoriesOpen" (click)="toggleCategories()" tabindex="0"
            (keydown.enter)="toggleCategories()" (keydown.space)="toggleCategories()" role="button"
            [attr.aria-expanded]="categoriesOpen">
-        <div class="categories-display" *ngIf="selectedCategories.length > 0; else placeholder">
-          @for (cat of selectedCategories; track cat) {
-            <span class="category-chip">{{ cat }}</span>
-          }
-        </div>
-        <ng-template #placeholder>
+        @if (selectedCategories.length > 0) {
+          <div class="categories-display">
+            @for (cat of selectedCategories; track cat) {
+              <span class="category-chip">{{ cat }}</span>
+            }
+          </div>
+        } @else {
           <span class="categories-placeholder">Seleccionar categorías...</span>
-        </ng-template>
+        }
         <span class="caret" aria-hidden="true">▾</span>
       </div>
-      <div class="categories-dropdown" *ngIf="categoriesOpen" (click)="$event.stopPropagation()">
-        @for (category of categoryKeys; track category) {
-          <div class="dropdown-item" (click)="onCategoryToggle(category)" [class.selected]="isCategorySelected(category)">
-            <input type="checkbox" [checked]="isCategorySelected(category)" tabindex="-1" />
-            <span>{{ category }}</span>
-          </div>
-        }
-      </div>
+      @if (categoriesOpen) {
+        <div class="categories-dropdown" (click)="$event.stopPropagation()">
+          @for (category of categoryKeys; track category) {
+            <div class="dropdown-item" (click)="onCategoryToggle(category)" [class.selected]="isCategorySelected(category)">
+              <input type="checkbox" [checked]="isCategorySelected(category)" tabindex="-1" />
+              <span>{{ category }}</span>
+            </div>
+          }
+        </div>
+      }
       @if (podcastForm.get('categories')?.invalid && podcastForm.get('categories')?.touched) {
         <div class="server-error">{{ customErrors['categories']['required'] }}</div>
       }

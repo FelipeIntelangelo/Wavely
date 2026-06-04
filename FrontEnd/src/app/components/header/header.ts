@@ -9,10 +9,11 @@ import { AuthService } from '../../services/auth/auth.service';
 import { PodcastService } from '../../services/podcast/podcast-service';
 import { PodcastSearchDTO } from '../../models/podcast/podcast-search-dto';
 import { LayoutService } from '../../services/layout/layout.service';
+import { NotificationBell } from '../notification-bell/notification-bell';
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, CommonModule, FormsModule],
+  imports: [RouterLink, CommonModule, FormsModule, NotificationBell],
   templateUrl: './header.html',
   styleUrl: './header.css'
 })
