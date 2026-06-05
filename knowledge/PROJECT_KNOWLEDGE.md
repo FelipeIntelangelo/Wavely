@@ -96,7 +96,7 @@ Toda la lógica de red utiliza `HttpClient`.
 *   **`notification/notification.service.ts`:**
     *   Usa `HttpClient` para traer notificaciones iniciales.
     *   Usa `@stomp/stompjs` y `sockjs-client` para conectar al WebSocket en `http://localhost:8080/ws` con el JWT en el header.
-    *   Mantiene estado global reactivo mediante `notifications$` y `unreadCount$` (RxJS `BehaviorSubject`).
+    *   Mantiene estado global reactivo mediante `notifications$` and `unreadCount$` (RxJS `BehaviorSubject`).
 *   **`media-player/`:** Servicio que controla la persistencia del audio en la app (reproductor global).
 
 ### 3.3 Componentes de Interfaz (`components/`)
