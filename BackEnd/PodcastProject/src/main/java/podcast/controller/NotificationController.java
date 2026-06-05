@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,8 +19,6 @@ import podcast.model.entities.User;
 import podcast.model.entities.dto.NotificationDTO;
 import podcast.model.services.NotificationService;
 import podcast.model.services.UserService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("podcastUTN/v1/notifications")
@@ -38,24 +37,26 @@ public class NotificationController {
 //* ===================================================================================================================
 
     @Operation(
-        summary = "Obtener notificaciones del usuario",
-        description = "Recupera todas las notificaciones del usuario actualmente autenticado (leídas y no leídas) ordenadas por fecha.",
+        summary = "Obtener notificaciones del usuario paginadas",
+        description = "Recupera las notificaciones del usuario actualmente autenticado (leídas y no leídas) ordenadas por fecha, con soporte de paginación.",
         security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "Lista de notificaciones obtenida correctamente",
+            description = "Página de notificaciones obtenida correctamente",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = NotificationDTO.class))
         ),
         @ApiResponse(responseCode = "401", description = "No autorizado - Token JWT faltante o inválido")
     })
     @PreAuthorize("isAuthenticated()")
     @GetMapping
-    public ResponseEntity<List<NotificationDTO>> getNotifications(
-            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<Page<NotificationDTO>> getNotifications(
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails,
+            @Parameter(description = "Número de página (0-indexed)", example = "0") @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Cantidad de notificaciones por página", example = "20") @RequestParam(defaultValue = "20") int size) {
         User user = userService.getAuthenticatedUser(userDetails.getUsername());
-        return ResponseEntity.ok(notificationService.getNotifications(user.getId()));
+        return ResponseEntity.ok(notificationService.getNotifications(user.getId(), page, size));
     }
 
 //* ===================================================================================================================
@@ -85,18 +86,22 @@ public class NotificationController {
 
     @Operation(
         summary = "Marcar notificación como leída",
-        description = "Cambia el estado de una notificación específica a leída.",
+        description = "Cambia el estado de una notificación específica a leída. Solo el receptor puede marcar su propia notificación.",
         security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Notificación marcada como leída"),
         @ApiResponse(responseCode = "401", description = "No autorizado"),
+        @ApiResponse(responseCode = "403", description = "Prohibido - La notificación no pertenece al usuario autenticado"),
         @ApiResponse(responseCode = "404", description = "Notificación no encontrada")
     })
     @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{id}/read")
-    public ResponseEntity<Void> markAsRead(@PathVariable Long id) {
-        notificationService.markAsRead(id);
+    public ResponseEntity<Void> markAsRead(
+            @PathVariable Long id,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails) {
+        User user = userService.getAuthenticatedUser(userDetails.getUsername());
+        notificationService.markAsRead(id, user.getId());
         return ResponseEntity.ok().build();
     }
 

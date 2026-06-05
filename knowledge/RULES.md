@@ -12,6 +12,7 @@ Este archivo contiene las reglas y pautas específicas del proyecto dictadas por
 
 ## 🛠️ 2. Estándares Técnicos del Frontend (Angular)
 * **Control de Flujo Moderno:** Está estrictamente prohibido usar la directiva estructural deprecada `*ngIf`. Se debe utilizar exclusivamente la sintaxis moderna de control de flujo de Angular (`@if`, `@else`, `@for`, `@switch`).
+* **Paginación:** Todos los listados que consuman endpoints paginados del backend deben utilizar la interfaz `PageResponse<T>` (ubicada en `models/page-response.ts`) para tipar la respuesta. Los servicios deben exponer `hasMore$` e `isLoading$` como `Observable` para que los componentes puedan renderizar estados de carga y botones "Ver más" sin lógica duplicada.
 
 ---
 
@@ -20,3 +21,10 @@ Este archivo contiene las reglas y pautas específicas del proyecto dictadas por
 * **Líneas Separadoras en Controladores:** Utilizar la línea de comentarios `//* ===================================================================================================================` para separar cada método expuesto por el controlador.
 * **Documentación con Swagger:** Añadir siempre anotaciones OpenAPI/Swagger (`@Tag` en la clase, `@Operation`, `@ApiResponses`, `@ApiResponse` y `@Parameter`) en todos los endpoints y clases controladoras.
 * **Principal de Autenticación:** Utilizar siempre `@AuthenticationPrincipal UserDetails userDetails` en los parámetros de los controladores para recuperar el usuario logueado en lugar de inyectar la entidad `User` directamente, resolviendo el objeto JPA llamando a `userService.getAuthenticatedUser(userDetails.getUsername())`.
+
+---
+
+## 📁 4. Estándares de Estructura y Nomenclatura del Backend
+* **Ubicación de Repositorios:** Todos los repositorios JPA deben ubicarse **exclusivamente** dentro del paquete `model.repositories.interfaces`. Nunca crear archivos de repositorio directamente en `model.repositories` (el paquete raíz).
+* **Nomenclatura de Repositorios:** Todos los repositorios deben seguir la convención `I` + `NombreEntidad` + `Repository` (ej: `INotificationRepository`, `IEpisodeRepository`). El prefijo `I` indica que es una interfaz y es **obligatorio**.
+* **Paginación en Repositorios:** Los métodos de consulta que devuelvan listas de entidades deben exponer una sobrecarga con `Pageable` que retorne `Page<T>` para soportar paginación. Los controladores deben aceptar los parámetros `@RequestParam(defaultValue = "0") int page` y `@RequestParam(defaultValue = "20") int size`, y devolver `Page<DTO>`.

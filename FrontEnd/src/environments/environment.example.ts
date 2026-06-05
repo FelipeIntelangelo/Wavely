@@ -11,5 +11,6 @@ export const environment = {
     cloudName: 'TU_CLOUD_NAME',
     uploadPreset: 'TU_UPLOAD_PRESET',
     apiKey: 'TU_API_KEY'
-  }
+  },
+  wsUrl: 'TU_WS_URL'
 };

@@ -58,7 +58,7 @@ Cada entidad está mapeada a PostgreSQL mediante JPA (`@Entity`).
 *   **`PodcastService`:** CRUD podcasts, cálculo de ratings/views. Integración con `CloudinaryService` para carátulas.
 *   **`EpisodeService`:** CRUD episodios, validación de temporada/capítulo (`season`, `chapter`), manejo de comentarios. Dispara `NUEVO_EPISODIO` y `NUEVO_COMENTARIO`.
 *   **`RatingService`:** Asigna puntaje (`rateEpisode`) y dispara `NUEVO_RATING`.
-*   **`NotificationService`:** Persiste notificaciones y envía por WebSocket a `/queue/notifications` vía `SimpMessagingTemplate`.
+*   **`NotificationService`:** Persiste notificaciones y envía por WebSocket a `/queue/notifications` vía `SimpMessagingTemplate`. El método `getNotifications(userId, page, size)` retorna `Page<NotificationDTO>` usando `INotificationRepository`.
 *   **`AuthService` / `GoogleAuthService`:** Registro y login (Local y Google). Generación de JWT mediante `JwtUtil`.
 *   **`CloudinaryService`:** Sube (`uploadFile`) y elimina (`deleteFile`) archivos multimedia en la nube.
 
@@ -67,7 +67,7 @@ Cada entidad está mapeada a PostgreSQL mediante JPA (`@Entity`).
 *   `/api/users/**`: `GET /myProfile`, `PATCH /myProfile`, `DELETE /myProfile`, `GET /myFavorites`, `POST /favorites/{id}`. Búsqueda con `?nickname=X`.
 *   `/api/podcasts/**`: `POST /`, `GET /`, `GET /{id}`, `PATCH /{id}`, `DELETE /{id}`.
 *   `/api/episodes/**`: `POST /`, `GET /{id}`, `PATCH /{id}`, `DELETE /{id}`, `POST /{id}/comments`.
-*   `/api/notifications/**`: `GET /` (lista), `GET /unread-count`, `PATCH /{id}/read`, `PATCH /read-all`.
+*   `/api/notifications/**`: `GET /?page=0&size=20` (lista paginada → `Page<NotificationDTO>`), `GET /unread-count`, `PATCH /{id}/read`, `PATCH /read-all`.
 *   `/ws/**`: Endpoint WebSocket para STOMP.
 
 ### 2.4 Configuración (`cfg`)
@@ -84,7 +84,7 @@ Aplicación SPA en **Angular 20**.
 *   `podcast/`: `PodcastDTO`, `PodcastSearchDTO`, `PodcastUpdateDTO`.
 *   `episode/`: `EpisodeDTO`, `EpisodeHistoryDTO`, `UpdateEpisodeDTO`.
 *   `notification/`: `Notification`, Enum `NotificationType`.
-*   `page-response.ts`: Interface estándar de paginación de Spring Boot (`content`, `totalPages`, `totalElements`).
+*   `page-response.ts`: Interface estándar de paginación de Spring Boot (`content`, `totalPages`, `totalElements`, `last`, etc.). Usada para tipar todas las respuestas paginadas del backend.
 
 ### 3.2 Servicios (`services/`)
 Toda la lógica de red utiliza `HttpClient`.
@@ -94,9 +94,10 @@ Toda la lógica de red utiliza `HttpClient`.
 *   **`podcast/podcast-service.ts`:** Llama a `/api/podcasts/`. Maneja subida con `FormData`.
 *   **`episode/episode.service.ts`:** Llama a `/api/episodes/`.
 *   **`notification/notification.service.ts`:**
-    *   Usa `HttpClient` para traer notificaciones iniciales.
-    *   Usa `@stomp/stompjs` y `sockjs-client` para conectar al WebSocket en `http://localhost:8080/ws` con el JWT en el header.
-    *   Mantiene estado global reactivo mediante `notifications$` and `unreadCount$` (RxJS `BehaviorSubject`).
+     *   Usa `HttpClient` para traer notificaciones iniciales con paginación (`page`, `size`). Tipado con `PageResponse<Notification>`.
+     *   Expone `notifications$`, `unreadCount$`, `hasMore$` e `isLoading$` como `Observable` (RxJS `BehaviorSubject`).
+     *   Método `loadNextPage()` para cargar la siguiente página y concatenarla a la lista existente.
+     *   Usa `@stomp/stompjs` y `sockjs-client` para conectar al WebSocket en `http://localhost:8080/ws` con el JWT en el header. Las notificaciones en tiempo real se anteponen a la lista.
 *   **`media-player/`:** Servicio que controla la persistencia del audio en la app (reproductor global).
 
 ### 3.3 Componentes de Interfaz (`components/`)
