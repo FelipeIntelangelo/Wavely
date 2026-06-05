@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Notification } from '../../models/notification/notification';
+import { PageResponse } from '../../models/page-response';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { AuthService } from '../auth/auth.service';
 import { UserService } from '../client/user-service';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -13,12 +15,22 @@ import { UserService } from '../client/user-service';
 export class NotificationService {
   private apiUrl = '/api/notifications';
   private stompClient: Client | null = null;
-  
+
+  private readonly PAGE_SIZE = 20;
+  private currentPage = 0;
+  private hasMorePages = true;
+
   private notificationsSubject = new BehaviorSubject<Notification[]>([]);
   public notifications$ = this.notificationsSubject.asObservable();
-  
+
   private unreadCountSubject = new BehaviorSubject<number>(0);
   public unreadCount$ = this.unreadCountSubject.asObservable();
+
+  private hasMoreSubject = new BehaviorSubject<boolean>(false);
+  public hasMore$ = this.hasMoreSubject.asObservable();
+
+  private isLoadingSubject = new BehaviorSubject<boolean>(false);
+  public isLoading$ = this.isLoadingSubject.asObservable();
 
   constructor(private http: HttpClient, private authService: AuthService, private userService: UserService) {
     this.authService.getIsLoggedIn().subscribe(isLoggedIn => {
@@ -26,31 +38,65 @@ export class NotificationService {
         this.userService.getCurrentUserProfile().subscribe(user => {
             if (user) {
               this.loadInitialData();
-              this.connectWebSocket(user.nickname);
+              this.connectWebSocket(user.credential.username);
             }
         });
       } else {
         this.disconnectWebSocket();
         this.notificationsSubject.next([]);
         this.unreadCountSubject.next(0);
+        this.hasMoreSubject.next(false);
+        this.currentPage = 0;
+        this.hasMorePages = true;
       }
     });
   }
 
-  private loadInitialData() {
-    this.http.get<Notification[]>(this.apiUrl).subscribe(data => {
-      this.notificationsSubject.next(data);
+  private loadInitialData(): void {
+    this.currentPage = 0;
+    this.notificationsSubject.next([]);
+    this.isLoadingSubject.next(true);
+
+    const params = new HttpParams()
+      .set('page', this.currentPage)
+      .set('size', this.PAGE_SIZE);
+
+    this.http.get<PageResponse<Notification>>(this.apiUrl, { params }).subscribe(pageData => {
+      this.notificationsSubject.next(pageData.content);
+      this.hasMorePages = !pageData.last;
+      this.hasMoreSubject.next(!pageData.last);
+      this.isLoadingSubject.next(false);
     });
+
     this.http.get<number>(`${this.apiUrl}/unread-count`).subscribe(count => {
       this.unreadCountSubject.next(count);
     });
   }
 
-  private connectWebSocket(username: string) {
-    const token = localStorage.getItem('jwt_token'); // Retrieve token directly since authService doesn't expose it
-    
+  loadNextPage(): void {
+    if (!this.hasMorePages || this.isLoadingSubject.value) return;
+
+    this.currentPage++;
+    this.isLoadingSubject.next(true);
+
+    const params = new HttpParams()
+      .set('page', this.currentPage)
+      .set('size', this.PAGE_SIZE);
+
+    this.http.get<PageResponse<Notification>>(this.apiUrl, { params }).subscribe(pageData => {
+      const current = this.notificationsSubject.value;
+      this.notificationsSubject.next([...current, ...pageData.content]);
+      this.hasMorePages = !pageData.last;
+      this.hasMoreSubject.next(!pageData.last);
+      this.isLoadingSubject.next(false);
+    });
+  }
+
+  private connectWebSocket(username: string): void {
+    const token = localStorage.getItem('jwt_token');
+
     this.stompClient = new Client({
-      webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
+      webSocketFactory: () => new SockJS(environment.wsUrl),
       connectHeaders: {
         Authorization: `Bearer ${token}`
       },
@@ -66,10 +112,10 @@ export class NotificationService {
       this.stompClient?.subscribe(`/user/${username}/queue/notifications`, (message) => {
         if (message.body) {
           const newNotification: Notification = JSON.parse(message.body);
-          
+
           const currentList = this.notificationsSubject.value;
           this.notificationsSubject.next([newNotification, ...currentList]);
-          
+
           this.unreadCountSubject.next(this.unreadCountSubject.value + 1);
         }
       });
@@ -78,7 +124,7 @@ export class NotificationService {
     this.stompClient.activate();
   }
 
-  private disconnectWebSocket() {
+  private disconnectWebSocket(): void {
     if (this.stompClient && this.stompClient.active) {
       this.stompClient.deactivate();
     }
@@ -87,7 +133,7 @@ export class NotificationService {
   markAsRead(id: number): Observable<void> {
     const obs = this.http.patch<void>(`${this.apiUrl}/${id}/read`, {});
     obs.subscribe(() => {
-      const currentList = this.notificationsSubject.value.map(n => 
+      const currentList = this.notificationsSubject.value.map(n =>
         n.id === id ? { ...n, isRead: true } : n
       );
       this.notificationsSubject.next(currentList);

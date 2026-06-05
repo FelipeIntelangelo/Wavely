@@ -131,8 +131,11 @@ public class UserService {
         user.getFavorites().add(podcast);
         userRepository.save(user);
 
-        String message = "📢 " + user.getNickname() + " se suscribió a tu podcast '" + podcast.getTitle() + "'";
-        notificationService.notify(NotificationType.NEW_SUBSCRIPTION, user, podcast.getUser(), podcast, null, null, message);
+        String subscriptionMessage = "📢 " + user.getNickname() + " se suscribió a tu podcast '" + podcast.getTitle() + "'";
+        notificationService.notify(NotificationType.NEW_SUBSCRIPTION, user, podcast.getUser(), podcast, null, null, subscriptionMessage);
+
+        String followerMessage = "👤 " + user.getNickname() + " ahora te sigue";
+        notificationService.notify(NotificationType.NEW_FOLLOWER, user, podcast.getUser(), null, null, null, followerMessage);
     }
 
     // ── Patch ────────────────────────────────────────────────────────────────────────

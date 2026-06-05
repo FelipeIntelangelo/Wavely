@@ -16,9 +16,13 @@ export class NotificationBell implements OnInit, OnDestroy {
   notifications: Notification[] = [];
   unreadCount: number = 0;
   isOpen: boolean = false;
-  
+  hasMore: boolean = false;
+  isLoading: boolean = false;
+
   private notifSub?: Subscription;
   private unreadSub?: Subscription;
+  private hasMoreSub?: Subscription;
+  private loadingSub?: Subscription;
 
   constructor(
     private notificationService: NotificationService,
@@ -33,11 +37,19 @@ export class NotificationBell implements OnInit, OnDestroy {
     this.unreadSub = this.notificationService.unreadCount$.subscribe(c => {
       this.unreadCount = c;
     });
+    this.hasMoreSub = this.notificationService.hasMore$.subscribe(h => {
+      this.hasMore = h;
+    });
+    this.loadingSub = this.notificationService.isLoading$.subscribe(l => {
+      this.isLoading = l;
+    });
   }
 
   ngOnDestroy() {
     this.notifSub?.unsubscribe();
     this.unreadSub?.unsubscribe();
+    this.hasMoreSub?.unsubscribe();
+    this.loadingSub?.unsubscribe();
   }
 
   toggleDropdown() {
@@ -56,7 +68,7 @@ export class NotificationBell implements OnInit, OnDestroy {
       this.notificationService.markAsRead(notification.id);
     }
     this.isOpen = false;
-    
+
     // Navigate based on type
     if (notification.type === 'NEW_EPISODE' && notification.episodeId) {
       this.router.navigate(['/episode', notification.episodeId]);
@@ -73,5 +85,9 @@ export class NotificationBell implements OnInit, OnDestroy {
 
   markAllAsRead() {
     this.notificationService.markAllAsRead();
+  }
+
+  loadMore() {
+    this.notificationService.loadNextPage();
   }
 }

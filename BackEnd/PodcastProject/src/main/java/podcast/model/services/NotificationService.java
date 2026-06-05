@@ -1,21 +1,23 @@
 package podcast.model.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import podcast.model.entities.*;
 import podcast.model.entities.dto.NotificationDTO;
 import podcast.model.entities.enums.NotificationType;
-import podcast.model.repositories.NotificationRepository;
+import podcast.model.repositories.interfaces.INotificationRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class NotificationService {
 
     @Autowired
-    private NotificationRepository notificationRepository;
+    private INotificationRepository notificationRepository;
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
@@ -40,10 +42,10 @@ public class NotificationService {
         
         NotificationDTO dto = toDTO(notification);
         
-        // Send over WebSocket
+        // Send over WebSocket — uses credential username to match the authenticated STOMP Principal
         messagingTemplate.convertAndSendToUser(
-                receiver.getNickname(), 
-                "/queue/notifications", 
+                receiver.getCredential().getUsername(),
+                "/queue/notifications",
                 dto
         );
     }
@@ -61,20 +63,24 @@ public class NotificationService {
         }
     }
 
-    public List<NotificationDTO> getNotifications(Long userId) {
-        return notificationRepository.findByReceiverIdOrderByCreatedAtDesc(userId)
-                .stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+    public Page<NotificationDTO> getNotifications(Long userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return notificationRepository.findByReceiverIdOrderByCreatedAtDesc(userId, pageable)
+                .map(this::toDTO);
     }
 
     public Long countUnread(Long userId) {
         return notificationRepository.countByReceiverIdAndIsReadFalse(userId);
     }
 
-    public void markAsRead(Long notificationId) {
+    public void markAsRead(Long notificationId, Long requestingUserId) {
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new RuntimeException("Notification not found"));
+        if (!notification.getReceiver().getId().equals(requestingUserId)) {
+            throw new org.springframework.security.access.AccessDeniedException(
+                    "No tienes permiso para modificar esta notificación"
+            );
+        }
         notification.setRead(true);
         notificationRepository.save(notification);
     }

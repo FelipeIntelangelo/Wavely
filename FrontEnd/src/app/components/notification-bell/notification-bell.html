@@ -16,7 +16,7 @@
             </div>
             
             <div class="dropdown-body">
-                @if (notifications.length === 0) {
+                @if (notifications.length === 0 && !isLoading) {
                     <div class="empty-state">
                         <p>No tienes notificaciones</p>
                     </div>
@@ -27,6 +27,16 @@
                         [notification]="notif"
                         (clicked)="handleNotificationClick($event)">
                     </app-notification-item>
+                }
+
+                @if (isLoading) {
+                    <div class="loading-state">
+                        <p>Cargando...</p>
+                    </div>
+                }
+
+                @if (hasMore && !isLoading) {
+                    <button class="load-more-btn" (click)="loadMore()">Ver más notificaciones</button>
                 }
             </div>
         </div>
