@@ -1,0 +1,5 @@
+export enum RecommendationStrategy {
+  TRENDING = 'TRENDING',
+  CONTENT_BASED = 'CONTENT_BASED',
+  COLLABORATIVE = 'COLLABORATIVE'
+}

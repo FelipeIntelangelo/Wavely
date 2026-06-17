@@ -80,7 +80,7 @@ public class Podcast {
     private List<User> favoritedBy;
 
 
-    Long calcularViewsPromedio() {
+    public Long calcularViewsPromedio() {
         if (episodes == null || episodes.isEmpty()) {
             return 0L;
         }

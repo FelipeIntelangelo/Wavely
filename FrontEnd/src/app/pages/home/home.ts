@@ -7,6 +7,9 @@ import { PodcastSearchDTO } from '../../models/podcast/podcast-search-dto';
 import { UserService } from '../../services/client/user-service';
 import { AuthService } from '../../services/auth/auth.service';
 import { PodcastDTO } from '../../models/podcast/podcast-dto';
+import { RecommendationService } from '../../services/recommendation/recommendation-service';
+import { RecommendationDTO } from '../../models/recommendation/recommendation-dto';
+import { RecommendationStrategy } from '../../models/enums/recommendation-strategy.enum';
 
 interface CarouselState {
   hasBeenClicked: boolean;
@@ -34,24 +37,29 @@ interface PodcastForDisplay {
   styleUrl: './home.css'
 })
 export class Home implements OnInit, AfterViewInit {
+  @ViewChild('recomendacionesWrapper') recomendacionesWrapper!: ElementRef<HTMLElement>;
   @ViewChild('novedadesWrapper') novedadesWrapper!: ElementRef<HTMLElement>;
   @ViewChild('masEscuchadosWrapper') masEscuchadosWrapper!: ElementRef<HTMLElement>;
   @ViewChild('mejoresValoradosWrapper') mejoresValoradosWrapper!: ElementRef<HTMLElement>;
   @ViewChild('favoritosWrapper') favoritosWrapper!: ElementRef<HTMLElement>;
 
   carousels: { [key: string]: CarouselState } = {
+    recomendaciones: { hasBeenClicked: false, atStart: true, atEnd: false },
     novedades: { hasBeenClicked: false, atStart: true, atEnd: false },
     masEscuchados: { hasBeenClicked: false, atStart: true, atEnd: false },
     mejoresValorados: { hasBeenClicked: false, atStart: true, atEnd: false },
     favoritos: { hasBeenClicked: false, atStart: true, atEnd: false },
   };
 
+  recomendacionesPodcasts: PodcastForDisplay[] = [];
+  recomendacionStrategyText: string = 'Recomendaciones para ti';
   novedadesPodcasts: PodcastForDisplay[] = [];
   masEscuchadosPodcasts: PodcastForDisplay[] = [];
   mejoresValoradosPodcasts: PodcastForDisplay[] = [];
   favoritosPodcasts: PodcastForDisplay[] = [];
 
   isLoading = {
+    recomendaciones: false,
     novedades: false,
     masEscuchados: false,
     mejoresValorados: false,
@@ -64,7 +72,8 @@ export class Home implements OnInit, AfterViewInit {
     private alertService: AlertService,
     private podcastService: PodcastService,
     private userService: UserService,
-    private authService: AuthService
+    private authService: AuthService,
+    private recommendationService: RecommendationService
   ) { }
 
   ngOnInit(): void {
@@ -74,6 +83,8 @@ export class Home implements OnInit, AfterViewInit {
       if (isLoggedIn) {
         this.loadFavoritos();
       }
+      // Cargamos recomendaciones solo después de saber si está logueado o no
+      this.loadRecomendaciones();
     });
 
     this.loadPodcasts();
@@ -83,6 +94,44 @@ export class Home implements OnInit, AfterViewInit {
     this.loadNovedades();
     this.loadMasEscuchados();
     this.loadMejoresValorados();
+  }
+
+  loadRecomendaciones(): void {
+    this.isLoading.recomendaciones = true;
+    const request = this.isLoggedIn 
+      ? this.recommendationService.getPersonalized() 
+      : this.recommendationService.getTrending();
+      
+    request.subscribe({
+      next: (recommendations: RecommendationDTO[]) => {
+        this.recomendacionesPodcasts = recommendations.map(r => ({
+          id: r.id,
+          title: r.title,
+          description: r.description,
+          imageUrl: r.imageUrl
+        }));
+        
+        if (recommendations.length > 0) {
+          const strategyTitles: Record<RecommendationStrategy, string> = {
+            [RecommendationStrategy.TRENDING]: 'Tendencias globales',
+            [RecommendationStrategy.CONTENT_BASED]: 'Porque te gustan estas categorías',
+            [RecommendationStrategy.COLLABORATIVE]: 'Recomendados para ti'
+          };
+          this.recomendacionStrategyText = strategyTitles[recommendations[0].strategy] || 'Recomendaciones para ti';
+        }
+
+        this.isLoading.recomendaciones = false;
+        setTimeout(() => {
+          if (this.recomendacionesWrapper) {
+            this.handleScroll('recomendaciones', this.recomendacionesWrapper.nativeElement);
+          }
+        }, 100);
+      },
+      error: (error) => {
+        console.error('Error loading recomendaciones:', error);
+        this.isLoading.recomendaciones = false;
+      }
+    });
   }
 
   loadNovedades(): void {
@@ -208,6 +257,7 @@ export class Home implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     const wrappers = [
+      { key: 'recomendaciones', ref: this.recomendacionesWrapper },
       { key: 'novedades', ref: this.novedadesWrapper },
       { key: 'masEscuchados', ref: this.masEscuchadosWrapper },
       { key: 'mejoresValorados', ref: this.mejoresValoradosWrapper },
@@ -224,6 +274,7 @@ export class Home implements OnInit, AfterViewInit {
   @HostListener('window:resize')
   onResize(): void {
     const wrappers = [
+      { key: 'recomendaciones', ref: this.recomendacionesWrapper },
       { key: 'novedades', ref: this.novedadesWrapper },
       { key: 'masEscuchados', ref: this.masEscuchadosWrapper },
       { key: 'mejoresValorados', ref: this.mejoresValoradosWrapper },
@@ -270,6 +321,7 @@ export class Home implements OnInit, AfterViewInit {
 
   private getWrapperElement(key: string): HTMLElement | null {
     const wrapperMap: { [key: string]: ElementRef<HTMLElement> | undefined } = {
+      'recomendaciones': this.recomendacionesWrapper,
       'novedades': this.novedadesWrapper,
       'masEscuchados': this.masEscuchadosWrapper,
       'mejoresValorados': this.mejoresValoradosWrapper,

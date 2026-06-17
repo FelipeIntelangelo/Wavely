@@ -61,18 +61,42 @@ Cada entidad está mapeada a PostgreSQL mediante JPA (`@Entity`).
 *   **`NotificationService`:** Persiste notificaciones y envía por WebSocket a `/queue/notifications` vía `SimpMessagingTemplate`. El método `getNotifications(userId, page, size)` retorna `Page<NotificationDTO>` usando `INotificationRepository`.
 *   **`AuthService` / `GoogleAuthService`:** Registro y login (Local y Google). Generación de JWT mediante `JwtUtil`.
 *   **`CloudinaryService`:** Sube (`uploadFile`) y elimina (`deleteFile`) archivos multimedia en la nube.
+*   **`RecommendationService`:** Motor de recomendaciones híbrido de tres capas. Selecciona la estrategia dinámicamente según la cantidad de favoritos del usuario: **TRENDING** (0 favoritos), **CONTENT_BASED** (1-5 favoritos) o **COLLABORATIVE** (más de 5). Apoyado por `IRecommendationRepository` con queries SQL nativas.
 
 ### 2.3 Endpoints / Controladores REST (`controller`)
-*   `/api/auth/**`: `POST /register`, `POST /login`, `POST /google`.
-*   `/api/users/**`: `GET /myProfile`, `PATCH /myProfile`, `DELETE /myProfile`, `GET /myFavorites`, `POST /favorites/{id}`. Búsqueda con `?nickname=X`.
-*   `/api/podcasts/**`: `POST /`, `GET /`, `GET /{id}`, `PATCH /{id}`, `DELETE /{id}`.
-*   `/api/episodes/**`: `POST /`, `GET /{id}`, `PATCH /{id}`, `DELETE /{id}`, `POST /{id}/comments`.
-*   `/api/notifications/**`: `GET /?page=0&size=20` (lista paginada → `Page<NotificationDTO>`), `GET /unread-count`, `PATCH /{id}/read`, `PATCH /read-all`.
+*   `/podcastUTN/v1/auth/**`: `POST /register`, `POST /login`, `POST /google`.
+*   `/podcastUTN/v1/users/**`: `GET /myProfile`, `PATCH /myProfile`, `DELETE /myProfile`, `GET /myFavorites`, `POST /favorites/{id}`. Búsqueda con `?nickname=X`.
+*   `/podcastUTN/v1/podcasts/**`: `POST /`, `GET /`, `GET /{id}`, `PATCH /{id}`, `DELETE /{id}`.
+*   `/podcastUTN/v1/episodes/**`: `POST /`, `GET /{id}`, `PATCH /{id}`, `DELETE /{id}`, `POST /{id}/comments`.
+*   `/podcastUTN/v1/notifications/**`: `GET /?page=0&size=20` (lista paginada → `Page<NotificationDTO>`), `GET /unread-count`, `PATCH /{id}/read`, `PATCH /read-all`.
+*   `/podcastUTN/v1/recommendations/**`: `GET /` (🔒 requiere JWT — recomendaciones personalizadas), `GET /trending` (🌐 público — podcasts más populares). Ambos retornan `List<RecommendationDTO>`.
 *   `/ws/**`: Endpoint WebSocket para STOMP.
 
 ### 2.4 Configuración (`cfg`)
-*   **`SecurityConfig`:** Deshabilita CSRF, habilita CORS, estado `STATELESS`. Rutas GET públicas (podcasts, episodios, usuarios) y WebSocket (`/ws/**`). Filtro JWT (`JwtAuthFilter`).
+*   **`SecurityConfig`:** Deshabilita CSRF, habilita CORS, estado `STATELESS`. Filtro JWT (`JwtAuthFilter`). Ver abajo la lista actualizada de rutas públicas.
 *   **`WebSocketConfig`:** Habilita el broker `/topic` y `/queue`. Prefijo de destino `/app` y destino de usuario `/user`. Endpoint SockJS en `/ws`.
+
+### 2.5 Rutas GET públicas actuales en `SecurityConfig` (`permitAll`)
+
+Esta lista debe mantenerse actualizada cada vez que se agrega o modifica un endpoint público.
+
+```
+GET  /podcastUTN/v1/podcasts
+GET  /podcastUTN/v1/podcasts/{podcastId}
+GET  /podcastUTN/v1/episodes
+GET  /podcastUTN/v1/episodes/{episodeId}
+GET  /podcastUTN/v1/users
+GET  /podcastUTN/v1/users/{userId}
+GET  /podcastUTN/v1/recommendations/trending
+GET  /ws/**
+POST /podcastUTN/v1/users/register
+POST /podcastUTN/v1/auth/login
+POST /podcastUTN/v1/auth/google
+GET  /swagger-ui/**
+GET  /v3/api-docs/**
+```
+
+> ⚠️ `GET /podcastUTN/v1/recommendations` (sin `/trending`) **NO** está en esta lista. Requiere JWT y tiene `@PreAuthorize("isAuthenticated()")` en el controlador.
 
 ---
 
