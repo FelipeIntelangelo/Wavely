@@ -64,7 +64,7 @@ public interface IRecommendationRepository extends JpaRepository<Podcast, Long> 
      * @return Lista de podcasts relevantes por categoría.
      */
     @Query(value = """
-            SELECT DISTINCT p.*
+            SELECT p.*
             FROM podcasts p
             JOIN categoriasxpodcast cp ON cp.podcast_id = p.id
             LEFT JOIN episodes e ON e.podcast_id = p.id
@@ -108,7 +108,7 @@ public interface IRecommendationRepository extends JpaRepository<Podcast, Long> 
      * @return Lista de podcasts ordenados por score colaborativo decreciente.
      */
     @Query(value = """
-            SELECT p.*, COUNT(*) AS collab_score
+            SELECT p.*
             FROM podcasts p
             JOIN favorites uf ON p.id = uf.podcast_id
             WHERE uf.user_id IN (
@@ -126,7 +126,7 @@ public interface IRecommendationRepository extends JpaRepository<Podcast, Long> 
                     SELECT f3.podcast_id FROM favorites f3 WHERE f3.user_id = :userId
               )
             GROUP BY p.id
-            ORDER BY collab_score DESC
+            ORDER BY COUNT(*) DESC
             LIMIT :limit
             """, nativeQuery = true)
     List<Podcast> findCollaborativeRecommendations(
