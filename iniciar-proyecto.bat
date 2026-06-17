@@ -17,8 +17,8 @@ if %errorlevel% neq 0 (
 )
 
 :: Levantar contenedores
-echo [1/2] Iniciando contenedores...
-docker compose up -d
+echo [1/2] Iniciando contenedores y recompilando si hay cambios...
+docker compose up -d --build
 
 if %errorlevel% neq 0 (
     echo [ERROR] Hubo un problema al levantar Docker Compose.

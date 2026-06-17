@@ -66,13 +66,13 @@ public interface IRecommendationRepository extends JpaRepository<Podcast, Long> 
     @Query(value = """
             SELECT p.*
             FROM podcasts p
-            JOIN categoriasxpodcast cp ON cp.podcast_id = p.id
+            JOIN categoriesxpodcast cp ON cp.podcast_id = p.id
             LEFT JOIN episodes e ON e.podcast_id = p.id
             WHERE p.is_active = true
               AND cp.category IN (
                     SELECT cp2.category
                     FROM favorites f
-                    JOIN categoriasxpodcast cp2 ON cp2.podcast_id = f.podcast_id
+                    JOIN categoriesxpodcast cp2 ON cp2.podcast_id = f.podcast_id
                     WHERE f.user_id = :userId
               )
               AND p.id NOT IN (
