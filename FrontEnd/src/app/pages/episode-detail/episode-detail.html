@@ -109,19 +109,30 @@
       }
     </div>
 
-      <!-- Reproductor de video MP4 -->
-      @if (isVideoMp4()) {
-        <div class="video-player-container">
-          <video 
-            #videoPlayer
-            [src]="episode.audioPath" 
-            [poster]="episode.imageUrl || episode.podcast.imageUrl || 'assets/default-episode.png'"
-            controls
-            (play)="onVideoPlayerPlay()"
-            class="episode-video-player">
-            Tu navegador no soporta el elemento de video.
-          </video>
-        </div>
+      <!-- Reproductor de video -->
+      @if (isVideo()) {
+        @if (hideInlinePlayer) {
+          <div class="inline-player-placeholder">
+            <p>Este episodio se está reproduciendo en el reproductor flotante.</p>
+            <button type="button" class="action-button" (click)="showInlinePlayer()">
+              Reproducir aquí
+            </button>
+          </div>
+        } @else {
+          <div class="video-player-container">
+            <video 
+              #videoPlayer
+              [src]="episode.audioPath" 
+              [poster]="episode.imageUrl || episode.podcast.imageUrl || 'assets/default-episode.png'"
+              controls
+              (play)="onVideoPlayerPlay()"
+              (pause)="onVideoPlayerPause()"
+              (timeupdate)="onVideoTimeUpdate($event)"
+              class="episode-video-player">
+              Tu navegador no soporta el elemento de video.
+            </video>
+          </div>
+        }
       }
 
     <!-- Sección Comentarios -->

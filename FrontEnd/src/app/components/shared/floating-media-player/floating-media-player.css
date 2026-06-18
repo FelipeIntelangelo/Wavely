@@ -245,17 +245,13 @@
   cursor: pointer;
   padding: 6px;
   border-radius: 0;
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
   transition: background 0.2s;
   z-index: 10;
   width: 32px;
   height: 32px;
-}
-
-.main-music-card.minimized .minimize-btn {
-  display: flex;
 }
 
 .minimize-btn:hover {
@@ -283,6 +279,174 @@
 
 .close-button:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+/* Video Container and element styles */
+/* Video Container and element styles */
+.video-container {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: #000000;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: block;
+}
+
+/* Gradient overlay at the top of the video container to make absolute text highly visible */
+.video-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 55%;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0) 100%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.video-container video {
+  width: 100%;
+  height: 100%;
+  border: none;
+  object-fit: cover;
+  accent-color: var(--accent) !important;
+}
+
+/* Estilos para los controles nativos del video */
+.video-container video::-webkit-media-controls-panel {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+}
+
+.video-container video::-webkit-media-controls-current-time-display,
+.video-container video::-webkit-media-controls-time-remaining-display {
+  color: #ffffff !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+.video-container video::-webkit-media-controls-timeline {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 0 !important;
+  height: 4px !important;
+}
+
+.video-container video::-webkit-media-controls-timeline::-webkit-media-slider-thumb {
+  background-color: white !important;
+  border-radius: 0 !important;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.5) !important;
+}
+
+.video-container video::-webkit-media-controls-volume-slider {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 0 !important;
+}
+
+.video-container video::-webkit-media-controls-mute-button,
+.video-container video::-webkit-media-controls-play-button,
+.video-container video::-webkit-media-controls-fullscreen-button {
+  background-color: transparent !important;
+  border-radius: 0 !important;
+}
+
+/* Hide video container when player is minimized */
+.main-music-card.minimized .video-container {
+  display: none !important;
+}
+
+/* Overrides for Video Playing State (edge-to-edge layout) */
+.main-music-card.has-video {
+  padding: 0 !important;
+  overflow: hidden;
+  gap: 0 !important;
+  max-width: 440px;
+}
+
+.main-music-card.has-video .track-info {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 3;
+  pointer-events: none;
+  background: transparent;
+  width: calc(100% - 100px);
+}
+
+.main-music-card.has-video .album-art {
+  display: none !important;
+}
+
+.main-music-card.has-video .track-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.main-music-card.has-video .track-title {
+  font-size: 2.1rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.main-music-card.has-video .artist-name {
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.75);
+  text-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.9);
+  pointer-events: auto;
+  margin-top: 0;
+}
+
+/* Float overlay minimize/close buttons on video top right */
+.main-music-card.has-video .close-button,
+.main-music-card.has-video .minimize-btn {
+  top: 16px;
+  background: rgba(0, 0, 0, 0.5) !important;
+  border-radius: 50% !important;
+  color: white;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background-color 0.2s, transform 0.2s;
+  z-index: 10;
+}
+
+.main-music-card.has-video .close-button:hover,
+.main-music-card.has-video .minimize-btn:hover {
+  background: rgba(0, 0, 0, 0.8) !important;
+  transform: scale(1.05);
+}
+
+.main-music-card.has-video .close-button {
+  right: 16px;
+}
+
+.main-music-card.has-video .minimize-btn {
+  right: 56px;
+}
+
+/* Restore normal compact layout on minimize even if it's a video */
+.main-music-card.has-video.minimized {
+  padding: 14px 18px !important;
+  gap: 0 !important;
+}
+
+.main-music-card.has-video.minimized .track-info {
+  position: static !important;
+  width: auto !important;
+}
+
+.main-music-card.has-video.minimized .album-art {
+  display: block !important;
 }
 
 /* Responsive */

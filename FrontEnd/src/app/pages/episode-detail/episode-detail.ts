@@ -7,7 +7,6 @@ import { CommentaryDTO } from '../../models/commentary/commentary-dto';
 import { CommentaryCreateDTO } from '../../models/commentary/commentary-create-dto';
 import { EpisodeHistoryDTO } from '../../models/episode/episode-history-dto';
 import { DatePipe, CommonModule } from '@angular/common';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MediaPlayerService } from '../../services/media-player/media-player.service';
 import { AuthService } from '../../services/auth/auth.service';
 import { UserService } from '../../services/client/user-service';
@@ -25,16 +24,9 @@ export class EpisodeDetail implements OnInit, OnDestroy {
   episode?: Episode;
   isLoading = true;
   episodeId?: number;
-  cachedYouTubeUrl: SafeResourceUrl | null = null;
-  cachedEpisodeId: number | null = null;
   hideInlinePlayer = false;
-  showIframe = false;
-  showAudio = false;
-  showVideo = false;
-  audioPlayBlocked = false;
-  videoPlayBlocked = false;
-  @ViewChild('inlineAudio') inlineAudio?: ElementRef<HTMLAudioElement>;
-  @ViewChild('inlineVideo') inlineVideo?: ElementRef<HTMLVideoElement>;
+  videoCurrentTime = 0;
+  isVideoPlaying = false;
   @ViewChild('videoPlayer') videoPlayer?: ElementRef<HTMLVideoElement>;
   
   // Contador de tiempo manual
@@ -71,7 +63,6 @@ export class EpisodeDetail implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private episodeService: EpisodeService,
     private commentaryService: CommentaryService,
-    private sanitizer: DomSanitizer,
     private mediaPlayerService: MediaPlayerService,
     private authService: AuthService,
     private userService: UserService,
@@ -128,28 +119,21 @@ export class EpisodeDetail implements OnInit, OnDestroy {
       next: (episode) => {
         this.episode = episode;
         this.isLoading = false;
-          this.loadCommentaries(episode.id);
+        this.loadCommentaries(episode.id);
         
         // Verificar si este episodio está reproduciéndose en el flotante
         const playerState = this.mediaPlayerService.playerState();
         if (playerState.isOpen && playerState.episode?.id === episode.id) {
           // El episodio está en el flotante, mostrar mensaje
           this.hideInlinePlayer = true;
-          this.showIframe = false;
           this.viewCounted = playerState.viewCounted;
         } else {
           // Episodio no está en el flotante, resetear estado
           this.hideInlinePlayer = false;
-          this.showIframe = false;
           this.viewCounted = false;
         }
         
-        // Limpiar cache cuando cambia de episodio
-        this.cachedYouTubeUrl = null;
-        this.cachedEpisodeId = null;
         this.estimatedPlaybackTime = 0;
-        this.showAudio = false;
-        this.showVideo = false;
       },
       error: (error) => {
         console.error('Error loading episode:', error);
@@ -219,142 +203,17 @@ export class EpisodeDetail implements OnInit, OnDestroy {
     }
   }
 
-  isYouTubeUrl(url: string): boolean {
-    return url.includes('youtube.com') || url.includes('youtu.be');
-  }
-
-  isCloudinaryVideo(url: string): boolean {
-    if (!url) return false;
-    const lower = url.toLowerCase();
-    if (!lower.includes('cloudinary.com')) return false;
-    // If the URL clearly points to an audio file, treat it as audio even if path contains '/video/'
-    if (lower.includes('.mp3') || lower.includes('.wav') || lower.includes('.m4a') || lower.includes('.ogg')) {
-      return false;
-    }
-    return lower.includes('/video/') || lower.includes('.mp4') || lower.includes('.webm');
-  }
-
-  isVideoMp4(): boolean {
+  isVideo(): boolean {
     if (!this.episode?.audioPath) return false;
     const url = this.episode.audioPath.toLowerCase();
-    
-    // Si es un archivo de audio (MP3, WAV, M4A, OGG), NO mostrar reproductor de video
-    if (url.includes('.mp3') || url.includes('.wav') || url.includes('.m4a') || url.includes('.ogg')) {
+    if (url.includes('.mp3') || url.includes('.wav') || url.includes('.m4a') || url.includes('.ogg') || url.includes('.flac')) {
       return false;
     }
-    
-    // Detectar si es un video MP4
-    return url.includes('.mp4') || (url.includes('cloudinary.com') && (url.includes('/video/') || url.includes('.mp4')));
-  }
-
-  isCloudinaryAudio(url: string): boolean {
-    return url.includes('cloudinary.com') && (url.includes('.mp3') || url.includes('.wav') || url.includes('.m4a'));
-  }
-
-  getYouTubeEmbedUrl(url: string): SafeResourceUrl {
-    // Si ya tenemos el URL cacheado para este episodio, devolverlo
-    if (this.episode && this.cachedEpisodeId === this.episode.id && this.cachedYouTubeUrl) {
-      return this.cachedYouTubeUrl;
-    }
-
-    let videoId = '';
-    
-    // Formato: https://www.youtube.com/watch?v=VIDEO_ID
-    if (url.includes('youtube.com/watch')) {
-      const urlParams = new URLSearchParams(url.split('?')[1]);
-      videoId = urlParams.get('v') || '';
-    }
-    // Formato: https://youtu.be/VIDEO_ID
-    else if (url.includes('youtu.be/')) {
-      videoId = url.split('youtu.be/')[1].split('?')[0];
-    }
-    
-    // Agregar autoplay=1 para que se reproduzca automáticamente
-    this.cachedYouTubeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${videoId}?autoplay=1`);
-    this.cachedEpisodeId = this.episode?.id || null;
-    return this.cachedYouTubeUrl;
-  }
-
-  startInlinePlayback(): void {
-    this.showIframe = true;
-    // Iniciar contador de views solo si el usuario está logeado
-    if (this.isUserLoggedIn) {
-      this.startViewTimer();
-    }
-  }
-
-  startInlineAudio(event?: Event): void {
-    // Duración de la animación del botón (ms). Mantener preview visible mientras anima.
-    const ANIMATION_MS = 1400;
-
-    // Intentamos respetar el gesto del usuario: el input fue clickeado.
-    // Retrasamos la inserción del <audio> para que la animación del botón tenga tiempo de reproducirse.
-    setTimeout(() => {
-      this.showAudio = true;
-
-      // Permitir que Angular renderice el elemento <audio> antes de intentar play()
-      setTimeout(() => {
-        try {
-          const el = this.inlineAudio?.nativeElement;
-          if (el) {
-            const p = el.play();
-            if (p && typeof p.then === 'function') {
-              p.then(() => {
-                // reproducción iniciada correctamente; el evento (playing) disparará los contadores
-              }).catch(() => {
-                // reproducción bloqueada por política del navegador; mostrar fallback para que el usuario vuelva a clicar
-                this.audioPlayBlocked = true;
-                this.showAudio = false;
-                try { if (event) (event.target as HTMLInputElement).checked = false; } catch {}
-              });
-            }
-          }
-        } catch (e) {
-          // ignore
-        }
-      }, 80);
-    }, ANIMATION_MS);
-  }
-
-  startInlineVideo(event?: Event): void {
-    // Wait for the CSS play-button animation (1200ms) plus an extra 500ms
-    const ANIMATION_MS = 1400;
-    setTimeout(() => {
-      this.showVideo = true;
-      // Dejar que Angular renderice
-      setTimeout(() => {
-        try {
-          const el = this.inlineVideo?.nativeElement;
-          if (el) {
-            const p = el.play();
-            if (p && typeof p.then === 'function') {
-              p.then(() => {
-                // reproducción iniciada; onInlineVideoPlay manejará contadores
-              }).catch(() => {
-                // reproducción bloqueada por política del navegador; mostrar fallback
-                this.videoPlayBlocked = true;
-                this.showVideo = false;
-                try { if (event) (event.target as HTMLInputElement).checked = false; } catch {}
-              });
-            }
-          }
-        } catch (e) {}
-      }, 80);
-    }, ANIMATION_MS);
-  }
-
-  onInlineVideoPlay(): void {
-    if (!this.timerInterval) {
-      this.startTimer();
-    }
-    if (this.isUserLoggedIn) {
-      this.startViewTimer();
-    }
+    return url.includes('.mp4') || url.includes('.webm') || url.includes('/video/');
   }
 
   onVideoPlayerPlay(): void {
-    // Cuando se reproduce el video MP4, iniciar el countdown de visualización
-    // Sin abrir el player flotante, solo iniciar el timer de visualización
+    this.isVideoPlaying = true;
     if (!this.timerInterval) {
       this.startTimer();
     }
@@ -363,55 +222,14 @@ export class EpisodeDetail implements OnInit, OnDestroy {
     }
   }
 
-  // Fallback: el usuario hizo un gesto explícito para iniciar la reproducción
-  playNowAudio(): void {
-    this.audioPlayBlocked = false;
-    this.showAudio = true;
-    setTimeout(() => {
-      try {
-        const el = this.inlineAudio?.nativeElement;
-        if (el) {
-          const p = el.play();
-          if (p && typeof p.then === 'function') {
-            p.then(() => { this.audioPlayBlocked = false; }).catch(() => { this.audioPlayBlocked = true; });
-          }
-        }
-      } catch (e) {}
-    }, 80);
+  onVideoPlayerPause(): void {
+    this.isVideoPlaying = false;
   }
 
-  playNowVideo(): void {
-    this.videoPlayBlocked = false;
-    this.showVideo = true;
-    setTimeout(() => {
-      try {
-        const el = this.inlineVideo?.nativeElement;
-        if (el) {
-          const p = el.play();
-          if (p && typeof p.then === 'function') {
-            p.then(() => { this.videoPlayBlocked = false; }).catch(() => { this.videoPlayBlocked = true; });
-          }
-        }
-      } catch (e) {}
-    }, 80);
-  }
-
-  onInlineAudioPlay(): void {
-    // Se dispara cuando el audio realmente comienza a reproducirse
-    if (!this.timerInterval) {
-      this.startTimer();
-    }
-    if (this.isUserLoggedIn) {
-      this.startViewTimer();
-    }
-  }
-
-  onIframeLoad(): void {
-    // Cuando el iframe carga (después de presionar play), iniciamos el contador de tiempo solo si está logeado
-    if (this.isUserLoggedIn) {
-      setTimeout(() => {
-        this.startTimer();
-      }, 2000);
+  onVideoTimeUpdate(event: Event): void {
+    const video = event.target as HTMLVideoElement;
+    if (video) {
+      this.videoCurrentTime = video.currentTime;
     }
   }
 
@@ -462,22 +280,27 @@ export class EpisodeDetail implements OnInit, OnDestroy {
 
   playInFloatingPlayer(): void {
     if (this.episode) {
+      let playbackTime = this.estimatedPlaybackTime;
+      
+      if (this.isVideo()) {
+        playbackTime = this.videoCurrentTime;
+        this.isVideoPlaying = false; // Prevent auto-floating on destroy
+      } else {
+        const el = this.videoPlayer?.nativeElement;
+        if (el) {
+          playbackTime = el.currentTime;
+          try {
+            el.pause();
+          } catch {}
+        }
+      }
+      
       // Detener el timer de tiempo
       this.stopTimer();
       this.hideInlinePlayer = true;
-      // ocultar cualquier player inline
-      this.showIframe = false;
-      this.showAudio = false;
-      this.showVideo = false;
-      // pausar audio inline si está sonando
-      try {
-        this.inlineAudio?.nativeElement.pause();
-        this.inlineVideo?.nativeElement.pause();
-      } catch {}
       
       // Abrir el reproductor flotante
-      // Pasar el estado de viewCounted para evitar contar dos veces
-      this.mediaPlayerService.openPlayer(this.episode, this.estimatedPlaybackTime, true, this.viewCounted);
+      this.mediaPlayerService.openPlayer(this.episode, playbackTime, true, this.viewCounted);
     }
   }
 
@@ -489,6 +312,10 @@ export class EpisodeDetail implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // If the video player was playing, transition to floating player on page navigation
+    if (this.episode && this.isVideo() && this.isVideoPlaying) {
+      this.mediaPlayerService.openPlayer(this.episode, this.videoCurrentTime, true, this.viewCounted);
+    }
     this.stopTimer();
     this.stopViewTimer();
   }
