@@ -80,6 +80,7 @@
   background: #000000;
   border-radius: 0;
   object-fit: contain;
+  accent-color: var(--accent) !important;
 }
 
 /* Estilos para los controles nativos del video */
@@ -1458,4 +1459,34 @@
     width: 40px;
     height: 40px;
   }
+}
+
+/* Placeholder when video is playing in the floating player */
+.inline-player-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  background: rgba(157, 101, 215, 0.05);
+  border: 2px dashed rgba(157, 101, 215, 0.4);
+  margin: 3rem 0;
+  text-align: center;
+  color: var(--text-primary);
+  max-width: clamp(320px, 92%, 920px);
+  border-radius: var(--radius-md);
+}
+
+.inline-player-placeholder p {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-secondary);
+}
+
+.inline-player-placeholder .action-button {
+  background: var(--accent);
+}
+
+.inline-player-placeholder .action-button:hover {
+  background: #7c3aed;
 }

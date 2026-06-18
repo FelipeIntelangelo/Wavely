@@ -1,7 +1,6 @@
-import { Component, computed, ViewChild, ElementRef, AfterViewInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, computed, effect, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MediaPlayerService } from '../../../services/media-player/media-player.service';
 import { EpisodeService } from '../../../services/episode/episode.service';
 import { EpisodeDTO } from '../../../models/episode/episode-dto';
@@ -14,19 +13,16 @@ import { Episode } from '../../../models/episode/episode';
   templateUrl: './floating-media-player.html',
   styleUrl: './floating-media-player.css'
 })
-export class FloatingMediaPlayerComponent implements AfterViewInit, OnDestroy {
+export class FloatingMediaPlayerComponent {
   playerState;
   hasEpisode;
-  cachedEmbedUrl: SafeResourceUrl | null = null;
-  cachedEpisodeId: number | null = null;
   
-  @ViewChild('mediaElement') mediaElement?: ElementRef<HTMLAudioElement | HTMLVideoElement | HTMLIFrameElement>;
+  @ViewChild('mediaElement') mediaElement?: ElementRef<HTMLAudioElement | HTMLVideoElement>;
   
   currentTime = 0;
   duration = 0;
   progressPercentage = 0;
   isPlayingState = false;
-  private updateInterval: any;
   
   episodes: EpisodeDTO[] = [];
   private episodesCache: Map<number, EpisodeDTO[]> = new Map(); // Cache por podcastId
@@ -34,49 +30,24 @@ export class FloatingMediaPlayerComponent implements AfterViewInit, OnDestroy {
   constructor(
     private mediaPlayerService: MediaPlayerService,
     private router: Router,
-    private sanitizer: DomSanitizer,
     private cdr: ChangeDetectorRef,
     private episodeService: EpisodeService
   ) {
     this.playerState = this.mediaPlayerService.playerState;
     this.hasEpisode = computed(() => this.playerState().episode !== null);
-  }
-  
-  ngAfterViewInit() {
-    this.startUpdateInterval();
-    // Cargar episodios cuando se inicializa si hay un episodio
-    if (this.playerState().episode) {
-      this.loadEpisodesForPodcast();
-    }
-    
-    // Observar cambios en el episodio
-    const checkInterval = setInterval(() => {
+
+    // Reactively watch for episode changes to load podcast episodes
+    effect(() => {
       const currentEpisode = this.playerState().episode;
       if (currentEpisode) {
         const podcastId = currentEpisode.podcast?.id;
         if (podcastId) {
-          // Si no tenemos episodios o el podcast cambió
-          if (this.episodes.length === 0 || !this.episodesCache.has(podcastId)) {
-            this.loadEpisodesForPodcast();
-          }
+          this.loadEpisodesForPodcast();
         }
+      } else {
+        this.episodes = [];
       }
-    }, 500);
-    
-    // Limpiar intervalo en destroy
-    if (this.updateInterval) {
-      // Guardar referencia para limpiar en ngOnDestroy
-      (this as any).checkInterval = checkInterval;
-    }
-  }
-  
-  ngOnDestroy() {
-    if (this.updateInterval) {
-      clearInterval(this.updateInterval);
-    }
-    if ((this as any).checkInterval) {
-      clearInterval((this as any).checkInterval);
-    }
+    });
   }
   
   loadEpisodesForPodcast() {
@@ -197,12 +168,6 @@ export class FloatingMediaPlayerComponent implements AfterViewInit, OnDestroy {
   
   
   
-  startUpdateInterval() {
-    this.updateInterval = setInterval(() => {
-      this.updateTime();
-    }, 100);
-  }
-  
   updateTime() {
     const element = this.mediaElement?.nativeElement;
     if (element && 'currentTime' in element && 'duration' in element) {
@@ -219,8 +184,8 @@ export class FloatingMediaPlayerComponent implements AfterViewInit, OnDestroy {
         if (checkbox) {
           checkbox.checked = this.isPlayingState;
         }
-        this.cdr.markForCheck();
       }
+      this.cdr.markForCheck();
     }
   }
   
@@ -230,8 +195,6 @@ export class FloatingMediaPlayerComponent implements AfterViewInit, OnDestroy {
 
   closePlayer() {
     this.mediaPlayerService.closePlayer();
-    this.cachedEmbedUrl = null;
-    this.cachedEpisodeId = null;
   }
 
   toggleMinimize() {
@@ -245,10 +208,6 @@ export class FloatingMediaPlayerComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  isYouTubeUrl(url: string): boolean {
-    return url.includes('youtube.com') || url.includes('youtu.be');
-  }
-
   goToPodcast() {
     const ep = this.playerState().episode;
     const podcastId = ep?.podcast?.id;
@@ -257,40 +216,13 @@ export class FloatingMediaPlayerComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  isCloudinaryVideo(url: string): boolean {
-    return url.includes('cloudinary.com') && (url.includes('/video/') || url.includes('.mp4') || url.includes('.webm'));
-  }
-
-  isCloudinaryAudio(url: string): boolean {
-    return url.includes('cloudinary.com') && (url.includes('.mp3') || url.includes('.wav') || url.includes('.m4a'));
-  }
-
-  getYouTubeEmbedUrl(url: string): SafeResourceUrl {
-    const episode = this.playerState().episode;
-    const state = this.playerState();
-    
-    if (episode && this.cachedEpisodeId === episode.id && this.cachedEmbedUrl) {
-      return this.cachedEmbedUrl;
+  isVideo(url: string): boolean {
+    if (!url) return false;
+    const lower = url.toLowerCase();
+    if (lower.includes('.mp3') || lower.includes('.wav') || lower.includes('.m4a') || lower.includes('.ogg') || lower.includes('.flac')) {
+      return false;
     }
-
-    let videoId = '';
-    
-    if (url.includes('youtube.com/watch')) {
-      const urlParams = new URLSearchParams(url.split('?')[1]);
-      videoId = urlParams.get('v') || '';
-    } else if (url.includes('youtu.be/')) {
-      videoId = url.split('youtu.be/')[1].split('?')[0];
-    }
-    
-    // Agregar startTime y autoplay
-    const startParam = state.startTime > 0 ? `&start=${Math.floor(state.startTime)}` : '';
-    const autoplayParam = state.autoplay ? '&autoplay=1' : '';
-    
-    this.cachedEmbedUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-      `https://www.youtube.com/embed/${videoId}?enablejsapi=1${startParam}${autoplayParam}`
-    );
-    this.cachedEpisodeId = episode?.id || null;
-    return this.cachedEmbedUrl;
+    return lower.includes('.mp4') || lower.includes('.webm') || lower.includes('/video/');
   }
   
   togglePlayPause(event: Event) {
@@ -340,14 +272,6 @@ export class FloatingMediaPlayerComponent implements AfterViewInit, OnDestroy {
     const checkbox = document.getElementById('play-toggle') as HTMLInputElement;
     if (checkbox) {
       checkbox.checked = false;
-    }
-  }
-  
-  onIframeLoad() {
-    // Para YouTube iframe, la duración se obtiene de otra forma
-    // Por ahora, usamos un valor por defecto
-    if (!this.duration) {
-      this.duration = 300; // 5 minutos por defecto
     }
   }
   

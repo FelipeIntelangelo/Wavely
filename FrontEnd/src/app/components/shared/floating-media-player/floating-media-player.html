@@ -1,5 +1,7 @@
 @if (playerState().isOpen && playerState().episode) {
-  <div class="main-music-card" [class.minimized]="playerState().isMinimized">
+  <div class="main-music-card" 
+       [class.minimized]="playerState().isMinimized"
+       [class.has-video]="isVideo(playerState().episode!.audioPath)">
     <input 
       type="checkbox" 
       id="play-toggle" 
@@ -13,6 +15,35 @@
         <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
       </svg>
     </button>
+
+    <!-- Media elements (always kept in DOM so minimization doesn't interrupt playback) -->
+    @if (isVideo(playerState().episode!.audioPath)) {
+      <div class="video-container">
+        <video 
+          #mediaElement
+          [src]="playerState().episode!.audioPath"
+          [autoplay]="playerState().autoplay"
+          controls
+          (loadedmetadata)="onMetadataLoaded()"
+          (timeupdate)="onTimeUpdate()"
+          (play)="onPlay()"
+          (ended)="onEnded()">
+          Tu navegador no soporta el elemento de video.
+        </video>
+      </div>
+    } @else {
+      <audio 
+        #mediaElement
+        [src]="playerState().episode!.audioPath" 
+        [autoplay]="playerState().autoplay"
+        (loadedmetadata)="onMetadataLoaded()"
+        (timeupdate)="onTimeUpdate()"
+        (play)="onPlay()"
+        (ended)="onEnded()"
+        style="display: none;">
+        Tu navegador no soporta el elemento de audio.
+      </audio>
+    }
 
     <div class="track-info">
       <div class="album-art">
@@ -29,7 +60,7 @@
       </div>
     </div>
 
-    @if (!playerState().isMinimized) {
+    @if (!playerState().isMinimized && !isVideo(playerState().episode!.audioPath)) {
       <div class="playback-controls">
         <div class="time-info">
           <span class="current-time">{{ formatTime(currentTime) }}</span>
@@ -95,40 +126,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Media player (hidden, solo para control) -->
-      @if (isCloudinaryVideo(playerState().episode!.audioPath)) {
-        <video 
-          #mediaElement
-          [src]="playerState().episode!.audioPath"
-          [autoplay]="playerState().autoplay"
-          (loadedmetadata)="onMetadataLoaded()"
-          (timeupdate)="onTimeUpdate()"
-          (play)="onPlay()"
-          (ended)="onEnded()"
-          style="display: none;">
-          Tu navegador no soporta el elemento de video.
-        </video>
-      } @else if (isYouTubeUrl(playerState().episode!.audioPath)) {
-        <iframe 
-          #mediaElement
-          [src]="getYouTubeEmbedUrl(playerState().episode!.audioPath)" 
-          style="display: none;"
-          (load)="onIframeLoad(); onPlay()">
-        </iframe>
-      } @else {
-        <audio 
-          #mediaElement
-          [src]="playerState().episode!.audioPath" 
-          [autoplay]="playerState().autoplay"
-          (loadedmetadata)="onMetadataLoaded()"
-          (timeupdate)="onTimeUpdate()"
-          (play)="onPlay()"
-          (ended)="onEnded()"
-          style="display: none;">
-          Tu navegador no soporta el elemento de audio.
-        </audio>
-      }
     }
 
     <!-- Botón para minimizar/expandir -->
