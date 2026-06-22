@@ -911,3 +911,6 @@
 }
 
 
+.episodes-list .episode-card {
+  overflow: visible;
+}

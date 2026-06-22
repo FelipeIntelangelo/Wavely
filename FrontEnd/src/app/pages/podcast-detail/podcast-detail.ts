@@ -8,10 +8,11 @@ import { User } from '../../models/user/user';
 import { EpisodeService } from '../../services/episode/episode.service';
 import { EpisodeDTO } from '../../models/episode/episode-dto';
 import { DatePipe } from '@angular/common';
+import { AddToPlaylistComponent } from '../../components/shared/add-to-playlist/add-to-playlist';
 
 @Component({
   selector: 'app-podcast-detail',
-  imports: [DatePipe, RouterLink],
+  imports: [DatePipe, RouterLink, AddToPlaylistComponent],
   templateUrl: './podcast-detail.html',
   styleUrl: './podcast-detail.css'
 })

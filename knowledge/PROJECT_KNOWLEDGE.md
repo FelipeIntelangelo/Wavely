@@ -150,3 +150,11 @@ Rutas principales configuradas en `app.routes.ts`:
 1.  **Imágenes y Audios:** El frontend utiliza `FormData` para enviar objetos `File` al backend (`PodcastController` / `EpisodeController`), que a su vez se encarga de subir el archivo binario a Cloudinary y guarda en la base de datos la URL segura (`https://res.cloudinary.com/...`).
 2.  **Seguridad CORS:** El backend en `SecurityConfig` (o `WebConfig`) permite orígenes que coincidan con `http://localhost:4200` o la IP de Angular, además de exponer endpoints `GET` críticos como públicos, asegurando `POST/PATCH/DELETE` solo a usuarios autenticados con su token Bearer extraído por el filtro de seguridad de Spring.
 3.  **Roles de Sistema:** Por defecto, cualquier usuario es `ROLE_USER`. Para crear podcasts o episodios, es altamente probable que el frontend o el backend restrinja el acceso con `ROLE_CREATOR` o `ROLE_ADMIN`, basado en la autoridad extraída del JWT.
+
+---
+
+## 5. Playlists mixtas
+
+Los usuarios autenticados pueden crear hasta 20 playlists privadas con podcasts y episodios. El modelo utiliza `Playlist` + `PlaylistItem`, evita duplicados, ordena por fecha de agregado y valida siempre la propiedad de la playlist. La creación puede incluir el primer contenido de forma atómica. El detalle pagina sus elementos con 20 resultados por defecto y un máximo de 100 por solicitud.
+
+El frontend expone el selector reutilizable `AddToPlaylistComponent` y la ruta `/playlists`. El contrato completo, decisiones y endpoints se encuentran en `knowledge/playlist_docs.md`.

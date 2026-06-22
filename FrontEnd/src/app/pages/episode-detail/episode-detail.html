@@ -18,7 +18,8 @@
         <div class="title-meta">
           <div class="meta-header-actions">
             <span class="episode-badge">S{{ episode.season }} · E{{ episode.chapter }}</span>
-            
+            <app-add-to-playlist contentType="EPISODE" [contentId]="episode.id"></app-add-to-playlist>
+
             @if (canDeleteEpisode()) {
               <div class="actions-buttons">
                 <button type="button" class="edit-episode-btn" [routerLink]="['/episode', episode.id, 'edit']" title="Editar episodio" aria-label="Editar episodio">

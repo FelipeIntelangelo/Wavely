@@ -16,6 +16,7 @@ import { AddEpisodePage } from './pages/add-episode/add-episode';
 import { EditEpisodePage } from './pages/edit-episode/edit-episode';
 import { FavoritesComponent } from './pages/favorites/favorites';
 import { HistoryComponent } from './pages/history/history';
+import { PlaylistsComponent } from './pages/playlists/playlists';
 
 export const routes: Routes = [
     {path: "", component: Home},
@@ -36,5 +37,6 @@ export const routes: Routes = [
     {path: "explore/:category", component: CategoryPodcasts},
     {path: "myPodcasts", component: MyPodcasts},
     {path: "favorites", component: FavoritesComponent},
-    {path: "history", component: HistoryComponent}
+    {path: "history", component: HistoryComponent},
+    {path: "playlists", component: PlaylistsComponent}
 ];

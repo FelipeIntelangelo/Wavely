@@ -1,0 +1,111 @@
+<section class="playlists-page">
+  <header class="page-header">
+    <div>
+      <span class="eyebrow">TU BIBLIOTECA</span>
+      <h1>Playlists</h1>
+    </div>
+    <button
+      type="button"
+      class="btn-primary"
+      [class.limit-reached]="playlists.length >= maxPlaylists"
+      (click)="toggleCreateForm()"
+      [attr.aria-disabled]="playlists.length >= maxPlaylists"
+      [attr.title]="playlists.length >= maxPlaylists ? 'Alcanzaste el límite de 20 playlists' : 'Crear playlist'">
+      <i class="fas fa-plus"></i>
+      Nueva playlist
+    </button>
+  </header>
+
+  @if (showCreateForm) {
+    <form class="create-panel" (submit)="createPlaylist()">
+      <input type="text" name="name" [(ngModel)]="newName" maxlength="80" placeholder="Nombre" required>
+      <textarea name="description" [(ngModel)]="newDescription" maxlength="300" placeholder="Descripción opcional"></textarea>
+      <div class="form-actions">
+        <button type="button" (click)="showCreateForm = false">Cancelar</button>
+        <button type="submit" class="btn-primary" [disabled]="!newName.trim()">Crear</button>
+      </div>
+    </form>
+  }
+
+  @if (isLoading) {
+    <div class="empty-state">Cargando playlists...</div>
+  } @else if (playlists.length === 0) {
+    <div class="empty-state">
+      <i class="fas fa-list-ul"></i>
+      <h2>Todavía no tenés playlists</h2>
+      <p>Creá una desde acá o usá el botón "+" de cualquier podcast o episodio.</p>
+    </div>
+  } @else {
+    <div class="playlist-layout">
+      <aside class="playlist-list">
+        @for (playlist of playlists; track playlist.id) {
+          <button
+            type="button"
+            class="playlist-list-item"
+            [class.active]="selectedPlaylist?.id === playlist.id"
+            (click)="selectPlaylist(playlist.id)">
+            <span>{{ playlist.name }}</span>
+            <small>{{ playlist.itemCount }} elementos</small>
+          </button>
+        }
+      </aside>
+
+      <div class="playlist-detail">
+        @if (isLoadingDetail) {
+          <div class="empty-state">Cargando contenido...</div>
+        } @else if (selectedPlaylist) {
+          <div class="playlist-detail-header">
+            <div>
+              <h2>{{ selectedPlaylist.name }}</h2>
+              @if (selectedPlaylist.description) {
+                <p>{{ selectedPlaylist.description }}</p>
+              }
+            </div>
+            <button type="button" class="delete-playlist" (click)="deletePlaylist(selectedPlaylist)" title="Eliminar playlist">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+
+          @if (selectedPlaylist.items.content.length === 0) {
+            <div class="empty-state compact">Esta playlist está vacía.</div>
+          } @else {
+            <div class="playlist-items">
+              @for (item of selectedPlaylist.items.content; track item.id) {
+                <article class="playlist-item" (click)="openItem(item)">
+                  <div class="item-image">
+                    @if (item.imageUrl) {
+                      <img [src]="item.imageUrl" [alt]="item.title" (error)="imageFallback($event)">
+                    }
+                    <i [class]="item.type === 'PODCAST' ? 'fas fa-microphone' : 'fas fa-play'"></i>
+                  </div>
+                  <div class="item-content">
+                    <span class="item-type">{{ item.type === 'PODCAST' ? 'Podcast' : 'Episodio' }}</span>
+                    <h3>{{ item.title }}</h3>
+                    @if (item.podcastTitle) {
+                      <small>{{ item.podcastTitle }}</small>
+                    }
+                    <p>{{ item.description }}</p>
+                  </div>
+                  <div class="item-stats">
+                    <span><i class="fas fa-eye"></i> {{ item.views || 0 }}</span>
+                    <span><i class="fas fa-star"></i> {{ item.rating || 0 }}</span>
+                  </div>
+                  <button type="button" class="remove-item" (click)="removeItem(item, $event)" title="Quitar de la playlist">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </article>
+              }
+            </div>
+            @if (!selectedPlaylist.items.last) {
+              <div class="load-more-container">
+                <button type="button" class="btn-primary" (click)="loadMore()" [disabled]="isLoadingMore">
+                  {{ isLoadingMore ? 'Cargando...' : 'Ver más' }}
+                </button>
+              </div>
+            }
+          }
+        }
+      </div>
+    </div>
+  }
+</section>
