@@ -35,16 +35,52 @@
           </div>
         </div>
         
-        <a [routerLink]="['/profile', podcast.user.id]" class="creator-link-main">
-          <div class="creator-avatar-small">
-            @if (podcast.user.profilePicture) {
-              <img [src]="podcast.user.profilePicture" [alt]="podcast.user.nickname">
-            } @else {
-              <div class="avatar-fallback-small">{{ getUserInitial() }}</div>
-            }
-          </div>
-          <span class="creator-name">{{ podcast.user.nickname }}</span>
-        </a>
+        <div class="creator-section">
+          <a [routerLink]="['/profile', podcast.user.id]" class="creator-link-main">
+            <div class="creator-avatar-small">
+              @if (podcast.user.profilePicture) {
+                <img [src]="podcast.user.profilePicture" [alt]="podcast.user.nickname">
+              } @else {
+                <div class="avatar-fallback-small">{{ getUserInitial() }}</div>
+              }
+            </div>
+            <span class="creator-name">{{ podcast.user.nickname }}</span>
+          </a>
+          @if (currentUser && podcast.user.id !== currentUser.id) {
+            <div class="creator-follow-actions">
+              <button
+                type="button"
+                id="btn-follow-creator"
+                class="follow-button-small"
+                [class.following]="followStatus?.isFollowing"
+                (click)="toggleFollowCreator()">
+                @if (followStatus?.isFollowing) {
+                  <i class="fas fa-user-check"></i>
+                  <span>Following</span>
+                } @else {
+                  <i class="fas fa-user-plus"></i>
+                  <span>Follow</span>
+                }
+              </button>
+              @if (followStatus?.isFollowing) {
+                <button
+                  type="button"
+                  id="btn-bell-creator"
+                  class="bell-button-small"
+                  [class.active]="followStatus?.bellEnabled"
+                  [title]="followStatus?.bellEnabled ? 'Desactivar notificaciones' : 'Activar notificaciones'"
+                  (click)="toggleBellCreator()">
+                  @if (followStatus?.bellEnabled) {
+                    <i class="fas fa-bell"></i>
+                  } @else {
+                    <i class="far fa-bell"></i>
+                  }
+                </button>
+              }
+            </div>
+          }
+        </div>
+
         <div class="podcast-stats-main">
           <div class="stat-item-main">
             <span class="icon-star"></span>

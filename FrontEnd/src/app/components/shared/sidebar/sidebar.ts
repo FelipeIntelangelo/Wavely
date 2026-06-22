@@ -22,6 +22,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private allNavItems: NavItem[] = [
     { label: 'Home', route: '/', icon: 'fas fa-home' },
     { label: 'Explore', route: '/explore', icon: 'fas fa-compass' },
+    { label: 'Following', route: '/following', icon: 'fas fa-users' },
     { label: 'My Podcasts', route: '/myPodcasts', icon: 'fas fa-microphone' },
     { label: 'Favorites', route: '/favorites', icon: 'fas fa-heart' },
     { label: 'Playlists', route: '/playlists', icon: 'fas fa-list-ul' },
@@ -54,9 +55,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
       // Mostrar todos los items cuando está logueado
       this.navItems = [...this.allNavItems];
     } else {
-      // Ocultar My Podcasts, Favorites e History cuando no está logueado
+      // Ocultar rutas protegidas cuando no está logueado
       this.navItems = this.allNavItems.filter(
-        item => item.label !== 'My Podcasts' && item.label !== 'Favorites' && item.label !== 'Playlists' && item.label !== 'History'
+        item => !['Following', 'My Podcasts', 'Favorites', 'Playlists', 'History'].includes(item.label)
       );
     }
   }

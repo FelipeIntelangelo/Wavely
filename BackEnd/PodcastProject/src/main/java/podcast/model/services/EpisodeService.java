@@ -28,6 +28,7 @@ private final IPodcastRepository podcastRepository;
 private final IEpisodeHistoryRepository episodeHistoryRepository;
 private final IUserRepository userRepository;
 private final ICommentaryRepository commentaryRepository;
+private final IUserFollowRepository userFollowRepository;
 private final CloudinaryService cloudinaryService;
 private final NotificationService notificationService;
 
@@ -37,6 +38,7 @@ private final NotificationService notificationService;
                           IEpisodeHistoryRepository episodeHistoryRepository,
                           IUserRepository userRepository,
                           ICommentaryRepository commentaryRepository,
+                          IUserFollowRepository userFollowRepository,
                           CloudinaryService cloudinaryService,
                           NotificationService notificationService) {
         this.episodeRepository = episodeRepository;
@@ -44,6 +46,7 @@ private final NotificationService notificationService;
         this.episodeHistoryRepository = episodeHistoryRepository;
         this.userRepository = userRepository;
         this.commentaryRepository = commentaryRepository;
+        this.userFollowRepository = userFollowRepository;
         this.cloudinaryService = cloudinaryService;
         this.notificationService = notificationService;
     }
@@ -177,6 +180,22 @@ private final NotificationService notificationService;
         }
         return filtered;
     }
+
+    public Page<Episode> getFeedForUser(String username, Pageable pageable) {
+        User user = userRepository.findByCredentialUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found with username: " + username));
+        
+        List<Long> followedIds = userFollowRepository.findByFollowerId(user.getId()).stream()
+                .map(f -> f.getFollowed().getId())
+                .toList();
+
+        if (followedIds.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+        return episodeRepository.findByPodcast_User_IdInOrderByPublicationDateDesc(followedIds, pageable);
+    }
+    
     public void commentEpisode(Long episodeId, String comment, String username) {
         if (comment == null || comment.isBlank()) {
             throw new IllegalArgumentException("Comment cannot be null or blank");

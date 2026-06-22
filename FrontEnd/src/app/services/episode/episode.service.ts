@@ -33,6 +33,13 @@ export class EpisodeService {
     );
   }
 
+  getFeed(page: number = 0, size: number = 10): Observable<PageResponse<EpisodeDTO>> {
+    return this.http.get<PageResponse<EpisodeDTO>>(`${this.API_URL}/feed?page=${page}&size=${size}`).pipe(
+      catchError(this.errorHandler.handleError.bind(this.errorHandler))
+    );
+  }
+
+
   getById(episodeId: number): Observable<Episode> {
     return this.http.get<Episode>(`${this.API_URL}/${episodeId}`).pipe(
       catchError(this.errorHandler.handleError.bind(this.errorHandler))

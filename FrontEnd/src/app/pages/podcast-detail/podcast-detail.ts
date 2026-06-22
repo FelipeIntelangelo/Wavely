@@ -9,6 +9,8 @@ import { EpisodeService } from '../../services/episode/episode.service';
 import { EpisodeDTO } from '../../models/episode/episode-dto';
 import { DatePipe } from '@angular/common';
 import { AddToPlaylistComponent } from '../../components/shared/add-to-playlist/add-to-playlist';
+import { FollowService } from '../../services/follow/follow-service';
+import { FollowStatusDTO } from '../../models/user/follow-status-dto';
 
 @Component({
   selector: 'app-podcast-detail',
@@ -20,14 +22,15 @@ export class PodcastDetail implements OnInit{
   podcast?: PodcastModel;
   isLoading = true;
   podcastId?: number;
-  isFavorited = false; // estado local temporal hasta integrar backend
+  isFavorited = false;
   currentUser?: User;
   isAdmin = false;
   episodes: EpisodeDTO[] = [];
   isLoadingEpisodes = false;
   showCategoriesPopup = false;
-  selectedSeason: number = 0; // 0 = todas las temporadas
+  selectedSeason: number = 0;
   availableSeasons: number[] = [];
+  followStatus: FollowStatusDTO | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -35,7 +38,8 @@ export class PodcastDetail implements OnInit{
     private userService: UserService,
     private alertService: AlertService,
     private router: Router,
-    private episodeService: EpisodeService
+    private episodeService: EpisodeService,
+    private followService: FollowService
   ){}
 
   ngOnInit(): void {
@@ -60,6 +64,9 @@ export class PodcastDetail implements OnInit{
         this.currentUser = user;
         this.isAdmin = user.credential.roles.includes('ADMIN');
         this.loadFavoriteStatus();
+        if (this.podcast) {
+          this.loadFollowStatus();
+        }
       },
       error: () => {
         this.currentUser = undefined;
@@ -88,6 +95,9 @@ export class PodcastDetail implements OnInit{
         this.podcast = podcast;
         this.isLoading = false;
         this.loadEpisodes(id);
+        if (this.currentUser) {
+          this.loadFollowStatus();
+        }
       },
       error: (error) => {
         console.error('Error loading podcast:', error);
@@ -262,6 +272,54 @@ export class PodcastDetail implements OnInit{
   editEpisode(episode: EpisodeDTO, event: Event): void {
     event.stopPropagation();
     this.router.navigate(['/episode', episode.id, 'edit']);
+  }
+
+  loadFollowStatus(): void {
+    if (!this.currentUser || !this.podcast) return;
+    if (this.currentUser.id === this.podcast.user.id) return; // no cargar si es el creador
+    this.followService.getFollowStatus(this.podcast.user.id).subscribe({
+      next: (status) => {
+        this.followStatus = status;
+      },
+      error: () => {
+        this.followStatus = null;
+      }
+    });
+  }
+
+  toggleFollowCreator(): void {
+    if (!this.podcast || !this.currentUser) return;
+    const creatorId = this.podcast.user.id;
+
+    if (this.followStatus?.isFollowing) {
+      this.followService.unfollowUser(creatorId).subscribe({
+        next: () => {
+          this.followStatus = { isFollowing: false, bellEnabled: false, followersCount: (this.followStatus?.followersCount ?? 1) - 1 };
+        },
+        error: (err) => this.alertService.error('Error', err.message || 'No se pudo dejar de seguir')
+      });
+    } else {
+      this.followService.followUser(creatorId).subscribe({
+        next: () => {
+          this.followStatus = { isFollowing: true, bellEnabled: false, followersCount: (this.followStatus?.followersCount ?? 0) + 1 };
+        },
+        error: (err) => this.alertService.error('Error', err.message || 'No se pudo seguir al creador')
+      });
+    }
+  }
+
+  toggleBellCreator(): void {
+    if (!this.podcast || !this.followStatus?.isFollowing) return;
+    const creatorId = this.podcast.user.id;
+
+    this.followService.toggleBell(creatorId).subscribe({
+      next: (res) => {
+        if (this.followStatus) {
+          this.followStatus = { ...this.followStatus, bellEnabled: res.bellEnabled };
+        }
+      },
+      error: (err) => this.alertService.error('Error', err.message || 'No se pudo actualizar la campanita')
+    });
   }
 
   onImageError(event: Event): void {

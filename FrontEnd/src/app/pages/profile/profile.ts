@@ -11,6 +11,8 @@ import { PodcastService } from '../../services/podcast/podcast-service';
 import { PodcastTotalDTO } from '../../models/podcast/podcast-total-dto';
 import { PodcastDTO } from '../../models/podcast/podcast-dto';
 import { catchError } from 'rxjs/operators';
+import { FollowService } from '../../services/follow/follow-service';
+import { FollowStatusDTO } from '../../models/user/follow-status-dto';
 
 @Component({
   selector: 'app-profile',
@@ -29,15 +31,17 @@ export class Profile implements OnInit, OnDestroy {
   activeTab: 'podcasts' | 'favorites' = 'podcasts';
   podcastsData: PodcastTotalDTO[] = [];
   favoritesData: PodcastDTO[] = [];
+  followStatus: FollowStatusDTO | null = null;
   private sub = new Subscription();
 
   constructor(
-    private userService: UserService, 
+    private userService: UserService,
     private route: ActivatedRoute,
     private authService: AuthService,
     private router: Router,
     private alertService: AlertService,
-    private podcastService: PodcastService
+    private podcastService: PodcastService,
+    private followService: FollowService
   ) {}
 
   ngOnInit(): void {
@@ -175,22 +179,70 @@ export class Profile implements OnInit, OnDestroy {
 
   private handleLoadSuccess(data: User | UserSearchDTO, shouldScroll: boolean): void {
     this.user = data;
-    
+
     // Cargar podcasts siempre
     if (this.isOwnProfile) {
-      // Si es el perfil propio, usar getMyPodcasts y getMyFavorites
       this.loadMyPodcasts();
       this.loadMyFavorites();
     } else {
-      // Si es otro usuario, buscar podcasts por userId
       this.loadUserPodcasts(data.id);
     }
     
+    // Cargar siempre el status de seguimiento para tener la cantidad de seguidores
+    this.loadFollowStatus(data.id);
+
     this.isLoading = false;
-    
+
     if (shouldScroll) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+  }
+
+  loadFollowStatus(userId: number): void {
+    if (!this.currentUserId) return;
+    this.followService.getFollowStatus(userId).subscribe({
+      next: (status) => {
+        this.followStatus = status;
+      },
+      error: () => {
+        this.followStatus = null;
+      }
+    });
+  }
+
+  toggleFollow(): void {
+    if (!this.user) return;
+    const userId = this.user.id;
+
+    if (this.followStatus?.isFollowing) {
+      this.followService.unfollowUser(userId).subscribe({
+        next: () => {
+          this.followStatus = { isFollowing: false, bellEnabled: false, followersCount: (this.followStatus?.followersCount ?? 1) - 1 };
+        },
+        error: (err) => this.alertService.error('Error', err.message || 'No se pudo dejar de seguir')
+      });
+    } else {
+      this.followService.followUser(userId).subscribe({
+        next: () => {
+          this.followStatus = { isFollowing: true, bellEnabled: false, followersCount: (this.followStatus?.followersCount ?? 0) + 1 };
+        },
+        error: (err) => this.alertService.error('Error', err.message || 'No se pudo seguir al creador')
+      });
+    }
+  }
+
+  toggleBell(): void {
+    if (!this.user || !this.followStatus?.isFollowing) return;
+    const userId = this.user.id;
+
+    this.followService.toggleBell(userId).subscribe({
+      next: (res) => {
+        if (this.followStatus) {
+          this.followStatus = { ...this.followStatus, bellEnabled: res.bellEnabled };
+        }
+      },
+      error: (err) => this.alertService.error('Error', err.message || 'No se pudo actualizar la campanita')
+    });
   }
 
   private loadMyPodcasts(): void {

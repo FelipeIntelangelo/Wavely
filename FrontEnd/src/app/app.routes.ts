@@ -17,6 +17,8 @@ import { EditEpisodePage } from './pages/edit-episode/edit-episode';
 import { FavoritesComponent } from './pages/favorites/favorites';
 import { HistoryComponent } from './pages/history/history';
 import { PlaylistsComponent } from './pages/playlists/playlists';
+import { FollowingComponent } from './pages/following/following';
+import { FollowersComponent } from './pages/followers/followers';
 
 export const routes: Routes = [
     {path: "", component: Home},
@@ -38,5 +40,7 @@ export const routes: Routes = [
     {path: "myPodcasts", component: MyPodcasts},
     {path: "favorites", component: FavoritesComponent},
     {path: "history", component: HistoryComponent},
-    {path: "playlists", component: PlaylistsComponent}
+    {path: "playlists", component: PlaylistsComponent},
+    {path: "following", component: FollowingComponent},
+    {path: "profile/:id/followers", component: FollowersComponent}
 ];

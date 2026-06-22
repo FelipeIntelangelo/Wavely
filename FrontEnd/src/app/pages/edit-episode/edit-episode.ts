@@ -144,12 +144,16 @@ export class EditEpisodePage implements OnInit {
     if (!this.detectedDuration) return 'No detectada';
     const hours = Math.floor(this.detectedDuration / 3600);
     const minutes = Math.floor((this.detectedDuration % 3600) / 60);
-    const seconds = this.detectedDuration % 60;
-    const parts = [];
-    if (hours > 0) parts.push(`${hours}h`);
-    if (minutes > 0) parts.push(`${minutes}m`);
-    if (seconds > 0) parts.push(`${seconds}s`);
-    return parts.join(' ') || '0s';
+    const seconds = Math.floor(this.detectedDuration % 60);
+    
+    if (hours > 0) {
+      return minutes > 0 ? `${hours}hr ${minutes}m` : `${hours}hr`;
+    } else if (minutes > 0) {
+      return seconds > 0 ? `${minutes} min ${seconds}` : `${minutes} min`;
+    } else if (seconds > 0) {
+      return `${seconds}s`;
+    }
+    return '0s';
   }
 
   async submit() {

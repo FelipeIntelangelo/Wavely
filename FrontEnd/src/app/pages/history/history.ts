@@ -3,11 +3,12 @@ import { UserService } from '../../services/client/user-service';
 import { EpisodeHistoryDTO } from '../../models/episode/episode-history-dto';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { DurationPipe } from '../../pipes/duration.pipe';
 
 @Component({
   selector: 'app-history',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, DurationPipe],
   templateUrl: './history.html',
   styleUrl: './history.css'
 })
