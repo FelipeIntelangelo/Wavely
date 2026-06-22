@@ -1,0 +1,170 @@
+:host {
+  display: inline-block;
+  position: relative;
+  z-index: 20;
+}
+
+.playlist-picker {
+  position: relative;
+}
+
+.playlist-add-button {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  color: white;
+  background: #282828;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: 0.2s ease;
+}
+
+.playlist-add-button:hover {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  transform: scale(1.05);
+}
+
+.playlist-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  width: 280px;
+  max-height: 360px;
+  overflow-y: auto;
+  background: #1d1a20;
+  border: 1px solid rgba(157, 101, 215, 0.5);
+  border-radius: 0.75rem;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.55);
+  padding: 0.65rem;
+  color: white;
+  cursor: default;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  .playlist-menu {
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color) transparent;
+  }
+}
+
+.playlist-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.playlist-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.playlist-menu::-webkit-scrollbar-button {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+  width: 0;
+  height: 0;
+  background: transparent;
+  border: 0;
+}
+
+.playlist-menu::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 999px;
+}
+
+.playlist-menu-header {
+  padding: 0.4rem 0.5rem 0.75rem;
+  font-weight: 700;
+}
+
+.playlist-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.playlist-option,
+.create-playlist-button {
+  width: 100%;
+  border: 0;
+  color: white;
+  background: transparent;
+  border-radius: 0.5rem;
+  padding: 0.7rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.playlist-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.playlist-option small {
+  color: rgba(255, 255, 255, 0.55);
+  white-space: nowrap;
+}
+
+.playlist-option:hover,
+.create-playlist-button:hover {
+  background: rgba(157, 101, 215, 0.2);
+}
+
+.create-playlist-button {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 0.4rem;
+  color: #cda7f2;
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.playlist-menu-state {
+  color: rgba(255, 255, 255, 0.65);
+  padding: 1rem 0.5rem;
+}
+
+.playlist-limit-message {
+  margin-top: 0.4rem;
+  padding: 0.75rem 0.5rem 0.35rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+}
+
+.playlist-create-form input {
+  width: 100%;
+  border: 1px solid rgba(157, 101, 215, 0.6);
+  border-radius: 0.45rem;
+  padding: 0.7rem;
+  color: white;
+  background: #111;
+  outline: none;
+}
+
+.playlist-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+}
+
+.playlist-form-actions button {
+  border: 0;
+  border-radius: 0.4rem;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+}
+
+.playlist-form-actions button[type='submit'] {
+  background: var(--primary-color);
+  color: white;
+}
+
+.playlist-form-actions button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

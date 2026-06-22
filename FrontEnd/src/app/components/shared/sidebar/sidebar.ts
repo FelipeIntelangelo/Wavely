@@ -24,6 +24,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     { label: 'Explore', route: '/explore', icon: 'fas fa-compass' },
     { label: 'My Podcasts', route: '/myPodcasts', icon: 'fas fa-microphone' },
     { label: 'Favorites', route: '/favorites', icon: 'fas fa-heart' },
+    { label: 'Playlists', route: '/playlists', icon: 'fas fa-list-ul' },
     { label: 'History', route: '/history', icon: 'fas fa-history' }
   ];
 
@@ -55,7 +56,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     } else {
       // Ocultar My Podcasts, Favorites e History cuando no está logueado
       this.navItems = this.allNavItems.filter(
-        item => item.label !== 'My Podcasts' && item.label !== 'Favorites' && item.label !== 'History'
+        item => item.label !== 'My Podcasts' && item.label !== 'Favorites' && item.label !== 'Playlists' && item.label !== 'History'
       );
     }
   }

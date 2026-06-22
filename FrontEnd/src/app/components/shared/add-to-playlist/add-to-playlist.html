@@ -1,0 +1,54 @@
+<div class="playlist-picker" (click)="keepOpen($event)">
+  <button
+    type="button"
+    class="playlist-add-button"
+    (click)="toggle($event)"
+    title="Agregar a playlist"
+    aria-label="Agregar a playlist"
+    [attr.aria-expanded]="isOpen">
+    <i class="fas fa-plus"></i>
+  </button>
+
+  @if (isOpen) {
+    <div class="playlist-menu">
+      <div class="playlist-menu-header">Agregar a playlist</div>
+
+      @if (isLoading) {
+        <div class="playlist-menu-state">Cargando...</div>
+      } @else if (!isCreating) {
+        <div class="playlist-options">
+          @for (playlist of playlists; track playlist.id) {
+            <button type="button" class="playlist-option" (click)="addTo(playlist, $event)">
+              <span>{{ playlist.name }}</span>
+              <small>{{ playlist.itemCount }} elementos</small>
+            </button>
+          } @empty {
+            <div class="playlist-menu-state">Todavía no tenés playlists.</div>
+          }
+        </div>
+        @if (playlists.length < 20) {
+          <button type="button" class="create-playlist-button" (click)="showCreate($event)">
+            <i class="fas fa-plus"></i>
+            Crear playlist
+          </button>
+        } @else {
+          <div class="playlist-limit-message">Alcanzaste el límite de 20 playlists.</div>
+        }
+      } @else {
+        <form class="playlist-create-form" (ngSubmit)="createAndAdd($event)">
+          <input
+            type="text"
+            name="playlistName"
+            [(ngModel)]="newPlaylistName"
+            maxlength="80"
+            placeholder="Nombre de la playlist"
+            autocomplete="off">
+          <div class="playlist-form-actions">
+            <button type="button" (click)="cancelCreate($event)">Cancelar</button>
+            <button type="submit" [disabled]="!newPlaylistName.trim()">Crear</button>
+          </div>
+        </form>
+      }
+    </div>
+  }
+</div>

@@ -13,10 +13,11 @@ import { UserService } from '../../services/client/user-service';
 import { AlertService } from '../../services/ui/alert.service';
 import { User } from '../../models/user/user';
 import { FormsModule } from '@angular/forms';
+import { AddToPlaylistComponent } from '../../components/shared/add-to-playlist/add-to-playlist';
 
 @Component({
   selector: 'app-episode-detail',
-  imports: [DatePipe, RouterLink, CommonModule, FormsModule],
+  imports: [DatePipe, RouterLink, CommonModule, FormsModule, AddToPlaylistComponent],
   templateUrl: './episode-detail.html',
   styleUrl: './episode-detail.css'
 })

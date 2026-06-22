@@ -16,6 +16,7 @@
           <div class="podcast-actions-main">
             <input type="checkbox" id="toggle-heart" [checked]="isFavorited" (change)="toggleFavorite()" style="display: none;">
             <label for="toggle-heart" [attr.aria-label]="isFavorited ? 'Quitar de favoritos' : 'Agregar a favoritos'">❤</label>
+            <app-add-to-playlist contentType="PODCAST" [contentId]="podcast.id"></app-add-to-playlist>
             @if (canDeletePodcast()) {
             <button type="button" class="edit-button" (click)="editPodcast()" title="Edit podcast">
               <svg class="edit-svgIcon" viewBox="0 0 512 512">
@@ -139,6 +140,7 @@
                     <h3 class="episode-title">{{ episode.title }}</h3>
                     <span class="episode-meta">S{{ episode.season }} · E{{ episode.chapter }}</span>
                   </div>
+                  <app-add-to-playlist contentType="EPISODE" [contentId]="episode.id"></app-add-to-playlist>
                   @if (canDeleteEpisode(episode)) {
                     <div class="episode-actions">
                       <button type="button" class="episode-edit-btn" (click)="editEpisode(episode, $event)" title="Editar episodio" aria-label="Editar episodio">
