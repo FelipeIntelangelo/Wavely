@@ -27,9 +27,53 @@
         @if (isOwnProfile && isFullUser(user)) {
           <div class="profile-actions-header">
             <a routerLink="/profile/edit" class="action-button edit-button">Edit Profile</a>
+            @if (followStatus) {
+              <a routerLink="/profile/{{user.id}}/followers" class="followers-count-link">
+                <span class="followers-count">{{ followStatus.followersCount }} {{ followStatus.followersCount === 1 ? 'follower' : 'followers' }}</span>
+              </a>
+            }
+          </div>
+        }
+        @if (!isOwnProfile && currentUserId) {
+          <div class="follow-actions">
+            <button
+              type="button"
+              id="btn-follow-profile"
+              class="follow-button"
+              [class.following]="followStatus?.isFollowing"
+              (click)="toggleFollow()">
+              @if (followStatus?.isFollowing) {
+                <i class="fas fa-user-check"></i>
+                <span>Following</span>
+              } @else {
+                <i class="fas fa-user-plus"></i>
+                <span>Follow</span>
+              }
+            </button>
+            @if (followStatus?.isFollowing) {
+              <button
+                type="button"
+                id="btn-bell-profile"
+                class="bell-button"
+                [class.active]="followStatus?.bellEnabled"
+                [title]="followStatus?.bellEnabled ? 'Desactivar notificaciones' : 'Activar notificaciones'"
+                (click)="toggleBell()">
+                @if (followStatus?.bellEnabled) {
+                  <i class="fas fa-bell"></i>
+                } @else {
+                  <i class="far fa-bell"></i>
+                }
+              </button>
+            }
+            @if (followStatus) {
+              <a routerLink="/profile/{{user.id}}/followers" class="followers-count-link">
+                <span class="followers-count">{{ followStatus.followersCount }} {{ followStatus.followersCount === 1 ? 'follower' : 'followers' }}</span>
+              </a>
+            }
           </div>
         }
       </div>
+
     </div>
 
     <!-- Sección Pública - Visible para todos -->

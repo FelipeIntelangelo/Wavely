@@ -28,7 +28,7 @@
                 <p class="episode-meta">
                   <span class="season-chapter">S{{ item.episode.season }} · E{{ item.episode.chapter }}</span>
                   <span class="separator">•</span>
-                  <span class="duration">{{ formatDuration(item.episode.duration) }}</span>
+                  <span class="duration">{{ item.episode.duration | duration }}</span>
                 </p>
               </div>
               <div class="listened-date">

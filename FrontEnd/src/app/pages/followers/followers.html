@@ -1,0 +1,41 @@
+<div class="followers-container">
+  <header class="page-header">
+    <h1>Seguidores</h1>
+  </header>
+
+  <div class="content-wrapper">
+    @if (isLoading) {
+      <div class="loading-state">
+        <p>Cargando seguidores...</p>
+      </div>
+    } @else if (followers.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <h2>Aún no hay seguidores</h2>
+        <p>Los usuarios que te sigan aparecerán aquí.</p>
+      </div>
+    } @else {
+      <div class="creators-grid">
+        @for (follower of followers; track follower.followerUserId) {
+          <article class="creator-card" (click)="goToProfile(follower.followerUserId)">
+            <div class="creator-avatar">
+              @if (follower.followerProfilePicture) {
+                <img [src]="follower.followerProfilePicture" [alt]="follower.followerNickname">
+              } @else {
+                <div class="avatar-fallback">{{ getUserInitial(follower.followerNickname) }}</div>
+              }
+            </div>
+            
+            <div class="creator-info">
+              <h3 class="creator-name">{{ follower.followerNickname }}</h3>
+              <p class="followers-count-text">{{ follower.followersCount }} {{ follower.followersCount === 1 ? 'seguidor' : 'seguidores' }}</p>
+              <p class="followed-date">Seguidor desde {{ follower.followedSince | date:'MMM yyyy' }}</p>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</div>

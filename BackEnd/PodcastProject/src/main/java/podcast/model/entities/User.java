@@ -86,6 +86,16 @@ public class User implements UserDetails {
     @JsonIgnore
     private List<Rating> ratings;
 
+    // ── Relaciones de Seguimiento ────────────────────────────────────────────────────
+
+    @OneToMany(mappedBy = "follower")
+    @JsonIgnore
+    private List<UserFollow> following;
+
+    @OneToMany(mappedBy = "followed")
+    @JsonIgnore
+    private List<UserFollow> followers;
+
     // ── Equals Y Hashcode ────────────────────────────────────────────────────────────
 
 

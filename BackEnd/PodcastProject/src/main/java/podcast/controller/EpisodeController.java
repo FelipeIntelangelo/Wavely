@@ -137,6 +137,33 @@ public class EpisodeController {
 //* ===================================================================================================================
 
     @Operation(
+            summary = "Obtener feed de episodios",
+            description = "Obtiene los episodios más recientes de los creadores que el usuario sigue, paginados.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Feed de episodios recuperado exitosamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = EpisodeDTO.class)
+                    )
+            ),
+            @ApiResponse(responseCode = "401", description = "No autorizado - Token JWT faltante o inválido")
+    })
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/feed")
+    public ResponseEntity<Page<EpisodeDTO>> getFeed(
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails,
+            @ParameterObject Pageable pageable) {
+        Page<Episode> feed = episodeService.getFeedForUser(userDetails.getUsername(), pageable);
+        return ResponseEntity.ok(feed.map(Episode::toDTO));
+    }
+
+//* ===================================================================================================================
+
+    @Operation(
             summary = "Obtener episodio por ID",
             description = "Recupera un episodio específico por su identificador único"
     )

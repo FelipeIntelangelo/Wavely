@@ -25,4 +25,7 @@ public interface IEpisodeRepository extends JpaRepository<Episode, Long> {
             nativeQuery = true
     )
     Double findAverageRatingByEpisodeId(@Param("episodeId") Long episodeId);
+
+    @Query("SELECT e FROM Episode e WHERE e.podcast.user.id IN :creatorIds ORDER BY e.publicationDate DESC")
+    Page<Episode> findByPodcast_User_IdInOrderByPublicationDateDesc(@Param("creatorIds") List<Long> creatorIds, Pageable pageable);
 }

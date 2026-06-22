@@ -1,0 +1,120 @@
+<div class="following-container">
+  <div class="following-header">
+    <h1 class="page-title">Following</h1>
+    <p class="page-subtitle">Tus creadores favoritos y sus últimos episodios.</p>
+  </div>
+
+  <div class="following-tabs">
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'feed'"
+      (click)="activeTab = 'feed'">
+      Feed
+    </button>
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'creators'"
+      (click)="activeTab = 'creators'">
+      Creators
+      @if (following && following.length > 0) {
+        <span class="tab-count">({{ following.length }})</span>
+      }
+    </button>
+  </div>
+
+  <!-- Tab Feed -->
+  @if (activeTab === 'feed') {
+    <div class="tab-content">
+      @if (isLoadingEpisodes) {
+        <div class="loading-state">
+          <i class="fas fa-spinner fa-spin"></i> Cargando feed...
+        </div>
+      } @else if (episodes.length === 0) {
+        <div class="empty-state">
+          <i class="fas fa-rss"></i>
+          <p>No hay episodios recientes.</p>
+          <span class="empty-subtitle">Seguí a más creadores para ver sus últimos lanzamientos.</span>
+        </div>
+      } @else {
+        <div class="episodes-feed">
+          @for (episode of episodes; track episode.id) {
+            <div class="episode-card" (click)="goToEpisode(episode.id)">
+              <div class="episode-image-wrapper">
+                <img [src]="episode.imageUrl" [alt]="episode.title" class="episode-image" onerror="this.src='assets/images/placeholder.png'">
+              </div>
+              <div class="episode-content">
+                <h3 class="episode-title">{{ episode.title }}</h3>
+                <div class="episode-meta">
+                  <span class="podcast-title">{{ episode.podcastTitle }}</span>
+                  <span class="separator">•</span>
+                  <span class="publish-date">{{ episode.publicationDate | date:'mediumDate' }}</span>
+                </div>
+                <p class="episode-desc">{{ episode.description }}</p>
+                <div class="episode-footer">
+                  <span class="episode-duration"><i class="far fa-clock"></i> {{ episode.duration | duration }}</span>
+                  <span class="episode-views"><i class="far fa-eye"></i> {{ episode.views }}</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Tab Creators -->
+  @if (activeTab === 'creators') {
+    <div class="tab-content">
+      @if (isLoadingFollowing) {
+        <div class="loading-state">
+          <i class="fas fa-spinner fa-spin"></i> Cargando creadores...
+        </div>
+      } @else if (following.length === 0) {
+        <div class="empty-state">
+          <i class="fas fa-users"></i>
+          <p>Aún no seguís a ningún creador.</p>
+        </div>
+      } @else {
+        <div class="creators-grid">
+          @for (creator of following; track creator.followedUserId) {
+            <div class="creator-card" (click)="goToProfile(creator.followedUserId)">
+              <div class="creator-avatar">
+                @if (creator.followedProfilePicture) {
+                  <img [src]="creator.followedProfilePicture" [alt]="creator.followedNickname">
+                } @else {
+                  <div class="avatar-fallback">{{ getUserInitial(creator.followedNickname) }}</div>
+                }
+              </div>
+              <div class="creator-info">
+                <h3 class="creator-name">{{ creator.followedNickname }}</h3>
+                <span class="followers-count-text">{{ creator.followersCount }} {{ creator.followersCount === 1 ? 'seguidor' : 'seguidores' }}</span>
+                <span class="following-since">Siguiendo desde {{ creator.followedSince | date:'shortDate' }}</span>
+              </div>
+              <div class="creator-actions">
+                <button
+                  type="button"
+                  class="bell-button"
+                  [class.active]="creator.bellEnabled"
+                  [title]="creator.bellEnabled ? 'Desactivar notificaciones' : 'Activar notificaciones'"
+                  (click)="toggleBell(creator.followedUserId, $event)">
+                  @if (creator.bellEnabled) {
+                    <i class="fas fa-bell"></i>
+                  } @else {
+                    <i class="far fa-bell"></i>
+                  }
+                </button>
+                <button
+                  type="button"
+                  class="unfollow-button"
+                  title="Dejar de seguir"
+                  (click)="unfollow(creator.followedUserId, $event)">
+                  <i class="fas fa-user-times"></i>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

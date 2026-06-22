@@ -1,6 +1,7 @@
 package podcast.model.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -11,7 +12,9 @@ import podcast.model.entities.dto.NotificationDTO;
 import podcast.model.entities.enums.NotificationType;
 import podcast.model.repositories.interfaces.INotificationRepository;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class NotificationService {
@@ -21,6 +24,10 @@ public class NotificationService {
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+
+    @Lazy
+    @Autowired
+    private UserFollowService userFollowService;
 
     public void notify(NotificationType type, User sender, User receiver, Podcast podcast, Episode episode, Commentary commentary, String message) {
         if (sender.getId().equals(receiver.getId())) {
@@ -53,12 +60,25 @@ public class NotificationService {
     public void notifyNewEpisode(Episode episode) {
         Podcast podcast = episode.getPodcast();
         User creator = podcast.getUser();
-        List<User> subscribers = podcast.getFavoritedBy();
 
+        Set<Long> notifiedUserIds = new HashSet<>();
+
+        // 1. Notificar a los que tienen el podcast en favoritos (comportamiento existente)
+        List<User> subscribers = podcast.getFavoritedBy();
         if (subscribers != null) {
             for (User subscriber : subscribers) {
                 String message = "🎙️ " + creator.getNickname() + " publicó un nuevo episodio en " + podcast.getTitle() + ": '" + episode.getTitle() + "'";
                 notify(NotificationType.NEW_EPISODE, creator, subscriber, podcast, episode, null, message);
+                notifiedUserIds.add(subscriber.getId());
+            }
+        }
+
+        // 2. Notificar a los seguidores con campanita activa del creador (sin duplicar)
+        List<User> bellFollowers = userFollowService.getFollowersWithBell(creator.getId());
+        for (User follower : bellFollowers) {
+            if (!notifiedUserIds.contains(follower.getId())) {
+                String message = "🔔 " + creator.getNickname() + " publicó un nuevo episodio: '" + episode.getTitle() + "'";
+                notify(NotificationType.NEW_EPISODE, creator, follower, podcast, episode, null, message);
             }
         }
     }
