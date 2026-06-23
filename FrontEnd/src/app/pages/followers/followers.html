@@ -17,6 +17,7 @@
         <p>Los usuarios que te sigan aparecerán aquí.</p>
       </div>
     } @else {
+      <p class="section-description">Usuarios que siguen tu contenido.</p>
       <div class="creators-grid">
         @for (follower of followers; track follower.followerUserId) {
           <article class="creator-card" (click)="goToProfile(follower.followerUserId)">
