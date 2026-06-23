@@ -36,6 +36,7 @@
           <span class="empty-subtitle">Seguí a más creadores para ver sus últimos lanzamientos.</span>
         </div>
       } @else {
+        <p class="section-description">Ultimos episodios publicados por los creadores a los que seguís.</p>
         <div class="episodes-feed">
           @for (episode of episodes; track episode.id) {
             <div class="episode-card" (click)="goToEpisode(episode.id)">
@@ -75,6 +76,7 @@
           <p>Aún no seguís a ningún creador.</p>
         </div>
       } @else {
+        <p class="section-description">Gestioná a los creadores que seguís y sus notificaciones.</p>
         <div class="creators-grid">
           @for (creator of following; track creator.followedUserId) {
             <div class="creator-card" (click)="goToProfile(creator.followedUserId)">
@@ -95,7 +97,7 @@
                   type="button"
                   class="bell-button"
                   [class.active]="creator.bellEnabled"
-                  [title]="creator.bellEnabled ? 'Desactivar notificaciones' : 'Activar notificaciones'"
+                  [title]="creator.bellEnabled ? 'Silenciar' : 'Notificar'"
                   (click)="toggleBell(creator.followedUserId, $event)">
                   @if (creator.bellEnabled) {
                     <i class="fas fa-bell"></i>
