@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Router, RouterLink } from "@angular/router";
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { FormError } from '../../../components/shared/form-error/form-error';
 import { UserService } from '../../../services/client/user-service';
 import { UserRegisterDTO } from '../../../models/user/userRegister/user-register-dto';
@@ -14,11 +14,16 @@ import { AlertService } from '../../../services/ui/alert.service';
   styleUrls: ['./register.css']
 })
 export class Register implements OnInit {
+  @Input() isModal = false;
+  @Output() switchLogin = new EventEmitter<void>();
+  @Output() registerSuccess = new EventEmitter<void>();
+
   registerForm!: FormGroup;
   currentStep = 1;
   isSubmitting = false;
   errorMessage: string | null = null;
   showPassword = false;
+  showConfirmPassword = false;
 
   // custom error messages for form-error component
   customErrors: { [controlName: string]: { [key: string]: string } } = {
@@ -54,6 +59,10 @@ export class Register implements OnInit {
       email: 'Debe ser un email válido',
       maxlength: 'Máximo {requiredLength} caracteres',
       pattern: 'El email tiene caracteres inválidos',
+    },
+    confirmPassword: {
+      required: 'Confirmar la contraseña es obligatorio',
+      mismatch: 'Las contraseñas no coinciden'
     }
   };
 
@@ -98,7 +107,10 @@ export class Register implements OnInit {
         Validators.maxLength(20),
         Validators.pattern('^[a-zA-Z0-9_]+$')
       ]),
-    });
+      confirmPassword: new FormControl('', [
+        Validators.required
+      ])
+    }, { validators: this.passwordMatchValidator });
   }
 
   get username() { return this.registerForm.get('username'); }
@@ -107,15 +119,40 @@ export class Register implements OnInit {
   get name() { return this.registerForm.get('name'); }
   get lastName() { return this.registerForm.get('lastName'); }
   get nickname() { return this.registerForm.get('nickname'); }
+  get confirmPassword() { return this.registerForm.get('confirmPassword'); }
+
+  passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
+    const g = control as FormGroup;
+    const password = g.get('password');
+    const confirmPassword = g.get('confirmPassword');
+    if (password && confirmPassword) {
+      if (password.value !== confirmPassword.value) {
+        confirmPassword.setErrors({ mismatch: true });
+      } else {
+        if (confirmPassword.hasError('mismatch')) {
+          const errors = confirmPassword.errors;
+          if (errors) {
+            delete errors['mismatch'];
+            confirmPassword.setErrors(Object.keys(errors).length ? errors : null);
+          }
+        }
+      }
+    }
+    return null;
+  }
 
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
   }
 
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
+  }
+
   nextStep() {
-    if (this.currentStep === 1 && this.registerForm.get('username')!.valid
-        && this.registerForm.get('email')!.valid
-        && this.registerForm.get('password')!.valid) {
+    if (this.currentStep === 1 && this.registerForm.get('name')!.valid
+        && this.registerForm.get('lastName')!.valid
+        && this.registerForm.get('nickname')!.valid) {
       this.currentStep = 2;
     } else {
       this.registerForm.markAllAsTouched();
@@ -153,7 +190,11 @@ export class Register implements OnInit {
         setTimeout(() => {
           this.isSubmitting = false; // para la ruedita de cargando
           this.alertService.successAlert(); // Mostrar alerta de éxito
-          this.router.navigate(['/auth/login']);
+          if (this.isModal) {
+            this.registerSuccess.emit();
+          } else {
+            this.router.navigate(['/auth/login']);
+          }
         }, remaining);
       },
       error: (err) => {

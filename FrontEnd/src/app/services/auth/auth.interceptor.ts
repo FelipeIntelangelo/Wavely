@@ -3,6 +3,7 @@ import { inject, Injector } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { AlertService } from '../ui/alert.service';
+import { AuthModalService } from './auth-modal.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
@@ -42,7 +43,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         } catch {}
         // Evitar bucle si ya estamos en /auth/login
         if (location.pathname !== '/auth/login') {
-          router.navigate(['/auth/login']);
+          try {
+            injector.get(AuthModalService).open('login');
+          } catch {
+            router.navigate(['/auth/login']);
+          }
         }
       }
       return throwError(() => err);

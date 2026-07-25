@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, NgZone } from '@angular/core';
+import { Component, OnInit, AfterViewInit, NgZone, Input, Output, EventEmitter } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { UserService } from '../../../services/client/user-service';
@@ -19,6 +19,10 @@ declare const google: any;
   styleUrl: './login.css'
 })
 export class Login implements OnInit, AfterViewInit {
+  @Input() isModal = false;
+  @Output() switchRegister = new EventEmitter<void>();
+  @Output() loginSuccess = new EventEmitter<void>();
+
   loginForm!: FormGroup;
   errorMessage: string | null = null;
   errorCheck: string | null = null;
@@ -89,7 +93,11 @@ export class Login implements OnInit, AfterViewInit {
         next: (res) => {
           localStorage.setItem('jwt_token', res.token);
           this.authService.login();
-          this.router.navigate(['/']);
+          if (this.isModal) {
+            this.loginSuccess.emit();
+          } else {
+            this.router.navigate(['/']);
+          }
         },
         error: (err) => {
           this.googleLoading = false;
@@ -113,7 +121,11 @@ export class Login implements OnInit, AfterViewInit {
           console.log('Login successful', response);
           localStorage.setItem('jwt_token', response.token); // Store the token
           this.authService.login(); // Notify AuthService
-          this.router.navigate(['/']); // Navigate to home page
+          if (this.isModal) {
+            this.loginSuccess.emit();
+          } else {
+            this.router.navigate(['/']); // Navigate to home page
+          }
         },
         error: (err) => {
           this.errorMessage = err.error || 'Login failed.';

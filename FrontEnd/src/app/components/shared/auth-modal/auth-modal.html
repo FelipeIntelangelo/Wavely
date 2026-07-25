@@ -1,0 +1,18 @@
+<div class="auth-modal-overlay" (click)="close()">
+  <div class="auth-modal-content" (click)="$event.stopPropagation()">
+    
+    @if (authModalService.mode() === 'login') {
+      <app-login 
+        [isModal]="true"
+        (switchRegister)="setMode('register')"
+        (loginSuccess)="close()">
+      </app-login>
+    } @else {
+      <app-register
+        [isModal]="true"
+        (switchLogin)="setMode('login')"
+        (registerSuccess)="setMode('login')">
+      </app-register>
+    }
+  </div>
+</div>

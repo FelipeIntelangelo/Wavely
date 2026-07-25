@@ -440,7 +440,7 @@ header{
     border: solid 2px rgba(255, 255, 255, 0.5);
     background-color: rgba(255, 255, 255, 0.15);
     cursor: text;
-    box-shadow: 0 0 0 5px #9D65D7;
+    box-shadow: 0 0 0 3px #9D65D7;
 }
 
 /* Mobile - Search minimizado solo con lupa */
@@ -510,7 +510,7 @@ header{
     }
 
     .mobile-search-popdown-wrapper:has(.mobile-search-popdown-input:focus) {
-        box-shadow: 0 0 0 5px #9D65D7;
+        box-shadow: 0 0 0 3px #9D65D7;
     }
 
     .mobile-search-popdown-input {
@@ -612,7 +612,7 @@ header{
 
 .search-container:focus-within{
     background-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 0 0 5px var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-color);
     border-color: transparent;
 }
 
