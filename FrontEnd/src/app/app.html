@@ -8,3 +8,7 @@
 </main>
 <app-footer [class.sidebar-closed]="!layoutService.sidebarOpen()"></app-footer>
 <app-floating-media-player></app-floating-media-player>
+
+@if (authModalService.isOpen()) {
+  <app-auth-modal></app-auth-modal>
+}

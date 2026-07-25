@@ -10,6 +10,7 @@ import { PodcastService } from '../../services/podcast/podcast-service';
 import { PodcastSearchDTO } from '../../models/podcast/podcast-search-dto';
 import { LayoutService } from '../../services/layout/layout.service';
 import { NotificationBell } from '../notification-bell/notification-bell';
+import { AuthModalService } from '../../services/auth/auth-modal.service';
 
 @Component({
   selector: 'app-header',
@@ -35,7 +36,8 @@ export class Header implements OnInit{
     private router: Router,
     private authService: AuthService,
     private elementRef: ElementRef,
-    private layoutService: LayoutService
+    private layoutService: LayoutService,
+    private authModalService: AuthModalService
   ) {}
 
   ngOnInit(): void {
@@ -71,7 +73,11 @@ export class Header implements OnInit{
   logout(): void {
     this.showProfileMenu = false; // Close the menu on logout
     this.authService.logout();
-    this.router.navigate(['/auth/login']);
+    this.router.navigate(['/']);
+  }
+
+  openLoginModal(): void {
+    this.authModalService.open('login');
   }
 
   onSearchFocus() {

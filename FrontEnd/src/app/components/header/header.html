@@ -241,7 +241,7 @@
             </div>
         }
         @if (!isLoggedIn) {
-            <button id="headerSignIn" routerLink="auth/login">
+            <button id="headerSignIn" (click)="openLoginModal()">
                 Sign In
                 <span class="arrow-wrapper">
                     <span class="arrow"></span>
