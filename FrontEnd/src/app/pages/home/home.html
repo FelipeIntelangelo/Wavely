@@ -48,8 +48,7 @@
                                 </div>
                                 @for (podcast of recomendacionesPodcasts; track podcast.id) {
                                     <div class="cardHome" [routerLink]="['/podcast', podcast.id]">
-                                        <img [src]="podcast.imageUrl" [alt]="podcast.title" class="podcastImage" (error)="onImageError($event)" />
-                                        <div class="image-placeholder-home"></div>
+                                        <app-media-image [src]="podcast.imageUrl" [alt]="podcast.title" type="podcast" customClass="podcastImage"></app-media-image>
                                         <h3>{{ podcast.title }}</h3>
                                         @if (podcast.description) {
                                             <h4>{{ podcast.description.length > 50 ? (podcast.description.substring(0, 50) + '...') : podcast.description }}</h4>
@@ -110,8 +109,7 @@
                         } @else {
                             @for (podcast of novedadesPodcasts; track podcast.id) {
                                 <div class="cardHome" [routerLink]="['/podcast', podcast.id]">
-                                    <img [src]="podcast.imageUrl" [alt]="podcast.title" class="podcastImage" (error)="onImageError($event)" />
-                                    <div class="image-placeholder-home"></div>
+                                    <app-media-image [src]="podcast.imageUrl" [alt]="podcast.title" type="podcast" customClass="podcastImage"></app-media-image>
                                     <h3>{{ podcast.title }}</h3>
                                     @if (podcast.description) {
                                         <h4>{{ podcast.description.length > 50 ? (podcast.description.substring(0, 50) + '...') : podcast.description }}</h4>
@@ -167,8 +165,7 @@
                         } @else {
                             @for (podcast of masEscuchadosPodcasts; track podcast.id) {
                                 <div class="cardHome" [routerLink]="['/podcast', podcast.id]">
-                                    <img [src]="podcast.imageUrl" [alt]="podcast.title" class="podcastImage" (error)="onImageError($event)" />
-                                    <div class="image-placeholder-home"></div>
+                                    <app-media-image [src]="podcast.imageUrl" [alt]="podcast.title" type="podcast" customClass="podcastImage"></app-media-image>
                                     <h3>{{ podcast.title }}</h3>
                                     @if (podcast.description) {
                                         <h4>{{ podcast.description.length > 50 ? (podcast.description.substring(0, 50) + '...') : podcast.description }}</h4>
@@ -224,8 +221,7 @@
                         } @else {
                             @for (podcast of mejoresValoradosPodcasts; track podcast.id) {
                                 <div class="cardHome" [routerLink]="['/podcast', podcast.id]">
-                                    <img [src]="podcast.imageUrl" [alt]="podcast.title" class="podcastImage" (error)="onImageError($event)" />
-                                    <div class="image-placeholder-home"></div>
+                                    <app-media-image [src]="podcast.imageUrl" [alt]="podcast.title" type="podcast" customClass="podcastImage"></app-media-image>
                                     <h3>{{ podcast.title }}</h3>
                                     @if (podcast.description) {
                                         <h4>{{ podcast.description.length > 50 ? (podcast.description.substring(0, 50) + '...') : podcast.description }}</h4>
@@ -282,8 +278,7 @@
                             } @else {
                                 @for (podcast of favoritosPodcasts; track podcast.id) {
                                     <div class="cardHome" [routerLink]="['/podcast', podcast.id]">
-                                        <img [src]="podcast.imageUrl" [alt]="podcast.title" class="podcastImage" (error)="onImageError($event)" />
-                                        <div class="image-placeholder-home"></div>
+                                        <app-media-image [src]="podcast.imageUrl" [alt]="podcast.title" type="podcast" customClass="podcastImage"></app-media-image>
                                         <h3>{{ podcast.title }}</h3>
                                         @if (podcast.description) {
                                             <h4>{{ podcast.description.length > 50 ? (podcast.description.substring(0, 50) + '...') : podcast.description }}</h4>

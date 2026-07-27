@@ -7,10 +7,11 @@ import { PodcastService } from '../../services/podcast/podcast-service';
 import { PodcastSearchDTO } from '../../models/podcast/podcast-search-dto';
 import { EpisodeService } from '../../services/episode/episode.service';
 import { EpisodeDTO } from '../../models/episode/episode-dto';
+import { MediaImageComponent } from '../../components/shared/media-image/media-image';
 
 @Component({
   selector: 'app-search',
-  imports: [],
+  imports: [MediaImageComponent],
   templateUrl: './search.html',
   styleUrl: './search.css'
 })
@@ -270,26 +271,6 @@ export class Search implements OnInit, OnDestroy, AfterViewInit {
       this.podcastPage = 0;
       this.hasMorePodcasts = true;
       this.loadPodcasts();
-    }
-  }
-
-  onImageError(event: Event): void {
-    const img = event.target as HTMLImageElement;
-    img.style.display = 'none';
-    const placeholder = img.parentElement?.querySelector('.image-placeholder') as HTMLElement;
-    if (placeholder) {
-      placeholder.style.display = 'flex';
-    }
-  }
-
-  onUserImageError(event: Event): void {
-    const img = event.target as HTMLImageElement;
-    const container = img.parentElement;
-    if (container) {
-      img.remove();
-      const placeholder = document.createElement('div');
-      placeholder.className = 'user-image-placeholder';
-      container.appendChild(placeholder);
     }
   }
 }

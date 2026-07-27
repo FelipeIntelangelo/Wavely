@@ -11,10 +11,11 @@ import { DatePipe } from '@angular/common';
 import { AddToPlaylistComponent } from '../../components/shared/add-to-playlist/add-to-playlist';
 import { FollowService } from '../../services/follow/follow-service';
 import { FollowStatusDTO } from '../../models/user/follow-status-dto';
+import { MediaImageComponent } from '../../components/shared/media-image/media-image';
 
 @Component({
   selector: 'app-podcast-detail',
-  imports: [DatePipe, RouterLink, AddToPlaylistComponent],
+  imports: [DatePipe, RouterLink, AddToPlaylistComponent, MediaImageComponent],
   templateUrl: './podcast-detail.html',
   styleUrl: './podcast-detail.css'
 })
@@ -320,15 +321,6 @@ export class PodcastDetail implements OnInit{
       },
       error: (err) => this.alertService.error('Error', err.message || 'No se pudo actualizar la campanita')
     });
-  }
-
-  onImageError(event: Event): void {
-    const img = event.target as HTMLImageElement;
-    img.style.display = 'none';
-    const placeholder = img.parentElement?.querySelector('.image-placeholder') as HTMLElement;
-    if (placeholder) {
-      placeholder.style.display = 'flex';
-    }
   }
 
   goToCategory(category: string, event: Event): void {

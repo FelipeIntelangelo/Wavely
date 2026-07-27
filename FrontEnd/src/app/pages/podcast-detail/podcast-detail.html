@@ -7,8 +7,7 @@
     <!-- Header similar a Profile -->
     <div class="podcast-header-main">
       <div class="podcast-image-wrapper">
-        <img [src]="podcast.imageUrl" [alt]="podcast.title" class="podcast-main-image" (error)="onImageError($event)">
-        <div class="image-placeholder" style="display: none;"></div>
+        <app-media-image [src]="podcast.imageUrl" [alt]="podcast.title" type="podcast" customClass="podcast-main-image"></app-media-image>
       </div>
       <div class="podcast-info-section">
         <div class="title-actions-wrapper">
@@ -38,11 +37,7 @@
         <div class="creator-section">
           <a [routerLink]="['/profile', podcast.user.id]" class="creator-link-main">
             <div class="creator-avatar-small">
-              @if (podcast.user.profilePicture) {
-                <img [src]="podcast.user.profilePicture" [alt]="podcast.user.nickname">
-              } @else {
-                <div class="avatar-fallback-small">{{ getUserInitial() }}</div>
-              }
+              <app-media-image [src]="podcast.user.profilePicture" [alt]="podcast.user.nickname" type="user"></app-media-image>
             </div>
             <span class="creator-name">{{ podcast.user.nickname }}</span>
           </a>
@@ -167,8 +162,7 @@
           @for (episode of filteredEpisodes; track episode.id) {
             <article class="episode-card" (click)="viewEpisode(episode.id)">
               <div class="episode-image">
-                <img [src]="episode.imageUrl || podcast.imageUrl" [alt]="episode.title" (error)="onImageError($event)">
-                <div class="image-placeholder" style="display: none;"></div>
+                <app-media-image [src]="episode.imageUrl || podcast.imageUrl" [alt]="episode.title" type="episode"></app-media-image>
               </div>
               <div class="episode-content">
                 <div class="episode-header">

@@ -22,11 +22,7 @@
         @for (follower of followers; track follower.followerUserId) {
           <article class="creator-card" (click)="goToProfile(follower.followerUserId)">
             <div class="creator-avatar">
-              @if (follower.followerProfilePicture) {
-                <img [src]="follower.followerProfilePicture" [alt]="follower.followerNickname">
-              } @else {
-                <div class="avatar-fallback">{{ getUserInitial(follower.followerNickname) }}</div>
-              }
+              <app-media-image [src]="follower.followerProfilePicture" [alt]="follower.followerNickname" type="user"></app-media-image>
             </div>
             
             <div class="creator-info">

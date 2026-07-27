@@ -16,10 +16,7 @@
       @for (p of podcasts; track p.id) {
         <article class="podcast-card" (click)="viewPodcast(p.id)">
           <div class="podcast-image">
-            <img [src]="p.imageUrl" [alt]="p.title" (error)="onImageError($event)">
-            <div class="image-placeholder" style="display: none;">
-              <i class="fas fa-podcast"></i>
-            </div>
+            <app-media-image [src]="p.imageUrl" [alt]="p.title" type="podcast"></app-media-image>
           </div>
           <div class="podcast-content">
             <div class="podcast-header">

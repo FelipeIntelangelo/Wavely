@@ -17,8 +17,7 @@
       @for (item of history; track item.episode.id + item.listenedAt) {
         <article class="episode-card" (click)="viewEpisode(item.episode.id)">
           <div class="episode-image">
-            <img [src]="item.episode.imageUrl" [alt]="item.episode.title" (error)="onImageError($event)">
-            <div class="image-placeholder" style="display: none;"></div>
+            <app-media-image [src]="item.episode.imageUrl" [alt]="item.episode.title" type="episode"></app-media-image>
           </div>
           
           <div class="episode-content">

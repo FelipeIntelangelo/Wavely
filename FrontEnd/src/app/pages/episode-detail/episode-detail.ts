@@ -14,10 +14,11 @@ import { AlertService } from '../../services/ui/alert.service';
 import { User } from '../../models/user/user';
 import { FormsModule } from '@angular/forms';
 import { AddToPlaylistComponent } from '../../components/shared/add-to-playlist/add-to-playlist';
+import { MediaImageComponent } from '../../components/shared/media-image/media-image';
 
 @Component({
   selector: 'app-episode-detail',
-  imports: [DatePipe, RouterLink, CommonModule, FormsModule, AddToPlaylistComponent],
+  imports: [DatePipe, RouterLink, CommonModule, FormsModule, AddToPlaylistComponent, MediaImageComponent],
   templateUrl: './episode-detail.html',
   styleUrl: './episode-detail.css'
 })
@@ -409,15 +410,6 @@ export class EpisodeDetail implements OnInit, OnDestroy {
         this.alertService.error('Error', err.message || 'No se pudo publicar el comentario.');
       }
     });
-  }
-
-  onImageError(event: Event): void {
-    const img = event.target as HTMLImageElement;
-    img.style.display = 'none';
-    const placeholder = img.parentElement?.querySelector('.image-placeholder') as HTMLElement;
-    if (placeholder) {
-      placeholder.style.display = 'flex';
-    }
   }
 
   isPlayingInFloatingPlayer(): boolean {

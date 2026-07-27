@@ -4,11 +4,12 @@ import { EpisodeHistoryDTO } from '../../models/episode/episode-history-dto';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DurationPipe } from '../../pipes/duration.pipe';
+import { MediaImageComponent } from '../../components/shared/media-image/media-image';
 
 @Component({
   selector: 'app-history',
   standalone: true,
-  imports: [CommonModule, DurationPipe],
+  imports: [CommonModule, DurationPipe, MediaImageComponent],
   templateUrl: './history.html',
   styleUrl: './history.css'
 })
@@ -76,14 +77,5 @@ export class HistoryComponent implements OnInit {
       return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  }
-
-  onImageError(event: Event): void {
-    const img = event.target as HTMLImageElement;
-    img.style.display = 'none';
-    const placeholder = img.parentElement?.querySelector('.image-placeholder') as HTMLElement;
-    if (placeholder) {
-      placeholder.style.display = 'flex';
-    }
   }
 }

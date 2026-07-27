@@ -27,6 +27,7 @@ export class AuthService {
   logout() {
     if (typeof localStorage !== 'undefined') {
       localStorage.removeItem('jwt_token');
+      localStorage.removeItem('auth_provider');
     }
     this.isLoggedIn$.next(false);
   }

@@ -11,6 +11,7 @@ import { RecommendationService } from '../../services/recommendation/recommendat
 import { RecommendationDTO } from '../../models/recommendation/recommendation-dto';
 import { RecommendationStrategy } from '../../models/enums/recommendation-strategy.enum';
 import { DiceRollerComponent } from '../../components/shared/dice-roller/dice-roller';
+import { MediaImageComponent } from '../../components/shared/media-image/media-image';
 
 interface CarouselState {
   hasBeenClicked: boolean;
@@ -33,7 +34,7 @@ interface PodcastForDisplay {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, DiceRollerComponent],
+  imports: [CommonModule, RouterLink, DiceRollerComponent, MediaImageComponent],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
@@ -332,14 +333,5 @@ export class Home implements OnInit, AfterViewInit {
 
     const wrapper = wrapperMap[key];
     return wrapper ? wrapper.nativeElement : null;
-  }
-
-  onImageError(event: Event): void {
-    const img = event.target as HTMLImageElement;
-    img.style.display = 'none';
-    const placeholder = img.nextElementSibling as HTMLElement;
-    if (placeholder && placeholder.classList.contains('image-placeholder-home')) {
-      placeholder.style.display = 'flex';
-    }
   }
 }

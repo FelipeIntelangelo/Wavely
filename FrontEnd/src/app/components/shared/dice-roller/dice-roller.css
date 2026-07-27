@@ -11,14 +11,8 @@
   align-items: center;
   width: 100%;
   aspect-ratio: 1 / 1;
-  background: rgba(157, 101, 215, 0.05);
-  border-radius: 0.5rem;
+  background: transparent;
   margin-bottom: 1rem;
-  transition: background 0.3s ease;
-}
-
-.dice-roller-container:hover {
-  background: rgba(157, 101, 215, 0.15);
 }
 
 /* ── Escena 3D ─────────────────────────────────────────────────── */
@@ -244,19 +238,11 @@
   background: rgba(157, 101, 215, 0.1);
 }
 
-.result-image {
+.result-image-wrapper {
   width: 100px;
   height: 100px;
   border-radius: 0.5rem;
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
-.result-image-placeholder {
-  width: 100px;
-  height: 100px;
-  border-radius: 0.5rem;
-  background: rgba(157, 101, 215, 0.2);
+  overflow: hidden;
   flex-shrink: 0;
 }
 

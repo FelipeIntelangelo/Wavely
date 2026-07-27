@@ -5,11 +5,12 @@ import { MediaPlayerService } from '../../../services/media-player/media-player.
 import { EpisodeService } from '../../../services/episode/episode.service';
 import { EpisodeDTO } from '../../../models/episode/episode-dto';
 import { Episode } from '../../../models/episode/episode';
+import { MediaImageComponent } from '../media-image/media-image';
 
 @Component({
   selector: 'app-floating-media-player',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MediaImageComponent],
   templateUrl: './floating-media-player.html',
   styleUrl: './floating-media-player.css'
 })

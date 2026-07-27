@@ -13,6 +13,7 @@ Este archivo contiene las reglas y pautas específicas del proyecto dictadas por
 ## 🛠️ 2. Estándares Técnicos del Frontend (Angular)
 * **Control de Flujo Moderno:** Está estrictamente prohibido usar la directiva estructural deprecada `*ngIf`. Se debe utilizar exclusivamente la sintaxis moderna de control de flujo de Angular (`@if`, `@else`, `@for`, `@switch`).
 * **Paginación:** Todos los listados que consuman endpoints paginados del backend deben utilizar la interfaz `PageResponse<T>` (ubicada en `models/page-response.ts`) para tipar la respuesta. Los servicios deben exponer `hasMore$` e `isLoading$` como `Observable` para que los componentes puedan renderizar estados de carga y botones "Ver más" sin lógica duplicada.
+* **Renderizado de Imágenes y Fallbacks (`MediaImageComponent`):** Queda estrictamente prohibido utilizar etiquetas `<img>` directas con manejadores `(error)="onImageError($event)"` o condicionales `@if/@else` duplicados para placeholders en las vistas. Toda imagen de la plataforma (podcasts, episodios, usuarios) debe renderizarse obligatoriamente usando el componente reutilizable `<app-media-image [src]="..." [alt]="..." type="'podcast'|'user'|'episode'"></app-media-image>`, el cual encapsula la visualización del SVG y la detección automática de errores de red o URLs vacías.
 
 ---
 

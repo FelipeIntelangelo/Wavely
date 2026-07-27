@@ -73,10 +73,7 @@
               @for (item of selectedPlaylist.items.content; track item.id) {
                 <article class="playlist-item" (click)="openItem(item)">
                   <div class="item-image">
-                    @if (item.imageUrl) {
-                      <img [src]="item.imageUrl" [alt]="item.title" (error)="imageFallback($event)">
-                    }
-                    <i [class]="item.type === 'PODCAST' ? 'fas fa-microphone' : 'fas fa-play'"></i>
+                    <app-media-image [src]="item.imageUrl" [alt]="item.title" [type]="item.type === 'PODCAST' ? 'podcast' : 'episode'"></app-media-image>
                   </div>
                   <div class="item-content">
                     <span class="item-type">{{ item.type === 'PODCAST' ? 'Podcast' : 'Episodio' }}</span>

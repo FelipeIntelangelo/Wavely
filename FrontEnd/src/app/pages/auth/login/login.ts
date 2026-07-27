@@ -92,6 +92,7 @@ export class Login implements OnInit, AfterViewInit {
       this.userService.loginWithGoogle(response.credential).subscribe({
         next: (res) => {
           localStorage.setItem('jwt_token', res.token);
+          localStorage.setItem('auth_provider', 'google');
           this.authService.login();
           if (this.isModal) {
             this.loginSuccess.emit();
@@ -120,6 +121,7 @@ export class Login implements OnInit, AfterViewInit {
         next: (response) => {
           console.log('Login successful', response);
           localStorage.setItem('jwt_token', response.token); // Store the token
+          localStorage.setItem('auth_provider', 'local');
           this.authService.login(); // Notify AuthService
           if (this.isModal) {
             this.loginSuccess.emit();
