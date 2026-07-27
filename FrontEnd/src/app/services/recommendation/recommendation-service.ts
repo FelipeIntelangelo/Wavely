@@ -36,4 +36,15 @@ export class RecommendationService {
       catchError(this.errorHandler.handleError.bind(this.errorHandler))
     );
   }
+
+  /**
+   * Tira el dado random: retorna un único podcast aleatorio ponderado por relevanceScore.
+   * Funciona con y sin JWT — si hay token, usa recomendaciones personalizadas;
+   * si no, usa el pool de trending.
+   */
+  rollDice(): Observable<RecommendationDTO> {
+    return this.http.get<RecommendationDTO>(`${this.API_URL}/dice`).pipe(
+      catchError(this.errorHandler.handleError.bind(this.errorHandler))
+    );
+  }
 }
