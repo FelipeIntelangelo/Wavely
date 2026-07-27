@@ -85,7 +85,8 @@ html, body {
   width: 100%;
   padding: 0 1rem 0 0;
   gap: 1.25rem;
-  height: 160px;
+  height: auto;
+  min-height: 160px;
   position: relative;
   z-index: 1;
 }
@@ -499,7 +500,6 @@ html, body {
 }
 
 .carousel-wrapper {
-  flex: 1;
   overflow-x: auto;
   border-radius: 0;
   scroll-snap-type: x mandatory;
@@ -587,7 +587,6 @@ html, body {
 }
 
 .carouselWrapper {
-  flex: 1;
   overflow-x: auto;
   border-radius: 0;
   scroll-snap-type: x mandatory;
