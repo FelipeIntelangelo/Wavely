@@ -197,14 +197,34 @@
 
 .error-message {
   color: rgb(255, 82, 82);
-  margin-top: 0.75rem;
+  margin-top: 0;
   font-size: 0.85rem;
   text-align: center;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease;
+}
+
+.error-message.show {
+  max-height: 60px;
+  opacity: 1;
+  margin-top: 0.75rem;
 }
 
 .spinner-container {
   display: flex;
   justify-content: center;
+  margin-top: 0;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease;
+}
+
+.spinner-container.show {
+  max-height: 40px;
+  opacity: 1;
   margin-top: 0.75rem;
 }
 

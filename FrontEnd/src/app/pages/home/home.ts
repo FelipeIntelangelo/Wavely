@@ -310,7 +310,7 @@ export class Home implements OnInit, AfterViewInit {
     const element = this.getWrapperElement(carouselKey);
     if (element) {
       const scrollAmount = element.clientWidth * 0.8;
-      element.scrollLeft += scrollAmount;
+      this.smoothScrollBy(element, scrollAmount, 400);
     }
   }
 
@@ -318,8 +318,35 @@ export class Home implements OnInit, AfterViewInit {
     const element = this.getWrapperElement(carouselKey);
     if (element) {
       const scrollAmount = element.clientWidth * 0.8;
-      element.scrollLeft -= scrollAmount;
+      this.smoothScrollBy(element, -scrollAmount, 400);
     }
+  }
+
+  private smoothScrollBy(element: HTMLElement, distance: number, duration: number): void {
+    const start = element.scrollLeft;
+    const startTime = performance.now();
+    
+    // Desactivar scroll-snap temporalmente para que no interrumpa la animación
+    element.style.scrollSnapType = 'none';
+
+    const animateScroll = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Función de aceleración (easeInOutQuad)
+      const easeProgress = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+      
+      element.scrollLeft = start + distance * easeProgress;
+
+      if (progress < 1) {
+        requestAnimationFrame(animateScroll);
+      } else {
+        // Restaurar scroll-snap al terminar para que se ajuste a la tarjeta más cercana
+        element.style.scrollSnapType = '';
+      }
+    };
+
+    requestAnimationFrame(animateScroll);
   }
 
   private getWrapperElement(key: string): HTMLElement | null {

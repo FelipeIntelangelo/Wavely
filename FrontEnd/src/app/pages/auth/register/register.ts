@@ -203,22 +203,21 @@ export class Register implements OnInit {
         setTimeout(() => {
           this.errorMessage = this.formatError(err);
           this.isSubmitting = false;
-          this.alertService.errorAlert(); // Mostrar alerta de error
+          // Mostramos el error en el HTML a través de this.errorMessage, 
+          // evitamos el popup intrusivo
         }, remaining);
       }
     });
   }
 
   private formatError(err: any): string {
-    if (!err) return 'Error al registrar el usuario.';
-    if (typeof err === 'string') return err;
-    const payload = err.error ?? err;
-    if (typeof payload === 'string') return payload;
-    if (payload && typeof payload === 'object') {
-      if (payload.message) return payload.message;
-      if (payload.errors && Array.isArray(payload.errors) && payload.errors.length) return String(payload.errors[0]);
+    // Como ErrorHandlerService ya nos devuelve un Javascript Error con el string limpio:
+    if (err instanceof Error) {
+      return err.message;
     }
-    if (err.message) return err.message;
+    // Fallback por si acaso
+    if (typeof err === 'string') return err;
+    if (err && err.message) return err.message;
     return 'Error al registrar el usuario.';
   }
 }

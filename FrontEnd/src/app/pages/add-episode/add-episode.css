@@ -40,7 +40,20 @@ button[disabled] { opacity: .6; cursor: not-allowed; }
   margin-top: .4rem;
   display: block;
 }
-.error { color: #ffb3b3; margin-top: .5rem; }
+.error { 
+  color: #ffb3b3; 
+  margin-top: 0; 
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease;
+}
+
+.error.show {
+  max-height: 80px;
+  opacity: 1;
+  margin-top: 0.5rem;
+}
 
 /* Media preview sizing */
 .media-preview {

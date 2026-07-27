@@ -6,9 +6,7 @@
   <div class="edit-episode-page">
     <h2>Editar episodio: {{ episode.title }}</h2>
 
-    @if (!isAuthorized && errorMessage) {
-      <div class="error">{{ errorMessage }}</div>
-    }
+    <div class="error" [class.show]="!isAuthorized && !!errorMessage">{{ errorMessage }}</div>
 
     @if (isAuthorized) {
       <form [formGroup]="form" (ngSubmit)="submit()">
@@ -101,17 +99,13 @@
           <button type="button" class="cancel-btn" (click)="cancel()">Cancelar</button>
         </div>
 
-        @if (errorMessage) {
-          <div class="error">{{ errorMessage }}</div>
-        }
+        <div class="error" [class.show]="!!errorMessage">{{ errorMessage }}</div>
       </form>
     }
   </div>
 } @else {
   <div class="error-container">
     <p>No se pudo cargar el episodio</p>
-    @if (errorMessage) {
-      <div class="error">{{ errorMessage }}</div>
-    }
+    <div class="error" [class.show]="!!errorMessage">{{ errorMessage }}</div>
   </div>
 }

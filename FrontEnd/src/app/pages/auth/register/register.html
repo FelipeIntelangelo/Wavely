@@ -85,14 +85,11 @@
                 </button>
             </div>
             
-            @if (isSubmitting) {
-                <div class="spinner-container">
-                    <span class="spinner" aria-hidden="true"></span>
-                </div>
-            }
-            @if (errorMessage) {
-                <p class="error-message">{{ errorMessage }}</p>
-            }
+            <div class="spinner-container" [class.show]="isSubmitting">
+                <span class="spinner" aria-hidden="true"></span>
+            </div>
+
+            <p class="error-message" [class.show]="!!errorMessage">{{ errorMessage }}</p>
             
             @if (isModal) {
                 <p class="signup">Have an account? <a href="#" (click)="$event.preventDefault(); switchLogin.emit()" id="loginRoute">Sign in</a></p>

@@ -117,7 +117,7 @@ export class PlaylistsComponent implements OnInit {
         this.newDescription = '';
         this.loadPlaylists(playlist.id);
       },
-      error: (error) => this.alertService.error('No se pudo crear', this.errorMessage(error))
+      error: (error) => this.alertService.error('No se pudo crear', error instanceof Error ? error.message : 'Intentá nuevamente.')
     });
   }
 
@@ -133,7 +133,7 @@ export class PlaylistsComponent implements OnInit {
         this.selectedPlaylist = undefined;
         this.loadPlaylists();
       },
-      error: () => this.alertService.error('Error', 'No se pudo eliminar la playlist.')
+      error: (err) => this.alertService.error('Error', err instanceof Error ? err.message : 'No se pudo eliminar la playlist.')
     });
   }
 
@@ -150,7 +150,7 @@ export class PlaylistsComponent implements OnInit {
         const summary = this.playlists.find(playlist => playlist.id === this.selectedPlaylist?.id);
         if (summary) summary.itemCount = this.selectedPlaylist.itemCount;
       },
-      error: () => this.alertService.error('Error', 'No se pudo quitar el elemento.')
+      error: (err) => this.alertService.error('Error', err instanceof Error ? err.message : 'No se pudo quitar el elemento.')
     });
   }
 
@@ -159,7 +159,5 @@ export class PlaylistsComponent implements OnInit {
     this.router.navigate([route, item.contentId]);
   }
 
-  private errorMessage(error: any): string {
-    return typeof error?.error === 'string' ? error.error : 'Intentá nuevamente.';
-  }
+
 }

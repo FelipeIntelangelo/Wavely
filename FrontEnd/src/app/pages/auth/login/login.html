@@ -23,9 +23,12 @@
 
         <button type="submit" class="sign" [disabled]="loginForm.invalid">Sign in</button>
         
-        @if (errorMessage) {
-            <p class="error-message">{{ errorMessage }}<span id="error-span">{{errorCheck}}</span></p>
-        }
+        <p class="error-message" [class.show]="!!errorMessage">
+            {{ errorMessage }}
+            @if (errorCheck) {
+                <span id="error-span">{{errorCheck}}</span>
+            }
+        </p>
 
         <div class="social-message">
             <div class="line"></div>
@@ -35,9 +38,7 @@
 
         <!-- Botón de Google Sign-In -->
         <div class="google-btn-container">
-            @if (googleLoading) {
-                <p class="google-loading">Iniciando sesión con Google...</p>
-            }
+            <p class="google-loading" [class.show]="googleLoading">Iniciando sesión con Google...</p>
             <div id="google-signin-btn"></div>
         </div>
 
