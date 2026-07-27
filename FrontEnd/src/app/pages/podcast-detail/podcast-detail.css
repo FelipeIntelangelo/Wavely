@@ -247,139 +247,162 @@
   text-overflow: ellipsis;
 }
 
+/* ── Nuevo Botón de Favorito Animado (SVG) ────────────────────────────────── */
+.favorite-wrapper {
+  position: relative;
+  display: inline-block;
+  z-index: 9999;
+}
+
 [id='toggle-heart'] {
   display: none;
 }
 
-[id='toggle-heart']:checked + label {
-  color: #e2264d;
-  filter: none;
-  background-color: rgba(226, 38, 77, 0.2);
-  will-change: font-size;
-  animation: heart 1s cubic-bezier(0.17, 0.89, 0.32, 1.49);
-}
-
-[id='toggle-heart']:checked + label:before, [id='toggle-heart']:checked + label:after {
-  animation: inherit;
-  animation-timing-function: ease-out;
-}
-
-[id='toggle-heart']:checked + label:before {
-  will-change: transform, border-width, border-color;
-  animation-name: bubble;
-}
-
-[id='toggle-heart']:checked + label:after {
-  will-change: opacity, box-shadow;
-  animation-name: sparkles;
-}
-
-[id='toggle-heart']:focus + label {
-  text-shadow: 0 0 3px white, 0 1px 1px white, 0 -1px 1px white, 1px 0 1px white, -1px 0 1px white;
-}
-
-[for='toggle-heart'] {
-  align-self: center;
-  position: relative;
-  color: white;
-  font-size: 1.5em;
-  filter: grayscale(0);
-  user-select: none;
-  cursor: pointer;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+.favorite-container {
   background-color: rgb(40, 40, 40);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.164);
-  transition-duration: 0.3s;
-  overflow: hidden;
-}
-
-[for='toggle-heart']:before, [for='toggle-heart']:after {
-  position: absolute;
-  z-index: -1;
-  top: 50%;
-  left: 50%;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.164);
+  color: white;
+  transition: background-color 0.3s, transform 0.2s;
+  position: relative;
+}
+
+.favorite-container:hover {
+  background-color: rgb(50, 50, 50);
+}
+
+.favorite-container:active {
+  transform: scale(0.95);
+}
+
+/* Estado deshabilitado (no logueado) */
+[id='toggle-heart']:disabled + .favorite-container {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Tooltip cuando está deshabilitado */
+[id='toggle-heart']:disabled + .favorite-container:hover::before {
+  content: 'Iniciá sesión para agregar a favoritos';
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: fadeIn 0.3s;
+  z-index: 99999;
+}
+
+/* Animación del tooltip */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* Estilos del SVG */
+.favorite-container svg {
+  width: 20px;
+  height: 20px;
+  transition: all 0.3s ease;
+  fill: transparent;
+}
+
+[id='toggle-heart']:checked + .favorite-container svg {
+  fill: #e2264d;
+  stroke: #e2264d;
+  animation: heartButton 1s;
+}
+
+@keyframes heartButton {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.3); }
+  50% { transform: scale(1); }
+  75% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+/* Nube flotante de texto (solo cuando está habilitado) */
+.favorite-container .action {
+  position: absolute;
+  bottom: 120%; /* Aparece por encima */
+  left: 50%;
+  transform: translateX(-50%);
+  display: grid;
+  background-color: rgba(255, 255, 255, 0.95);
+  color: #333;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s, bottom 0.3s;
+  pointer-events: none;
+  z-index: 99999;
+}
+
+/* Triángulo debajo de la nube */
+.favorite-container .action::after {
   content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px 5px 0;
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.95) transparent transparent transparent;
 }
 
-[for='toggle-heart']:before {
-  box-sizing: border-box;
-  margin: -2.25rem;
-  border: solid 2.25rem #e2264d;
-  width: 4.5rem;
-  height: 4.5rem;
-  transform: scale(0);
+/* Mostrar la nube al hacer hover (si no está deshabilitado) */
+[id='toggle-heart']:not(:disabled) + .favorite-container:hover .action {
+  opacity: 1;
+  visibility: visible;
+  bottom: 140%;
 }
 
-[for='toggle-heart']:after {
-  margin: -0.1875rem;
-  width: 0.375rem;
-  height: 0.375rem;
-  box-shadow: 
-    2.8125rem 0.375rem 0 -0.1875rem #ff8080,
-    -2.8125rem 0.375rem 0 -0.1875rem #ffed80,
-    2.1094rem 1.9688rem 0 -0.1875rem #ffed80,
-    -2.1094rem 1.9688rem 0 -0.1875rem #a4ff80,
-    1.2188rem 2.625rem 0 -0.1875rem #a4ff80,
-    -1.2188rem 2.625rem 0 -0.1875rem #80ffc8,
-    0.0938rem 2.8125rem 0 -0.1875rem #80ffc8,
-    -0.0938rem 2.8125rem 0 -0.1875rem #80c8ff,
-    -1.2188rem 2.625rem 0 -0.1875rem #80c8ff,
-    1.2188rem 2.625rem 0 -0.1875rem #a480ff,
-    -2.1094rem 1.9688rem 0 -0.1875rem #a480ff,
-    2.1094rem 1.9688rem 0 -0.1875rem #ff80ed,
-    -2.8125rem 0.375rem 0 -0.1875rem #ff80ed,
-    2.8125rem 0.375rem 0 -0.1875rem #ff8080;
+/* Lógica de cambio de texto (Add to Favorites / Added to Favorites) */
+.favorite-container .action span {
+  grid-column-start: 1;
+  grid-column-end: 1;
+  grid-row-start: 1;
+  grid-row-end: 1;
+  transition: all 0.5s;
 }
 
-@keyframes heart {
-  0%, 17.5% {
-    font-size: 0;
-  }
+.favorite-container .action span.option-1 {
+  transform: translate(0px, 0%);
+  opacity: 1;
 }
 
-@keyframes bubble {
-  15% {
-    transform: scale(1);
-    border-color: #cc8ef5;
-    border-width: 2.25rem;
-  }
-  
-  30%, 100% {
-    transform: scale(1);
-    border-color: #cc8ef5;
-    border-width: 0;
-  }
+[id='toggle-heart']:checked + .favorite-container .action span.option-1 {
+  transform: translate(0px, -100%);
+  opacity: 0;
 }
 
-@keyframes sparkles {
-  0%, 20% {
-    opacity: 0;
-  }
-  
-  25% {
-    opacity: 1;
-    box-shadow: 
-      2.25rem 0.375rem 0 0rem #ff8080,
-      -2.25rem 0.375rem 0 0rem #ffed80,
-      1.6875rem 1.5469rem 0 0rem #ffed80,
-      -1.6875rem 1.5469rem 0 0rem #a4ff80,
-      0.9844rem 2.0625rem 0 0rem #a4ff80,
-      -0.9844rem 2.0625rem 0 0rem #80ffc8,
-      0.0938rem 2.25rem 0 0rem #80ffc8,
-      -0.0938rem 2.25rem 0 0rem #80c8ff,
-      -0.9844rem 2.0625rem 0 0rem #80c8ff,
-      0.9844rem 2.0625rem 0 0rem #a480ff,
-      -1.6875rem 1.5469rem 0 0rem #a480ff,
-      1.6875rem 1.5469rem 0 0rem #ff80ed,
-      -2.25rem 0.375rem 0 0rem #ff80ed,
-      2.25rem 0.375rem 0 0rem #ff8080;
-  }
+.favorite-container .action span.option-2 {
+  transform: translate(0px, 100%);
+  opacity: 0;
+}
+
+[id='toggle-heart']:checked + .favorite-container .action span.option-2 {
+  transform: translate(0px, 0%);
+  opacity: 1;
 }
 
 /* Botón de editar animado */

@@ -260,8 +260,18 @@ button[type="submit"]:disabled {
 
 .server-error {
   color: #ffb3b3;
-  margin-top: 1rem;
+  margin-top: 0;
   text-align: center;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease;
+}
+
+.server-error.show {
+  max-height: 60px;
+  opacity: 1;
+  margin-top: 1rem;
 }
 
 .current-image {

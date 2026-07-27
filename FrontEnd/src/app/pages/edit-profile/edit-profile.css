@@ -282,6 +282,17 @@
   background: rgba(255, 107, 107, 0.1);
   border: 1px solid rgba(255, 107, 107, 0.3);
   border-radius: 0.5rem;
+  padding: 0 1rem;
+  margin-top: 0;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease, padding 0.3s ease;
+}
+
+.error-message.show {
+  max-height: 80px;
+  opacity: 1;
   padding: 1rem;
   margin-top: 1rem;
 }

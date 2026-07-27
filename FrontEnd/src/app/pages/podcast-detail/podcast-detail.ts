@@ -177,7 +177,6 @@ export class PodcastDetail implements OnInit{
 
   toggleFavorite(): void {
     if (!this.podcastId || !this.currentUser) {
-      this.alertService.error('Error', 'Debes iniciar sesión para agregar favoritos');
       return;
     }
 

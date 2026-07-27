@@ -2,9 +2,7 @@
   <div class="add-episode-page">
   <h2>Nuevo episodio para: {{ podcast.title }}</h2>
 
-  @if (!isAuthorized && errorMessage) {
-    <div class="error">{{ errorMessage }}</div>
-  }
+  <div class="error" [class.show]="!isAuthorized && !!errorMessage">{{ errorMessage }}</div>
 
   @if (isAuthorized) {
   <form [formGroup]="form" (ngSubmit)="submit()">
@@ -138,15 +136,11 @@
       <a [routerLink]="['/podcast', podcast.id]" class="cancel">Cancelar</a>
     </div>
 
-    @if (errorMessage) {
-      <div class="error">{{ errorMessage }}</div>
-    }
+    <div class="error" [class.show]="!!errorMessage">{{ errorMessage }}</div>
   </form>
   }
   </div>
 } @else {
   <p>Cargando podcast…</p>
-  @if (errorMessage) {
-    <div class="error">{{ errorMessage }}</div>
-  }
+  <div class="error" [class.show]="!!errorMessage">{{ errorMessage }}</div>
 }

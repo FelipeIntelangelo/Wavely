@@ -3,9 +3,7 @@
     <div class="loading-spinner">Loading profile...</div>
   }
 
-  @if (error) {
-    <div class="error-message">{{ error }}</div>
-  }
+  <div class="error-message" [class.show]="!!error">{{ error }}</div>
 
   @if (currentUser) {
     @if (isGoogleUser) {

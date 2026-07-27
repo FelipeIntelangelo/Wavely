@@ -102,8 +102,8 @@ export class Login implements OnInit, AfterViewInit {
         },
         error: (err) => {
           this.googleLoading = false;
-          this.errorMessage = 'Error al iniciar sesión con Google';
-          this.errorCheck = err.error?.error || 'Intentá de nuevo';
+          this.errorMessage = err instanceof Error ? err.message : 'Error al iniciar sesión con Google';
+          this.errorCheck = null;
           console.error('Google login error', err);
         }
       });
@@ -130,13 +130,13 @@ export class Login implements OnInit, AfterViewInit {
           }
         },
         error: (err) => {
-          this.errorMessage = err.error || 'Login failed.';
-          this.errorCheck = 'Please check your credentials';
+          this.errorMessage = err instanceof Error ? err.message : 'Error al iniciar sesión.';
+          this.errorCheck = null;
           console.error('Login error', err);
         }
       });
     } else {
-      this.errorMessage = 'Please enter both username and password.';
+      this.errorMessage = 'Por favor, completá tu usuario y contraseña.';
     }
   }
 }

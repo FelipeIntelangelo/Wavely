@@ -79,8 +79,6 @@
       </button>
     </div>
 
-    @if (errorMessage) {
-      <p class="server-error">{{ errorMessage }}</p>
-    }
+    <p class="server-error" [class.show]="!!errorMessage">{{ errorMessage }}</p>
   </div>
 </form>

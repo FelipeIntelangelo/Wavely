@@ -237,7 +237,7 @@ export class EditProfileComponent implements OnInit {
           this.router.navigate(['/profile']);
         },
         error: (err) => {
-          this.error = 'Failed to update profile.';
+          this.error = err instanceof Error ? err.message : 'Error al actualizar el perfil.';
           console.error(err);
         }
       });

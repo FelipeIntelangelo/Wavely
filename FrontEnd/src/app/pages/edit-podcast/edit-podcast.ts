@@ -41,8 +41,8 @@ export class EditPodcastComponent implements OnInit {
     this.podcastService.getPodcastById(this.podcastId).subscribe({
       next: (p) => this.podcast = p,
       error: (err) => {
-        this.alertService.errorAlert();
         this.errorMessage = this.formatError(err);
+        this.alertService.error('Error', this.errorMessage);
       }
     });
   }
@@ -59,21 +59,17 @@ export class EditPodcastComponent implements OnInit {
       error: (err) => {
         this.isSubmitting = false;
         this.errorMessage = this.formatError(err);
-        this.alertService.errorAlert();
+        this.alertService.error('Error', this.errorMessage);
       }
     });
   }
 
   private formatError(err: any): string {
-    if (!err) return 'Error al actualizar el podcast.';
-    if (typeof err === 'string') return err;
-    const payload = err.error ?? err;
-    if (typeof payload === 'string') return payload;
-    if (payload && typeof payload === 'object') {
-      if (payload.message) return payload.message;
-      if (payload.errors && Array.isArray(payload.errors) && payload.errors.length) return String(payload.errors[0]);
+    if (err instanceof Error) {
+      return err.message;
     }
-    if (err.message) return err.message;
+    if (typeof err === 'string') return err;
+    if (err && err.message) return err.message;
     return 'Error al actualizar el podcast.';
   }
 }
