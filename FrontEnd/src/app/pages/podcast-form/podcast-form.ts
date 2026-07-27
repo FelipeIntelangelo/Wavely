@@ -5,11 +5,12 @@ import { Podcast } from '../../models/podcast/podcast';
 import { Category } from '../../models/enums/category.enum';
 import { FormError } from '../../components/shared/form-error/form-error';
 import { CloudinaryUploadComponent } from '../../components/shared/cloudinary-upload/cloudinary-upload';
+import { MediaImageComponent } from '../../components/shared/media-image/media-image';
 
 @Component({
   selector: 'app-podcast-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormError, CloudinaryUploadComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormError, CloudinaryUploadComponent, MediaImageComponent],
   templateUrl: './podcast-form.html',
   styleUrls: ['./podcast-form.css']
 })
@@ -147,13 +148,61 @@ export class PodcastFormComponent implements OnInit, OnChanges {
     return this.podcastForm.get('categories');
   }
 
+  isDragOver = false;
+  imageError: string | null = null;
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = true;
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = false;
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = false;
+
+    if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+      const file = event.dataTransfer.files[0];
+      if (file.type.startsWith('image/')) {
+        this.imageError = null;
+        if (this.imageUp) {
+          this.imageUp.setFile(file);
+        }
+        this.onFileSelected(file);
+      } else {
+        this.imageError = 'Por favor selecciona o arrastra un archivo de imagen válido (JPG, PNG, WebP).';
+      }
+    }
+  }
+
+  onFileSelected(file: File): void {
+    if (file && file.type.startsWith('image/')) {
+      this.imageError = null;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.podcastForm.patchValue({ imageUrl: e.target?.result as string });
+      };
+      reader.readAsDataURL(file);
+    } else if (file) {
+      this.imageError = 'Por favor selecciona o arrastra un archivo de imagen válido (JPG, PNG, WebP).';
+    }
+  }
+
   onImageUploaded(url: string): void {
+    this.imageError = null;
     this.podcastForm.patchValue({ imageUrl: url });
   }
 
   onUploadError(error: string): void {
     console.error('Upload error:', error);
-    // Aquí podrías mostrar un mensaje al usuario
+    this.imageError = error || 'Ocurrió un error al cargar la imagen de portada.';
   }
 
   async onSubmit(): Promise<void> {
@@ -183,5 +232,9 @@ export class PodcastFormComponent implements OnInit, OnChanges {
     } else {
       this.podcastForm.markAllAsTouched();
     }
+  }
+
+  onCancel(): void {
+    window.history.back();
   }
 }

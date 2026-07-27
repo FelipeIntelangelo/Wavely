@@ -40,9 +40,12 @@ export class CloudinaryUploadComponent {
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
+    this.setFile(input.files[0]);
+  }
 
-    const file = input.files[0];
-    
+  setFile(file: File): void {
+    if (!file) return;
+
     // Validar tamaño
     const maxSizeBytes = this.maxSizeMB * 1024 * 1024;
     if (file.size > maxSizeBytes) {

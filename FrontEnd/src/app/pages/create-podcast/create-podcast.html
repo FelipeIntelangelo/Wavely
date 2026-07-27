@@ -1,4 +1,9 @@
 <div class="create-podcast-container">
+  <div class="page-header">
+    <h1 class="page-title">Crear Podcast</h1>
+    <p class="page-subtitle">Configurá la información, portada y categorías de tu programa.</p>
+  </div>
+
   <app-podcast-form
     (formSubmit)="onCreatePodcast($event)"
     [isSubmitting]="isSubmitting"

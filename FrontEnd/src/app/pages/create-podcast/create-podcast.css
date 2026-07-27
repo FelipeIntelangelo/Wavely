@@ -1,8 +1,35 @@
 .create-podcast-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh; /* Adjust as needed */
-    background: radial-gradient(circle, #1a1a1a 0%, #000000 100%);
-    padding: 20px;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  background: radial-gradient(circle at top, #1d1d1d 0%, #0d0d0d 100%);
+  min-height: calc(100vh - var(--header-height) - var(--footer-height));
+  color: white;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.4rem 0;
+  color: white;
+  letter-spacing: 0.5px;
+}
+
+.page-subtitle {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .create-podcast-container {
+    padding: 1.25rem;
+  }
 }
