@@ -76,6 +76,13 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.track-title:hover {
+  color: var(--primary-color);
+  text-decoration: underline;
 }
 
 .artist-name {

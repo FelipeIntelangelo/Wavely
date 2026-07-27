@@ -46,7 +46,7 @@
     }
 
     <div class="track-info">
-      <div class="album-art">
+      <div class="album-art" (click)="goToEpisode(); $event.stopPropagation()" style="cursor: pointer;">
         <app-media-image 
           [src]="playerState().episode?.imageUrl || playerState().episode?.podcast?.imageUrl" 
           [alt]="playerState().episode?.title || ''"
@@ -55,7 +55,7 @@
         </app-media-image>
       </div>
       <div class="track-details">
-        <div class="track-title">{{ playerState().episode?.title }}</div>
+        <div class="track-title" (click)="goToEpisode(); $event.stopPropagation()">{{ playerState().episode?.title }}</div>
         <div class="artist-name" (click)="goToPodcast(); $event.stopPropagation()">
           {{ playerState().episode?.podcast?.title }}
         </div>

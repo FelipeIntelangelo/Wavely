@@ -9,7 +9,7 @@
     @if (isGoogleUser) {
       <div class="google-user-notice">
         <i class="fab fa-google"></i>
-        <span>Iniciaste sesión con Google. Solo podés modificar tu <strong>Nickname</strong> y <strong>Bio</strong>. Los demás campos están bloqueados.</span>
+        <span>Iniciaste sesión con Google. Podés modificar tu información de perfil. Los campos de seguridad (email y contraseña) están gestionados por Google.</span>
       </div>
     }
     <form [formGroup]="editProfileForm" (ngSubmit)="onSave()" class="edit-profile-form">
@@ -19,15 +19,11 @@
           <div class="profile-header">
             <!-- Columna de Foto -->
             <div class="profile-picture-column">
-              <div class="profile-picture-wrapper"
-                   [style.cursor]="isGoogleUser ? 'not-allowed' : 'pointer'"
-                   (click)="!isGoogleUser && profilePictureUpload.triggerFileSelect()">
+              <div class="profile-picture-wrapper" (click)="profilePictureUpload.triggerFileSelect()" style="cursor: pointer;">
                 <app-media-image [src]="editProfileForm.get('profilePicture')?.value" [alt]="currentUser.nickname || 'Profile Picture'" type="user" customClass="profile-picture"></app-media-image>
-                @if (!isGoogleUser) {
-                  <div class="profile-picture-overlay">
-                    <i class="fas fa-pencil-alt"></i>
-                  </div>
-                }
+                <div class="profile-picture-overlay">
+                  <i class="fas fa-pencil-alt"></i>
+                </div>
               </div>
               <app-cloudinary-upload
                 style="display: none;"
@@ -51,21 +47,21 @@
                 <app-form-error controlName="nickname" [customMessages]="customErrors['nickname']"></app-form-error>
               </div>
 
-              @if (currentUser.name && currentUser.lastName) {
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="name">Name</label>
-                    <input type="text" id="name" [value]="currentUser.name" disabled class="disabled-input">
-                    <app-form-error controlName="name" [customMessages]="customErrors['name']"></app-form-error>
-                  </div>
-
-                  <div class="form-group">
-                    <label for="lastName">Last Name</label>
-                    <input type="text" id="lastName" [value]="currentUser.lastName" disabled class="disabled-input">
-                    <app-form-error controlName="lastName" [customMessages]="customErrors['lastName']"></app-form-error>
-                  </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="name">Nombre</label>
+                  <input type="text" id="name" formControlName="name"
+                         [class.error-input]="editProfileForm.get('name')?.invalid && editProfileForm.get('name')?.touched">
+                  <app-form-error controlName="name" [customMessages]="customErrors['name']"></app-form-error>
                 </div>
-              }
+
+                <div class="form-group">
+                  <label for="lastName">Apellido</label>
+                  <input type="text" id="lastName" formControlName="lastName"
+                         [class.error-input]="editProfileForm.get('lastName')?.invalid && editProfileForm.get('lastName')?.touched">
+                  <app-form-error controlName="lastName" [customMessages]="customErrors['lastName']"></app-form-error>
+                </div>
+              </div>
             </div>
           </div>
 
