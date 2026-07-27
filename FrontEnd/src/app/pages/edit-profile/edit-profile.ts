@@ -108,6 +108,16 @@ export class EditProfileComponent implements OnInit {
   initForm(): void {
     if (this.currentUser) {
       this.editProfileForm = this.fb.group({
+        name: [this.currentUser.name || '', [
+          Validators.required,
+          Validators.minLength(2),
+          Validators.maxLength(19)
+        ]],
+        lastName: [this.currentUser.lastName || '', [
+          Validators.required,
+          Validators.minLength(2),
+          Validators.maxLength(19)
+        ]],
         nickname: [this.currentUser.nickname, [
           Validators.required,
           Validators.minLength(3),
@@ -211,13 +221,20 @@ export class EditProfileComponent implements OnInit {
 
       const formValue = this.editProfileForm.getRawValue();
       
-      // Construir el DTO con solo los campos que acepta la API
+      // Construir el DTO con los campos que acepta la API
       const updateDTO: UserUpdateDTO = {
         nickname: formValue.nickname,
         email: formValue.email
       };
 
-      // Incluir campos opcionales solo si tienen valor
+      if (formValue.name && formValue.name.trim() !== '') {
+        updateDTO.name = formValue.name;
+      }
+
+      if (formValue.lastName && formValue.lastName.trim() !== '') {
+        updateDTO.lastName = formValue.lastName;
+      }
+
       if (formValue.profilePicture && formValue.profilePicture.trim() !== '') {
         updateDTO.profilePicture = formValue.profilePicture;
       }
