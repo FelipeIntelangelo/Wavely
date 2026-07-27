@@ -10,6 +10,7 @@ import { PodcastDTO } from '../../models/podcast/podcast-dto';
 import { RecommendationService } from '../../services/recommendation/recommendation-service';
 import { RecommendationDTO } from '../../models/recommendation/recommendation-dto';
 import { RecommendationStrategy } from '../../models/enums/recommendation-strategy.enum';
+import { DiceRollerComponent } from '../../components/shared/dice-roller/dice-roller';
 
 interface CarouselState {
   hasBeenClicked: boolean;
@@ -32,7 +33,7 @@ interface PodcastForDisplay {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, DiceRollerComponent],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
@@ -115,7 +116,8 @@ export class Home implements OnInit, AfterViewInit {
           const strategyTitles: Record<RecommendationStrategy, string> = {
             [RecommendationStrategy.TRENDING]: 'Tendencias globales',
             [RecommendationStrategy.CONTENT_BASED]: 'Porque te gustan estas categorías',
-            [RecommendationStrategy.COLLABORATIVE]: 'Recomendados para ti'
+            [RecommendationStrategy.COLLABORATIVE]: 'Recomendados para ti',
+            [RecommendationStrategy.RANDOM_DICE]: 'Recomendaciones para ti'
           };
           this.recomendacionStrategyText = strategyTitles[recommendations[0].strategy] || 'Recomendaciones para ti';
         }

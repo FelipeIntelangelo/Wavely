@@ -285,12 +285,72 @@ Las siguientes constantes se encuentran en `RecommendationService` y controlan e
 | Constante | Valor por defecto | Descripción |
 |---|---|---|
 | `DEFAULT_LIMIT` | `10` | Cantidad máxima de recomendaciones retornadas |
+| `DICE_POOL_SIZE` | `20` | Tamaño del pool de candidatos para el Dado Random |
 | `COLLABORATIVE_THRESHOLD` | `5` | Cantidad de favoritos a partir de la cual se activa la Capa 3 |
 | `MIN_SHARED_FAVORITES` | `2` | Mínimo de favoritos en común para considerar usuarios "similares" |
 
 ---
 
-## 8. Tecnologías Utilizadas
+## 8. Dado Random (Weighted Random Selection)
+
+### Concepto
+
+El **Dado Random** es una extensión del motor de recomendaciones que introduce **azar ponderado** en la selección de podcasts. En lugar de presentar siempre los resultados ordenados por relevancia (lo que crea predictibilidad), el dado construye un pool amplio de candidatos y sortea uno con probabilidad proporcional a su `relevanceScore`.
+
+Esto rompe la **burbuja de filtro** sin sacrificar la relevancia: un podcast con score 900 tiene ~3× más chances de salir que uno con score 300, pero ambos tienen posibilidad.
+
+### Algoritmo
+
+```
+1. Obtener los favoritos del usuario (o null si anónimo)
+2. Seleccionar estrategia según el árbol de decisión existente:
+   - 0 favoritos → pool = Trending (top 20)
+   - 1-5 favoritos → pool = Content-Based (top 20)
+   - >5 favoritos → pool = Collaborative (top 20, con fallback a Content-Based)
+3. Pool ampliado a DICE_POOL_SIZE (20) resultados
+4. Anti-repetición: si el usuario tiene un resultado previo, se excluye del pool
+5. Sorteo ponderado: probabilidad ∝ relevanceScore (mínimo 0.1 para evitar división por cero)
+6. Retorna UN único RecommendationDTO con strategy = RANDOM_DICE
+```
+
+### Sorteo ponderado (implementación)
+
+```java
+double totalWeight = candidates.stream()
+        .mapToDouble(dto -> Math.max(dto.getRelevanceScore(), 0.1))
+        .sum();
+
+double random = ThreadLocalRandom.current().nextDouble() * totalWeight;
+double cumulative = 0;
+
+for (RecommendationDTO candidate : candidates) {
+    cumulative += Math.max(candidate.getRelevanceScore(), 0.1);
+    if (random <= cumulative) return candidate;
+}
+```
+
+### Anti-repetición
+
+Se mantiene un `ConcurrentHashMap<Long, Long>` en memoria (`lastDiceResultByUser`) que mapea `userId → último podcastId sorteado`. Si el pool tiene más de un candidato, se filtra el último resultado antes del sorteo.
+
+### Endpoint
+
+#### `GET /podcastUTN/v1/recommendations/dice`
+
+**Público con mejora autenticada.** Figura en el bloque `permitAll()` del `SecurityFilterChain`.
+
+- **Sin JWT:** Usa el pool de Trending (descubrimiento para visitantes).
+- **Con JWT:** Usa la estrategia personalizada según los favoritos del usuario.
+
+Retorna un único `RecommendationDTO` (no una lista).
+
+### Frontend
+
+El dado se implementa como un componente Angular compartido (`DiceRollerComponent`) ubicado en `components/shared/dice-roller/`. Consiste en un cubo 3D CSS de 44×44px con los colores de Wavely que gira al hacer click directamente sobre él (sin botón separado). Al completar la animación, se muestra un modal con la card del podcast sorteado y opciones para navegar al podcast o tirar de nuevo.
+
+---
+
+## 9. Tecnologías Utilizadas
 
 | Componente | Tecnología |
 |---|---|
@@ -304,7 +364,7 @@ Las siguientes constantes se encuentran en `RecommendationService` y controlan e
 
 ---
 
-## 9. Escalabilidad y Evolución Futura
+## 10. Escalabilidad y Evolución Futura
 
 El diseño actual sienta las bases para futuras mejoras sin necesidad de reescribir la arquitectura:
 
@@ -317,6 +377,6 @@ El diseño actual sienta las bases para futuras mejoras sin necesidad de reescri
 
 ---
 
-## 10. Resumen
+## 11. Resumen
 
 El motor de recomendaciones de Wavely implementa un **algoritmo híbrido de tres capas** que opera íntegramente sobre PostgreSQL mediante queries SQL nativas. Su diseño resuelve el problema del cold start, evita la burbuja de filtro mediante el componente colaborativo y garantiza respuestas de calidad en todos los estados del ciclo de vida del usuario — desde el registro hasta el uso avanzado de la plataforma.

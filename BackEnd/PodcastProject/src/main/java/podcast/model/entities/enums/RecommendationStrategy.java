@@ -12,5 +12,6 @@ package podcast.model.entities.enums;
 public enum RecommendationStrategy {
     TRENDING,
     CONTENT_BASED,
-    COLLABORATIVE
+    COLLABORATIVE,
+    RANDOM_DICE
 }
