@@ -1,6 +1,7 @@
 <div class="upload-container">
   <label class="upload-label">
     <input 
+      #fileInput
       type="file" 
       [accept]="acceptedTypes"
       (change)="onFileSelected($event)"

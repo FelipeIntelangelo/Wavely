@@ -17,21 +17,21 @@
         }
       </div>
       <div class="profile-name-section">
-        @if (isFullUser(user)) {
-          <h1 class="profile-username">{{ user.nickname }}</h1>
-          <h2 class="profile-fullname">{{ user.name }} {{ user.lastName }}</h2>
-          
-        } @else {
-          <h1 class="profile-username">{{ user.nickname }}</h1>
+        <h1 class="profile-username">{{ user.nickname }}</h1>
+        
+        @if (followStatus) {
+          <a routerLink="/profile/{{user.id}}/followers" class="followers-count-link">
+            <span class="followers-count">{{ followStatus.followersCount }} {{ followStatus.followersCount === 1 ? 'follower' : 'followers' }}</span>
+          </a>
         }
+
+        @if (isFullUser(user)) {
+          <h2 class="profile-fullname">{{ user.name }} {{ user.lastName }}</h2>
+        }
+
         @if (isOwnProfile && isFullUser(user)) {
           <div class="profile-actions-header">
             <a routerLink="/profile/edit" class="action-button edit-button">Edit Profile</a>
-            @if (followStatus) {
-              <a routerLink="/profile/{{user.id}}/followers" class="followers-count-link">
-                <span class="followers-count">{{ followStatus.followersCount }} {{ followStatus.followersCount === 1 ? 'follower' : 'followers' }}</span>
-              </a>
-            }
           </div>
         }
         @if (!isOwnProfile && currentUserId) {
@@ -64,11 +64,6 @@
                   <i class="far fa-bell"></i>
                 }
               </button>
-            }
-            @if (followStatus) {
-              <a routerLink="/profile/{{user.id}}/followers" class="followers-count-link">
-                <span class="followers-count">{{ followStatus.followersCount }} {{ followStatus.followersCount === 1 ? 'follower' : 'followers' }}</span>
-              </a>
             }
           </div>
         }
