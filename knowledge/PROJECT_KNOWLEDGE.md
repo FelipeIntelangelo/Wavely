@@ -131,6 +131,7 @@ Toda la lógica de red utiliza `HttpClient`.
 *   **`notification-item/`:** Renderiza la notificación individual con iconos específicos (`🎙️`, `📢`, `💬`, `⭐`).
 *   **`sidebar/`:** Navegación principal de la plataforma.
 *   **`audio-player/`:** Reproductor multimedia fijado en la parte inferior de la pantalla.
+*   **`media-image/` (`<app-media-image>`):** Componente reutilizable y standalone estándar para renderizar portadas de podcasts, avatares de usuario y carátulas de episodios. Conmuta automáticamente al placeholder SVG/CSS correspondiente en caso de URLs nulas o fallas de red (404).
 
 ### 3.4 Vistas / Páginas (`pages/`)
 Rutas principales configuradas en `app.routes.ts`:

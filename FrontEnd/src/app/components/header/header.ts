@@ -11,10 +11,11 @@ import { PodcastSearchDTO } from '../../models/podcast/podcast-search-dto';
 import { LayoutService } from '../../services/layout/layout.service';
 import { NotificationBell } from '../notification-bell/notification-bell';
 import { AuthModalService } from '../../services/auth/auth-modal.service';
+import { MediaImageComponent } from '../shared/media-image/media-image';
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, CommonModule, FormsModule, NotificationBell],
+  imports: [RouterLink, CommonModule, FormsModule, NotificationBell, MediaImageComponent],
   templateUrl: './header.html',
   styleUrl: './header.css'
 })

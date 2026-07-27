@@ -7,11 +7,13 @@ import { EpisodeService } from '../../services/episode/episode.service';
 import { EpisodeDTO } from '../../models/episode/episode-dto';
 import { AlertService } from '../../services/ui/alert.service';
 import { DurationPipe } from '../../pipes/duration.pipe';
+import { MediaImageComponent } from '../../components/shared/media-image/media-image';
+import { AddToPlaylistComponent } from '../../components/shared/add-to-playlist/add-to-playlist';
 
 @Component({
   selector: 'app-following',
   standalone: true,
-  imports: [CommonModule, RouterLink, DurationPipe],
+  imports: [CommonModule, RouterLink, DurationPipe, MediaImageComponent, AddToPlaylistComponent],
   templateUrl: './following.html',
   styleUrl: './following.css'
 })

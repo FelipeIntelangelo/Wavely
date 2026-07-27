@@ -8,6 +8,12 @@
   }
 
   @if (currentUser) {
+    @if (isGoogleUser) {
+      <div class="google-user-notice">
+        <i class="fab fa-google"></i>
+        <span>Iniciaste sesión con Google. Solo podés modificar tu <strong>Nickname</strong> y <strong>Bio</strong>. Los demás campos están bloqueados.</span>
+      </div>
+    }
     <form [formGroup]="editProfileForm" (ngSubmit)="onSave()" class="edit-profile-form">
       <div class="edit-profile-grid">
         <!-- Columna Izquierda: Información de Perfil -->
@@ -15,15 +21,15 @@
           <div class="profile-header">
             <!-- Columna de Foto -->
             <div class="profile-picture-column">
-              <div class="profile-picture-wrapper" (click)="profilePictureUpload.triggerFileSelect()" style="cursor: pointer;">
-                @if (editProfileForm.get('profilePicture')?.value) {
-                  <img [src]="editProfileForm.get('profilePicture')?.value" alt="Profile Picture" class="profile-picture">
-                } @else {
-                  <div class="user-image-placeholder profile-picture-placeholder"></div>
+              <div class="profile-picture-wrapper"
+                   [style.cursor]="isGoogleUser ? 'not-allowed' : 'pointer'"
+                   (click)="!isGoogleUser && profilePictureUpload.triggerFileSelect()">
+                <app-media-image [src]="editProfileForm.get('profilePicture')?.value" [alt]="currentUser.nickname || 'Profile Picture'" type="user" customClass="profile-picture"></app-media-image>
+                @if (!isGoogleUser) {
+                  <div class="profile-picture-overlay">
+                    <i class="fas fa-pencil-alt"></i>
+                  </div>
                 }
-                <div class="profile-picture-overlay">
-                  <i class="fas fa-pencil-alt"></i>
-                </div>
               </div>
               <app-cloudinary-upload
                 style="display: none;"
@@ -73,7 +79,7 @@
             <app-form-error controlName="bio" [customMessages]="customErrors['bio']"></app-form-error>
           </div>
 
-          <div class="form-actions">
+          <div class="form-actions desktop-only-actions">
             <button type="submit" [disabled]="editProfileForm.invalid">Save Changes</button>
             <button type="button" (click)="onCancel()">Cancel</button>
           </div>
@@ -84,6 +90,7 @@
           <div class="form-group">
             <label for="email">Email</label>
             <input type="email" id="email" formControlName="email"
+                   [class.disabled-input]="isGoogleUser"
                    [class.error-input]="editProfileForm.get('email')?.invalid && editProfileForm.get('email')?.touched">
             <app-form-error controlName="email" [customMessages]="customErrors['email']"></app-form-error>
           </div>
@@ -92,8 +99,9 @@
             <label for="password">Nueva Contraseña (opcional)</label>
             <div class="password-input-wrapper">
               <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password"
+                     [class.disabled-input]="isGoogleUser"
                      [class.error-input]="editProfileForm.get('password')?.invalid && editProfileForm.get('password')?.touched">
-              <button type="button" class="password-toggle" (click)="togglePasswordVisibility()" tabindex="-1">
+              <button type="button" class="password-toggle" (click)="togglePasswordVisibility()" tabindex="-1" [disabled]="isGoogleUser">
                 <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
               </button>
             </div>
@@ -104,14 +112,21 @@
             <label for="confirmPassword">Confirmar Nueva Contraseña</label>
             <div class="password-input-wrapper">
               <input [type]="showConfirmPassword ? 'text' : 'password'" id="confirmPassword" formControlName="confirmPassword"
+                     [class.disabled-input]="isGoogleUser"
                      [class.error-input]="editProfileForm.get('confirmPassword')?.invalid && editProfileForm.get('confirmPassword')?.touched">
-              <button type="button" class="password-toggle" (click)="toggleConfirmPasswordVisibility()" tabindex="-1">
+              <button type="button" class="password-toggle" (click)="toggleConfirmPasswordVisibility()" tabindex="-1" [disabled]="isGoogleUser">
                 <i [class]="showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
               </button>
             </div>
             <app-form-error controlName="confirmPassword" [customMessages]="customErrors['confirmPassword']"></app-form-error>
           </div>
         </div>
+      </div>
+
+      <!-- Botones para vista Mobile/Tablet (Debajo de todos los inputs) -->
+      <div class="form-actions mobile-only-actions">
+        <button type="submit" [disabled]="editProfileForm.invalid">Save Changes</button>
+        <button type="button" (click)="onCancel()">Cancel</button>
       </div>
     </form>
   }

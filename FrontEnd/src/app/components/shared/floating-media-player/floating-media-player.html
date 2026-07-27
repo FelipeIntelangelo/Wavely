@@ -47,10 +47,12 @@
 
     <div class="track-info">
       <div class="album-art">
-        <img 
-          [src]="playerState().episode?.imageUrl || playerState().episode?.podcast?.imageUrl || 'assets/default-episode.png'" 
-          [alt]="playerState().episode?.title"
-          class="album-art-img">
+        <app-media-image 
+          [src]="playerState().episode?.imageUrl || playerState().episode?.podcast?.imageUrl" 
+          [alt]="playerState().episode?.title || ''"
+          type="episode"
+          customClass="album-art-img">
+        </app-media-image>
       </div>
       <div class="track-details">
         <div class="track-title">{{ playerState().episode?.title }}</div>

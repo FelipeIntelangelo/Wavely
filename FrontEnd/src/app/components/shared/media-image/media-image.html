@@ -1,0 +1,9 @@
+@if (src && !hasError) {
+  <img [src]="src" [alt]="alt" (error)="onImageError()" [class]="customClass">
+} @else {
+  @if (type === 'user') {
+    <div class="user-image-placeholder" [ngClass]="customClass"></div>
+  } @else {
+    <div class="image-placeholder" [ngClass]="customClass"></div>
+  }
+}

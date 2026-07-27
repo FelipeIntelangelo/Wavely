@@ -4,11 +4,12 @@ import { PodcastDTO } from '../../models/podcast/podcast-dto';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AlertService } from '../../services/ui/alert.service';
+import { MediaImageComponent } from '../../components/shared/media-image/media-image';
 
 @Component({
   selector: 'app-favorites',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MediaImageComponent],
   templateUrl: './favorites.html',
   styleUrl: './favorites.css'
 })
@@ -68,14 +69,5 @@ export class FavoritesComponent implements OnInit {
         this.alertService.error('Error', err.message || 'No se pudo quitar de favoritos');
       }
     });
-  }
-
-  onImageError(event: Event): void {
-    const img = event.target as HTMLImageElement;
-    img.style.display = 'none';
-    const placeholder = img.parentElement?.querySelector('.image-placeholder') as HTMLElement;
-    if (placeholder) {
-      placeholder.style.display = 'flex';
-    }
   }
 }

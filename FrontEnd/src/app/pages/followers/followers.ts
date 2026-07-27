@@ -4,11 +4,12 @@ import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { FollowService } from '../../services/follow/follow-service';
 import { FollowerDTO } from '../../models/user/follower-dto';
 import { AlertService } from '../../services/ui/alert.service';
+import { MediaImageComponent } from '../../components/shared/media-image/media-image';
 
 @Component({
   selector: 'app-followers',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, MediaImageComponent],
   templateUrl: './followers.html',
   styleUrl: './followers.css'
 })

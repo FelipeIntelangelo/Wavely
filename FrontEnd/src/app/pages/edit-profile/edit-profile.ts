@@ -7,11 +7,12 @@ import { CommonModule } from '@angular/common';
 import { CloudinaryUploadComponent } from '../../components/shared/cloudinary-upload/cloudinary-upload';
 import { FormError } from '../../components/shared/form-error/form-error';
 import { UserUpdateDTO } from '../../models/user/user-update-dto';
+import { MediaImageComponent } from '../../components/shared/media-image/media-image';
 
 @Component({
   selector: 'app-edit-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, CloudinaryUploadComponent, FormError],
+  imports: [CommonModule, ReactiveFormsModule, CloudinaryUploadComponent, FormError, MediaImageComponent],
   templateUrl: './edit-profile.html',
   styleUrl: './edit-profile.css'
 })
@@ -79,6 +80,31 @@ export class EditProfileComponent implements OnInit {
     });
   }
 
+  get isGoogleUser(): boolean {
+    if (typeof localStorage !== 'undefined') {
+      const provider = localStorage.getItem('auth_provider') || localStorage.getItem('login_provider');
+      if (provider === 'google') return true;
+      const token = localStorage.getItem('jwt_token');
+      if (token) {
+        try {
+          const payloadBase64 = token.split('.')[1];
+          if (payloadBase64) {
+            const payload = JSON.parse(atob(payloadBase64));
+            if (
+              payload.provider === 'google' ||
+              payload.iss?.includes('google') ||
+              payload.authProvider === 'google' ||
+              payload.isGoogle === true
+            ) {
+              return true;
+            }
+          }
+        } catch (e) {}
+      }
+    }
+    return false;
+  }
+
   initForm(): void {
     if (this.currentUser) {
       this.editProfileForm = this.fb.group({
@@ -104,6 +130,12 @@ export class EditProfileComponent implements OnInit {
         ]],
         confirmPassword: ['']
       }, { validators: this.passwordMatchValidator });
+
+      if (this.isGoogleUser) {
+        this.editProfileForm.get('email')?.disable();
+        this.editProfileForm.get('password')?.disable();
+        this.editProfileForm.get('confirmPassword')?.disable();
+      }
 
       // Revalidar cuando cambien los campos de contraseña
       this.editProfileForm.get('password')?.valueChanges.subscribe(() => {
@@ -177,7 +209,7 @@ export class EditProfileComponent implements OnInit {
         return;
       }
 
-      const formValue = this.editProfileForm.value;
+      const formValue = this.editProfileForm.getRawValue();
       
       // Construir el DTO con solo los campos que acepta la API
       const updateDTO: UserUpdateDTO = {

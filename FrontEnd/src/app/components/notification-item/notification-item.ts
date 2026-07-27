@@ -1,10 +1,11 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Notification } from '../../models/notification/notification';
+import { MediaImageComponent } from '../shared/media-image/media-image';
 
 @Component({
   selector: 'app-notification-item',
-  imports: [CommonModule],
+  imports: [CommonModule, MediaImageComponent],
   templateUrl: './notification-item.html',
   styleUrls: ['./notification-item.css']
 })

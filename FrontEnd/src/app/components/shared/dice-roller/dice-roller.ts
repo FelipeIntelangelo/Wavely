@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { RecommendationService } from '../../../services/recommendation/recommendation-service';
 import { RecommendationDTO } from '../../../models/recommendation/recommendation-dto';
+import { MediaImageComponent } from '../media-image/media-image';
 
 @Component({
   selector: 'app-dice-roller',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MediaImageComponent],
   templateUrl: './dice-roller.html',
   styleUrl: './dice-roller.css'
 })

@@ -26,12 +26,7 @@
                                 class="search-result-item podcast-result"
                                 (click)="selectPodcast(podcast)">
                                 <span class="result-type result-icon-podcast">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                                        <line x1="12" y1="19" x2="12" y2="23"/>
-                                        <line x1="8" y1="23" x2="16" y2="23"/>
-                                    </svg>
+                                    <app-media-image [src]="podcast.imageUrl" [alt]="podcast.title" type="podcast"></app-media-image>
                                 </span>
                                 <div class="result-content">
                                     <div class="result-title">{{ podcast.title }}</div>
@@ -50,11 +45,7 @@
                                 class="search-result-item user-result"
                                 (click)="selectResult(result)">
                                 <span class="result-type result-icon-user">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M12.12 12.78C12.05 12.77 11.96 12.77 11.88 12.78C10.12 12.72 8.71997 11.28 8.71997 9.50998C8.71997 7.69998 10.18 6.22998 12 6.22998C13.81 6.22998 15.28 7.69998 15.28 9.50998C15.27 11.28 13.88 12.72 12.12 12.78Z"/>
-                                        <path d="M18.74 19.3801C16.96 21.0101 14.6 22.0001 12 22.0001C9.40001 22.0001 7.04001 21.0101 5.26001 19.3801C5.36001 18.4401 5.96001 17.5201 7.03001 16.8001C9.77001 14.9801 14.25 14.9801 16.97 16.8001C18.04 17.5201 18.64 18.4401 18.74 19.3801Z"/>
-                                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"/>
-                                    </svg>
+                                    <app-media-image [src]="result.profilePicture" [alt]="result.nickname" type="user"></app-media-image>
                                 </span>
                                 <div class="result-content">
                                     <div class="result-title">{{ result.nickname }}</div>
@@ -95,13 +86,8 @@
                                     class="search-result-item podcast-result"
                                     (click)="selectPodcast(podcast); closeMobileSearchPopdown()">
                                     <span class="result-type result-icon-podcast">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                                        <line x1="12" y1="19" x2="12" y2="23"/>
-                                        <line x1="8" y1="23" x2="16" y2="23"/>
-                                    </svg>
-                                </span>
+                                        <app-media-image [src]="podcast.imageUrl" [alt]="podcast.title" type="podcast"></app-media-image>
+                                    </span>
                                     <div class="result-content">
                                         <div class="result-title">{{ podcast.title }}</div>
                                         @if (podcast.description && podcast.description.length > 0) {
@@ -119,12 +105,8 @@
                                     class="search-result-item user-result"
                                     (click)="selectResult(result); closeMobileSearchPopdown()">
                                     <span class="result-type result-icon-user">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M12.12 12.78C12.05 12.77 11.96 12.77 11.88 12.78C10.12 12.72 8.71997 11.28 8.71997 9.50998C8.71997 7.69998 10.18 6.22998 12 6.22998C13.81 6.22998 15.28 7.69998 15.28 9.50998C15.27 11.28 13.88 12.72 12.12 12.78Z"/>
-                                        <path d="M18.74 19.3801C16.96 21.0101 14.6 22.0001 12 22.0001C9.40001 22.0001 7.04001 21.0101 5.26001 19.3801C5.36001 18.4401 5.96001 17.5201 7.03001 16.8001C9.77001 14.9801 14.25 14.9801 16.97 16.8001C18.04 17.5201 18.64 18.4401 18.74 19.3801Z"/>
-                                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"/>
-                                    </svg>
-                                </span>
+                                        <app-media-image [src]="result.profilePicture" [alt]="result.nickname" type="user"></app-media-image>
+                                    </span>
                                     <div class="result-content">
                                         <div class="result-title">{{ result.nickname }}</div>
                                         @if (result.bio && result.bio.length > 0) {
@@ -172,12 +154,7 @@
                                 class="search-result-item podcast-result"
                                 (click)="selectPodcast(podcast)">
                                 <span class="result-type result-icon-podcast">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                                        <line x1="12" y1="19" x2="12" y2="23"/>
-                                        <line x1="8" y1="23" x2="16" y2="23"/>
-                                    </svg>
+                                    <app-media-image [src]="podcast.imageUrl" [alt]="podcast.title" type="podcast"></app-media-image>
                                 </span>
                                 <div class="result-content">
                                     <div class="result-title">{{ podcast.title }}</div>
@@ -196,11 +173,7 @@
                                 class="search-result-item user-result"
                                 (click)="selectResult(result)">
                                 <span class="result-type result-icon-user">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M12.12 12.78C12.05 12.77 11.96 12.77 11.88 12.78C10.12 12.72 8.71997 11.28 8.71997 9.50998C8.71997 7.69998 10.18 6.22998 12 6.22998C13.81 6.22998 15.28 7.69998 15.28 9.50998C15.27 11.28 13.88 12.72 12.12 12.78Z"/>
-                                        <path d="M18.74 19.3801C16.96 21.0101 14.6 22.0001 12 22.0001C9.40001 22.0001 7.04001 21.0101 5.26001 19.3801C5.36001 18.4401 5.96001 17.5201 7.03001 16.8001C9.77001 14.9801 14.25 14.9801 16.97 16.8001C18.04 17.5201 18.64 18.4401 18.74 19.3801Z"/>
-                                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"/>
-                                    </svg>
+                                    <app-media-image [src]="result.profilePicture" [alt]="result.nickname" type="user"></app-media-image>
                                 </span>
                                 <div class="result-content">
                                     <div class="result-title">{{ result.nickname }}</div>
@@ -224,12 +197,7 @@
             </button>
             <div class="profile-section">
                 <div (click)="toggleProfileMenu()" class="profile-picture-container">
-                    @if (user.profilePicture) {
-                        <img [src]="user.profilePicture" alt="User Profile" class="profile-picture" (error)="onProfileImageError($event)" />
-                        <div class="user-image-placeholder profile-placeholder" style="display: none;"></div>
-                    } @else {
-                        <div class="user-image-placeholder profile-placeholder"></div>
-                    }
+                    <app-media-image [src]="user.profilePicture" [alt]="user.nickname || 'User Profile'" type="user" customClass="profile-picture"></app-media-image>
                 </div>
                 @if (showProfileMenu) {
                     <div class="profile-menu">

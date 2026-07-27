@@ -54,8 +54,7 @@
                     @for (podcast of filteredPodcasts; track podcast.id) {
                         <div class="podcast-card" (click)="navigateToPodcast(podcast.id)">
                             <div class="podcast-image">
-                                <img [src]="podcast.imageUrl" [alt]="podcast.title" (error)="onImageError($event)">
-                                <div class="image-placeholder" style="display: none;"></div>
+                                <app-media-image [src]="podcast.imageUrl" [alt]="podcast.title" type="podcast"></app-media-image>
                             </div>
                             <div class="podcast-info">
                                 <h3 class="podcast-title">{{ podcast.title }}</h3>
@@ -109,8 +108,7 @@
                     @for (episode of filteredEpisodes; track episode.id) {
                         <div class="podcast-card" (click)="navigateToPodcast(episode.podcastId || 0)"> <!-- Asume podcastId -->
                             <div class="podcast-image">
-                                <img [src]="episode.imageUrl" [alt]="episode.title" (error)="onImageError($event)">
-                                <div class="image-placeholder" style="display: none;"></div>
+                                <app-media-image [src]="episode.imageUrl" [alt]="episode.title" type="episode"></app-media-image>
                             </div>
                             <div class="podcast-info">
                                 <h3 class="podcast-title">{{ episode.title }}</h3>
@@ -164,11 +162,7 @@
                     @for (user of filteredUsers; track user.id) {
                         <div class="user-card" (click)="navigateToProfile(user.id)">
                             <div class="user-image">
-                                @if (user.profilePicture) {
-                                    <img [src]="user.profilePicture" [alt]="user.nickname" (error)="onUserImageError($event)">
-                                } @else {
-                                    <div class="user-image-placeholder"></div>
-                                }
+                                <app-media-image [src]="user.profilePicture" [alt]="user.nickname" type="user"></app-media-image>
                             </div>
                             <div class="user-info">
                                 <h3 class="user-nickname">{{ user.nickname }}</h3>

@@ -4,6 +4,10 @@
   z-index: 20;
 }
 
+:host(.is-open) {
+  z-index: 1000 !important;
+}
+
 .playlist-picker {
   position: relative;
 }
@@ -41,6 +45,7 @@
   padding: 0.65rem;
   color: white;
   cursor: default;
+  z-index: 1001;
 }
 
 @supports not selector(::-webkit-scrollbar) {

@@ -8,8 +8,7 @@
       <!-- Imagen del episodio -->
       <div class="left-section">
         <div class="episode-image">
-          <img [src]="episode.imageUrl || episode.podcast.imageUrl || 'assets/default-episode.png'" [alt]="episode.title" (error)="onImageError($event)">
-          <div class="image-placeholder" style="display: none;"></div>
+          <app-media-image [src]="episode.imageUrl || episode.podcast.imageUrl" [alt]="episode.title" type="episode"></app-media-image>
         </div>
       </div>
 
@@ -148,54 +147,39 @@
           @if (isInHistory) {
             <div class="comment-form">
               <div class="user-avatar">
-                @if (currentUser?.profilePicture) {
-                  <img [src]="currentUser!.profilePicture" [alt]="currentUser!.nickname" />
-                } @else {
-                  <div class="avatar-fallback">{{ currentUser?.nickname?.charAt(0)?.toUpperCase() || 'U' }}</div>
-                }
+                <app-media-image [src]="currentUser?.profilePicture" [alt]="currentUser?.nickname || ''" type="user"></app-media-image>
               </div>
               <div class="comment-input-wrapper">
                 <textarea
                   class="comment-input"
                   [(ngModel)]="newCommentContent"
                   placeholder="Añade un comentario..."
-                  rows="1"
-                  maxlength="500"
+                  rows="3"
                   [disabled]="isSubmittingComment"
-                  (focus)="$any($event.target).rows = 3"
-                  (blur)="newCommentContent.trim() === '' ? $any($event.target).rows = 1 : null"
                 ></textarea>
                 <div class="comment-actions">
-                  <span class="char-counter" [class.warning]="newCommentContent.length > 200" [class.realWarning]="newCommentContent.length > 325" [class.realRealWarning]="newCommentContent.length > 425">
-                    {{ newCommentContent.length }}/500
-                  </span>
-                  <div class="action-buttons">
-                    <button
-                      type="button"
-                      class="cancel-btn"
-                      (click)="newCommentContent = ''"
-                      [disabled]="isSubmittingComment || !newCommentContent.trim()"
-                    >
-                      Cancel
+                  @if (newCommentContent.trim()) {
+                    <button type="button" class="cancel-btn" (click)="newCommentContent = ''" [disabled]="isSubmittingComment">
+                      Cancelar
                     </button>
-                    <button
-                      type="button"
-                      class="submit-btn"
-                      (click)="submitComment()"
-                      [disabled]="isSubmittingComment || !newCommentContent.trim()"
-                    >
-                      @if (isSubmittingComment) {
-                        <span class="spinner"></span>
-                        Publicando...
-                      } @else {
-                        Comment
-                      }
-                    </button>
-                  </div>
-        </div>
-      </div>
-  </div>
-} @else {
+                  }
+                  <button
+                    type="button"
+                    class="submit-btn"
+                    (click)="submitComment()"
+                    [disabled]="isSubmittingComment || !newCommentContent.trim()"
+                  >
+                    @if (isSubmittingComment) {
+                      <span class="spinner"></span>
+                      Publicando...
+                    } @else {
+                      Comment
+                    }
+                  </button>
+                </div>
+              </div>
+            </div>
+          } @else {
             <div class="comment-locked">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
@@ -227,11 +211,7 @@
           @for (comment of paginatedCommentaries; track $index) {
             <article class="commentary-card">
               <div class="commentary-avatar">
-                @if (comment.userProfilePicture) {
-                  <img [src]="comment.userProfilePicture" [alt]="comment.userName" />
-                } @else {
-                  <div class="avatar-fallback">{{ comment.userName.charAt(0).toUpperCase() }}</div>
-                }
+                <app-media-image [src]="comment.userProfilePicture" [alt]="comment.userName" type="user"></app-media-image>
               </div>
               <div class="commentary-content">
                 <div class="commentary-meta">

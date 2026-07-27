@@ -21,11 +21,9 @@
         <span class="result-title-text">¡El dado ha hablado!</span>
       </div>
       <div class="result-body" (click)="goToPodcast()">
-        @if (result.imageUrl) {
-          <img [src]="result.imageUrl" [alt]="result.title" class="result-image" />
-        } @else {
-          <div class="result-image-placeholder"></div>
-        }
+        <div class="result-image-wrapper">
+          <app-media-image [src]="result.imageUrl" [alt]="result.title" type="podcast"></app-media-image>
+        </div>
         <div class="result-info">
           <h3>{{ result.title }}</h3>
           @if (result.description) {

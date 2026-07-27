@@ -6,11 +6,12 @@ import { PodcastSearchDTO } from '../../models/podcast/podcast-search-dto';
 import { Category } from '../../models/enums/category.enum';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { MediaImageComponent } from '../../components/shared/media-image/media-image';
 
 @Component({
   selector: 'app-category-podcasts',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MediaImageComponent],
   templateUrl: './category-podcasts.html',
   styleUrls: ['./category-podcasts.css']
 })
@@ -94,14 +95,5 @@ export class CategoryPodcasts implements OnInit {
 
   viewPodcast(id: number): void {
     this.router.navigate(['/podcast', id]);
-  }
-
-  onImageError(event: Event): void {
-    const img = event.target as HTMLImageElement;
-    img.style.display = 'none';
-    const placeholder = img.parentElement?.querySelector('.image-placeholder') as HTMLElement;
-    if (placeholder) {
-      placeholder.style.display = 'flex';
-    }
   }
 }

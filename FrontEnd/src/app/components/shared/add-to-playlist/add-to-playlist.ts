@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, Input } from '@angular/core';
+import { Component, ElementRef, HostBinding, HostListener, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Playlist, PlaylistItemType } from '../../../models/playlist/playlist';
@@ -19,6 +19,11 @@ export class AddToPlaylistComponent {
 
   playlists: Playlist[] = [];
   isOpen = false;
+
+  @HostBinding('class.is-open')
+  get isOpenClass(): boolean {
+    return this.isOpen;
+  }
   isLoading = false;
   isCreating = false;
   newPlaylistName = '';

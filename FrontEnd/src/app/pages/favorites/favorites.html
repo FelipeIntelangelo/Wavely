@@ -17,8 +17,7 @@
       @for (podcast of favorites; track podcast.id) {
         <article class="podcast-card" (click)="viewPodcast(podcast.id)">
           <div class="podcast-image">
-            <img [src]="podcast.imageUrl" [alt]="podcast.title" (error)="onImageError($event)">
-            <div class="image-placeholder" style="display: none;"></div>
+            <app-media-image [src]="podcast.imageUrl" [alt]="podcast.title" type="podcast"></app-media-image>
           </div>
           
           <div class="podcast-content">

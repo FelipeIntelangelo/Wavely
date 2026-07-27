@@ -4,10 +4,11 @@ import { PodcastTotalDTO } from '../../models/podcast/podcast-total-dto';
 import { AlertService } from '../../services/ui/alert.service';
 import { Router } from '@angular/router';
 import { EpisodeService } from '../../services/episode/episode.service';
+import { MediaImageComponent } from '../../components/shared/media-image/media-image';
 
 @Component({
   selector: 'app-my-podcasts',
-  imports: [],
+  imports: [MediaImageComponent],
   templateUrl: './my-podcasts.html',
   styleUrl: './my-podcasts.css'
 })
@@ -125,15 +126,6 @@ export class MyPodcasts implements OnInit {
           }
         }
       });
-    }
-  }
-
-  onImageError(event: Event): void {
-    const img = event.target as HTMLImageElement;
-    img.style.display = 'none';
-    const placeholder = img.parentElement?.querySelector('.image-placeholder') as HTMLElement;
-    if (placeholder) {
-      placeholder.style.display = 'flex';
     }
   }
 }

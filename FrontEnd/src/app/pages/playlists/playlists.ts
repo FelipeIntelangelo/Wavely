@@ -4,11 +4,12 @@ import { Router } from '@angular/router';
 import { Playlist, PlaylistDetail, PlaylistItem } from '../../models/playlist/playlist';
 import { PlaylistService } from '../../services/playlist/playlist-service';
 import { AlertService } from '../../services/ui/alert.service';
+import { MediaImageComponent } from '../../components/shared/media-image/media-image';
 
 @Component({
   selector: 'app-playlists',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, MediaImageComponent],
   templateUrl: './playlists.html',
   styleUrl: './playlists.css'
 })
@@ -156,10 +157,6 @@ export class PlaylistsComponent implements OnInit {
   openItem(item: PlaylistItem): void {
     const route = item.type === 'PODCAST' ? '/podcast' : '/episode';
     this.router.navigate([route, item.contentId]);
-  }
-
-  imageFallback(event: Event): void {
-    (event.target as HTMLImageElement).style.display = 'none';
   }
 
   private errorMessage(error: any): string {

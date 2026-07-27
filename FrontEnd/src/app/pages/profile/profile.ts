@@ -13,11 +13,12 @@ import { PodcastDTO } from '../../models/podcast/podcast-dto';
 import { catchError } from 'rxjs/operators';
 import { FollowService } from '../../services/follow/follow-service';
 import { FollowStatusDTO } from '../../models/user/follow-status-dto';
+import { MediaImageComponent } from '../../components/shared/media-image/media-image';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, MediaImageComponent],
   templateUrl: './profile.html',
   styleUrl: './profile.css'
 })
@@ -158,23 +159,6 @@ export class Profile implements OnInit, OnDestroy {
 
   navigateToPodcast(podcastId: number): void {
     this.router.navigate(['/podcast', podcastId]);
-  }
-
-  onImageError(event: Event): void {
-    const img = event.target as HTMLImageElement;
-    // Ocultar la imagen con error
-    img.style.display = 'none';
-    // Mostrar el placeholder si existe
-    const placeholder = img.parentElement?.querySelector('.image-placeholder') as HTMLElement;
-    if (placeholder) {
-      placeholder.style.display = 'flex';
-    } else {
-      // Si no existe placeholder, crear uno
-      const placeholderDiv = document.createElement('div');
-      placeholderDiv.className = 'image-placeholder';
-      placeholderDiv.innerHTML = '<i class="fas fa-podcast"></i>';
-      img.parentElement?.appendChild(placeholderDiv);
-    }
   }
 
   private handleLoadSuccess(data: User | UserSearchDTO, shouldScroll: boolean): void {
@@ -347,16 +331,5 @@ export class Profile implements OnInit, OnDestroy {
     this.error = message;
     this.isLoading = false;
     console.error(err);
-  }
-
-  onProfileImageError(event: Event): void {
-    const img = event.target as HTMLImageElement;
-    const wrapper = img.parentElement;
-    if (wrapper) {
-      img.remove();
-      const placeholder = document.createElement('div');
-      placeholder.className = 'user-image-placeholder profile-picture-placeholder';
-      wrapper.appendChild(placeholder);
-    }
   }
 }
