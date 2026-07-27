@@ -33,6 +33,12 @@ export class EditProfileComponent implements OnInit {
       maxlength: 'Máximo {requiredLength} caracteres',
       pattern: 'Solo letras, números y guion bajo',
     },
+    name: {
+      required: 'El nombre es obligatorio',
+    },
+    lastName: {
+      required: 'El apellido es obligatorio',
+    },
     email: {
       required: 'El email es obligatorio',
       email: 'Debe ser un email válido',

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CloudinaryService } from '../../../services/cloudinary/cloudinary.service';
 
@@ -23,6 +23,14 @@ export class CloudinaryUploadComponent {
 
   isUploading = false;
   uploadProgress = 0;
+
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
+  triggerFileSelect(): void {
+    if (this.fileInput) {
+      this.fileInput.nativeElement.click();
+    }
+  }
   previewUrl: string | null = null;
   private selectedFile: File | null = null;
   private lastUrl: string | null = null;
