@@ -1,84 +1,194 @@
-<form [formGroup]="podcastForm" (ngSubmit)="onSubmit()">
-  <div class="form-container">
-    <h2>{{ podcast ? 'Edit Podcast' : 'Create Podcast' }}</h2>
+<form [formGroup]="podcastForm" (ngSubmit)="onSubmit()" class="edit-profile-form">
+  <div class="edit-profile-grid">
+    <!-- Columna Izquierda: Portada y Título -->
+    <div class="edit-profile-column">
+      <!-- Portada de Podcast con Varios Tamaños (Steam Style) -->
+      <div class="form-group form-group-cover">
+        <label>Portada del Podcast</label>
+        <div class="cover-picture-container">
+          @if (podcastForm.get('imageUrl')?.value) {
+            <div class="cover-previews-row">
+              <!-- Vista Previa Principal (240px) -->
+              <div class="preview-item main-preview">
+                <div class="cover-picture-wrapper"
+                     [class.is-dragover]="isDragOver"
+                     (click)="imageUp.triggerFileSelect()"
+                     (dragover)="onDragOver($event)"
+                     (dragenter)="onDragOver($event)"
+                     (dragleave)="onDragLeave($event)"
+                     (drop)="onDrop($event)"
+                     style="cursor: pointer;">
+                  <app-media-image 
+                    [src]="podcastForm.get('imageUrl')?.value" 
+                    [alt]="podcastForm.get('title')?.value || 'Podcast Cover'" 
+                    type="podcast" 
+                    customClass="cover-picture">
+                  </app-media-image>
+                  <div class="cover-picture-overlay">
+                    <i class="fas fa-pencil-alt"></i>
+                    <span>Cambiar</span>
+                  </div>
+                </div>
+                <span class="preview-size-label">Principal (240px)</span>
+              </div>
 
-    <fieldset>
-      <label for="title">Title</label>
-      <input type="text" id="title" formControlName="title" placeholder="My Awesome Podcast"
-             [class.error-input]="podcastForm.get('title')?.invalid && podcastForm.get('title')?.touched">
-      <app-form-error controlName="title" [customMessages]="customErrors['title']"></app-form-error>
-    </fieldset>
+              <!-- Vista Previa Tarjeta (160px) -->
+              <div class="preview-item medium-preview">
+                <div class="cover-picture-wrapper-small medium"
+                     (click)="imageUp.triggerFileSelect()"
+                     (dragover)="onDragOver($event)"
+                     (dragenter)="onDragOver($event)"
+                     (dragleave)="onDragLeave($event)"
+                     (drop)="onDrop($event)"
+                     style="cursor: pointer;"
+                     title="Vista previa en Tarjeta (160px)">
+                  <app-media-image 
+                    [src]="podcastForm.get('imageUrl')?.value" 
+                    [alt]="podcastForm.get('title')?.value || 'Podcast Cover'" 
+                    type="podcast" 
+                    customClass="cover-picture">
+                  </app-media-image>
+                </div>
+                <span class="preview-size-label">Tarjeta (160px)</span>
+              </div>
 
-    <fieldset>
-      <label for="description">Description</label>
-      <textarea id="description" formControlName="description" placeholder="A podcast about..." style="resize: none;"
-                [class.error-input]="podcastForm.get('description')?.invalid && podcastForm.get('description')?.touched"></textarea>
-      <app-form-error controlName="description" [customMessages]="customErrors['description']"></app-form-error>
-    </fieldset>
-
-    <fieldset>
-      <label>Imagen del Podcast</label>
-      <app-cloudinary-upload
-        acceptedTypes="image/*"
-        resourceType="image"
-        label="Subir imagen del podcast"
-        [maxSizeMB]="10"
-        [defer]="true"
-        #imageUp
-        (uploadComplete)="onImageUploaded($event)"
-        (uploadError)="onUploadError($event)">
-      </app-cloudinary-upload>
-      
-      @if (podcastForm.get('imageUrl')?.value) {
-        <div class="current-image">
-          <p class="image-url-label">URL actual:</p>
-          <a [href]="podcastForm.get('imageUrl')?.value" target="_blank" class="image-url-link">
-            {{ podcastForm.get('imageUrl')?.value }}
-          </a>
-        </div>
-      }
-    </fieldset>
-
-    <fieldset>
-      <label class="categories-label">Categories</label>
-      <div class="categories-combobox" [class.open]="categoriesOpen" (click)="toggleCategories()" tabindex="0"
-           (keydown.enter)="toggleCategories()" (keydown.space)="toggleCategories()" role="button"
-           [attr.aria-expanded]="categoriesOpen">
-        @if (selectedCategories.length > 0) {
-          <div class="categories-display">
-            @for (cat of selectedCategories; track cat) {
-              <span class="category-chip">{{ cat }}</span>
-            }
-          </div>
-        } @else {
-          <span class="categories-placeholder">Seleccionar categorías...</span>
-        }
-        <span class="caret" aria-hidden="true">▾</span>
-      </div>
-      @if (categoriesOpen) {
-        <div class="categories-dropdown" (click)="$event.stopPropagation()">
-          @for (category of categoryKeys; track category) {
-            <div class="dropdown-item" (click)="onCategoryToggle(category)" [class.selected]="isCategorySelected(category)">
-              <input type="checkbox" [checked]="isCategorySelected(category)" tabindex="-1" />
-              <span>{{ category }}</span>
+              <!-- Vista Previa Miniatura (80px) -->
+              <div class="preview-item small-preview">
+                <div class="cover-picture-wrapper-small small"
+                     (click)="imageUp.triggerFileSelect()"
+                     (dragover)="onDragOver($event)"
+                     (dragenter)="onDragOver($event)"
+                     (dragleave)="onDragLeave($event)"
+                     (drop)="onDrop($event)"
+                     style="cursor: pointer;"
+                     title="Vista previa en Reproductor (80px)">
+                  <app-media-image 
+                    [src]="podcastForm.get('imageUrl')?.value" 
+                    [alt]="podcastForm.get('title')?.value || 'Podcast Cover'" 
+                    type="podcast" 
+                    customClass="cover-picture">
+                  </app-media-image>
+                </div>
+                <span class="preview-size-label">Mini (80px)</span>
+              </div>
+            </div>
+          } @else {
+            <div class="file-upload-form"
+                 [class.is-dragover]="isDragOver"
+                 (click)="imageUp.triggerFileSelect()"
+                 (dragover)="onDragOver($event)"
+                 (dragenter)="onDragOver($event)"
+                 (dragleave)="onDragLeave($event)"
+                 (drop)="onDrop($event)">
+              <label class="file-upload-label">
+                <div class="file-upload-design">
+                  <svg viewBox="0 0 640 512" height="1em">
+                    <path d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z"></path>
+                  </svg>
+                  <p>Arrastrar o Seleccionar imagen de portada</p>
+                  <span class="browse-button">Subir Portada</span>
+                </div>
+              </label>
             </div>
           }
-        </div>
-      }
-      @if (podcastForm.get('categories')?.invalid && podcastForm.get('categories')?.touched) {
-        <div class="server-error">{{ customErrors['categories']['required'] }}</div>
-      }
-    </fieldset>
 
-    <div class="button-container">
-      <button type="submit" [disabled]="isSubmitting || podcastForm.invalid">
-        {{ isSubmitting ? 'Saving...' : (podcast ? 'Save Changes' : 'Create Podcast') }}
-        @if (isSubmitting) {
-          <span class="spinner"></span>
-        }
-      </button>
+          <app-cloudinary-upload
+            style="display: none;"
+            acceptedTypes="image/*"
+            resourceType="image"
+            label="Subir imagen"
+            [maxSizeMB]="10"
+            [defer]="true"
+            #imageUp
+            (fileSelected)="onFileSelected($event)"
+            (uploadComplete)="onImageUploaded($event)"
+            (uploadError)="onUploadError($event)">
+          </app-cloudinary-upload>
+        </div>
+
+        <div class="field-error-wrapper">
+          @if (imageError) {
+            <p class="form-error-text">{{ imageError }}</p>
+          }
+        </div>
+      </div>
+
+      <!-- Título -->
+      <div class="form-group">
+        <label for="title">Título del Podcast</label>
+        <input type="text" id="title" formControlName="title" placeholder="Ej. Mi Podcast Asombroso"
+               [class.error-input]="podcastForm.get('title')?.invalid && podcastForm.get('title')?.touched">
+        <app-form-error controlName="title" [customMessages]="customErrors['title']"></app-form-error>
+      </div>
+
+      <!-- Botones Desktop -->
+      <div class="form-actions desktop-only-actions">
+        <button type="submit" [disabled]="isSubmitting || podcastForm.invalid">
+          {{ isSubmitting ? 'Guardando...' : (podcast ? 'Guardar Cambios' : 'Crear Podcast') }}
+          @if (isSubmitting) {
+            <span class="spinner"></span>
+          }
+        </button>
+        <button type="button" (click)="onCancel()">Cancelar</button>
+      </div>
     </div>
 
-    <p class="server-error" [class.show]="!!errorMessage">{{ errorMessage }}</p>
+    <!-- Columna Derecha: Descripción y Categorías -->
+    <div class="edit-profile-column">
+      <!-- Descripción -->
+      <div class="form-group">
+        <label for="description">Descripción</label>
+        <textarea id="description" formControlName="description" placeholder="Un podcast acerca de..." style="resize: none;" rows="5"
+                  [class.error-input]="podcastForm.get('description')?.invalid && podcastForm.get('description')?.touched"></textarea>
+        <app-form-error controlName="description" [customMessages]="customErrors['description']"></app-form-error>
+      </div>
+
+      <!-- Categorías -->
+      <div class="form-group">
+        <label class="categories-label">Categorías</label>
+        <div class="categories-combobox" [class.open]="categoriesOpen" (click)="toggleCategories()" tabindex="0"
+             (keydown.enter)="toggleCategories()" (keydown.space)="toggleCategories()" role="button"
+             [attr.aria-expanded]="categoriesOpen">
+          @if (selectedCategories.length > 0) {
+            <div class="categories-display">
+              @for (cat of selectedCategories; track cat) {
+                <span class="category-chip">{{ cat }}</span>
+              }
+            </div>
+          } @else {
+            <span class="categories-placeholder">Seleccionar categorías...</span>
+          }
+          <span class="caret" aria-hidden="true">▾</span>
+        </div>
+        @if (categoriesOpen) {
+          <div class="categories-dropdown" (click)="$event.stopPropagation()">
+            @for (category of categoryKeys; track category) {
+              <div class="dropdown-item" (click)="onCategoryToggle(category)" [class.selected]="isCategorySelected(category)">
+                <input type="checkbox" [checked]="isCategorySelected(category)" tabindex="-1" />
+                <span>{{ category }}</span>
+              </div>
+            }
+          </div>
+        }
+        @if (podcastForm.get('categories')?.invalid && podcastForm.get('categories')?.touched) {
+          <div class="server-error show">{{ customErrors['categories']['required'] }}</div>
+        }
+      </div>
+
+      @if (errorMessage) {
+        <div class="server-error show">{{ errorMessage }}</div>
+      }
+    </div>
+  </div>
+
+  <!-- Botones Mobile -->
+  <div class="form-actions mobile-only-actions">
+    <button type="submit" [disabled]="isSubmitting || podcastForm.invalid">
+      {{ isSubmitting ? 'Guardando...' : (podcast ? 'Guardar Cambios' : 'Crear Podcast') }}
+      @if (isSubmitting) {
+        <span class="spinner"></span>
+      }
+    </button>
+    <button type="button" (click)="onCancel()">Cancelar</button>
   </div>
 </form>

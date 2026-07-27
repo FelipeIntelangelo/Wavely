@@ -1,4 +1,9 @@
 <div class="edit-podcast-container">
+  <div class="page-header">
+    <h1 class="page-title">Editar Podcast</h1>
+    <p class="page-subtitle">Modificá los detalles, portada o categorías de tu programa.</p>
+  </div>
+
   <app-podcast-form
     [podcast]="podcast"
     (formSubmit)="onUpdatePodcast($event)"
