@@ -4,9 +4,10 @@
         @if (recomendacionesPodcasts.length > 0 || isLoading.recomendaciones) {
             <div class="carouselSection">
                 <div class="carouselContainer" style="border-left: 4px solid var(--primary-color);">
-                    <div class="carousel-header">
+                <div class="carousel-header">
                         <h2 style="color: var(--primary-color);">{{ recomendacionStrategyText }}</h2>
-                        <div class="carousel-navigation">
+                        <div class="carousel-header-right">
+                            <div class="carousel-navigation">
                             @if (carousels['recomendaciones'].hasBeenClicked) {
                                 <button 
                                     class="arrowButton arrowBack"
@@ -34,12 +35,17 @@
                                 </button>
                             }
                         </div>
+                        </div>
                     </div>
                     <div class="carouselWrapper" #recomendacionesWrapper (scroll)="handleScroll('recomendaciones', recomendacionesWrapper)">
                         <div class="carouselContent">
                             @if (isLoading.recomendaciones) {
                                 <div style="color: white; padding: 2rem;">Cargando recomendaciones...</div>
                             } @else {
+                                <div class="cardHome" style="align-items: center; text-align: center;">
+                                    <app-dice-roller></app-dice-roller>
+                                    <h3 style="color: var(--primary-color); font-style: italic; width: 100%;">"Sorpréndeme"</h3>
+                                </div>
                                 @for (podcast of recomendacionesPodcasts; track podcast.id) {
                                     <div class="cardHome" [routerLink]="['/podcast', podcast.id]">
                                         <img [src]="podcast.imageUrl" [alt]="podcast.title" class="podcastImage" (error)="onImageError($event)" />

@@ -19,6 +19,12 @@ h2{
     margin-bottom: 0.5rem;
 }
 
+.carousel-header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
 .containerCards{
     display: flex;
     justify-content: space-around;

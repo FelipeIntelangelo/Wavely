@@ -139,4 +139,45 @@ public class RecommendationController {
     public ResponseEntity<List<RecommendationDTO>> getTrending() {
         return ResponseEntity.ok(recommendationService.getRecommendations(null));
     }
+
+//* ===================================================================================================================
+
+    @Operation(
+        summary = "Tirar el dado random (público con mejora autenticada)",
+        description = """
+                Retorna un único podcast aleatorio seleccionado mediante sorteo ponderado.
+                
+                El algoritmo arma un pool de 20 candidatos usando la misma lógica de tres capas
+                del motor de recomendaciones, pero en vez de devolver el top 10 ordenado,
+                **sortea uno al azar con probabilidad proporcional a su relevanceScore**.
+                
+                - **Sin JWT**: Usa el pool de Trending (descubrimiento para visitantes).
+                - **Con JWT**: Usa la estrategia personalizada según los favoritos del usuario
+                  (Trending / Content-Based / Collaborative).
+                
+                Evita repetir el mismo podcast en tiradas consecutivas para un mismo usuario.
+                La estrategia retornada siempre es `RANDOM_DICE`.
+                """
+    )
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200",
+            description = "Podcast aleatorio obtenido correctamente",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = RecommendationDTO.class)
+            )
+        ),
+        @ApiResponse(responseCode = "500", description = "Error interno al procesar el dado")
+    })
+    @GetMapping("/dice")
+    public ResponseEntity<RecommendationDTO> rollDice(
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails) {
+        Long userId = null;
+        if (userDetails != null) {
+            User user = userService.getAuthenticatedUser(userDetails.getUsername());
+            userId = user.getId();
+        }
+        return ResponseEntity.ok(recommendationService.getRandomDice(userId));
+    }
 }

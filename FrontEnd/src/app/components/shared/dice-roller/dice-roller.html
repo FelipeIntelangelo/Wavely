@@ -1,0 +1,50 @@
+<div class="dice-roller-container">
+  <div class="dice-scene" (click)="roll()" [class.rolling]="isRolling">
+    <div class="dice" #dice>
+      <div class="face front"></div>
+      <div class="face back"></div>
+      <div class="face top"></div>
+      <div class="face bottom"></div>
+      <div class="face right"></div>
+      <div class="face left"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Resultado: card del podcast sorteado -->
+@if (showResult && result) {
+  <div class="dice-result-overlay" (click)="dismissResult()">
+    <div class="dice-result-card" (click)="$event.stopPropagation()">
+      <button class="close-btn" (click)="dismissResult()">✕</button>
+      <div class="result-header">
+        <span class="dice-emoji">🎲</span>
+        <span class="result-title-text">¡El dado ha hablado!</span>
+      </div>
+      <div class="result-body" (click)="goToPodcast()">
+        @if (result.imageUrl) {
+          <img [src]="result.imageUrl" [alt]="result.title" class="result-image" />
+        } @else {
+          <div class="result-image-placeholder"></div>
+        }
+        <div class="result-info">
+          <h3>{{ result.title }}</h3>
+          @if (result.description) {
+            <p>{{ result.description.length > 100 ? (result.description.substring(0, 100) + '...') : result.description }}</p>
+          }
+          <div class="result-meta">
+            @if (result.averageRating) {
+              <span class="meta-item">⭐ {{ result.averageRating | number:'1.1-1' }}</span>
+            }
+            @if (result.averageViews) {
+              <span class="meta-item">👁️ {{ result.averageViews }}</span>
+            }
+          </div>
+        </div>
+      </div>
+      <div class="result-actions">
+        <button class="btn-go" (click)="goToPodcast()">Ir al podcast</button>
+        <button class="btn-reroll" (click)="dismissResult(); roll()">🎲 Tirar de nuevo</button>
+      </div>
+    </div>
+  </div>
+}

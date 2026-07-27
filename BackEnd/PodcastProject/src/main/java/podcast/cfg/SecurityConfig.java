@@ -67,7 +67,8 @@ public class SecurityConfig {
                                                                 "/podcastUTN/v1/episodes",
                                                                 "/podcastUTN/v1/users",
                                                                 "/podcastUTN/v1/users/{userId}",
-                                                                "/podcastUTN/v1/recommendations/trending")
+                                                                "/podcastUTN/v1/recommendations/trending",
+                                                                "/podcastUTN/v1/recommendations/dice")
                                                 .permitAll()
                                                 .requestMatchers(HttpMethod.POST,
                                                                 "/podcastUTN/v1/users/register")

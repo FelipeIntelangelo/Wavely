@@ -8,6 +8,9 @@ import podcast.model.entities.enums.RecommendationStrategy;
 import podcast.model.repositories.interfaces.IRecommendationRepository;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Servicio del motor de recomendaciones de Wavely.
@@ -45,6 +48,12 @@ public class RecommendationService {
     private static final int DEFAULT_LIMIT = 10;
 
     /**
+     * Tamaño del pool de candidatos para el Dado Random.
+     * Se usa un pool más amplio que el default para maximizar la variedad en el sorteo.
+     */
+    private static final int DICE_POOL_SIZE = 20;
+
+    /**
      * Umbral mínimo de favoritos para activar el Collaborative Filtering.
      * Con menos favoritos que este valor, se usa Content-Based Filtering.
      */
@@ -59,6 +68,12 @@ public class RecommendationService {
     // ── Inyección de dependencias ─────────────────────────────────────────────────────
 
     private final IRecommendationRepository recommendationRepository;
+
+    /**
+     * Cache en memoria para evitar repetir el mismo podcast en tiradas consecutivas
+     * del dado para un mismo usuario. Mapea userId → último podcastId sorteado.
+     */
+    private final Map<Long, Long> lastDiceResultByUser = new ConcurrentHashMap<>();
 
     @Autowired
     public RecommendationService(IRecommendationRepository recommendationRepository) {
@@ -187,6 +202,155 @@ public class RecommendationService {
         }
 
         return result;
+    }
+
+    // ── Dado Random (Weighted Random Selection) ──────────────────────────────────────
+
+    /**
+     * Genera una recomendación aleatoria ponderada para el Dado Random.
+     *
+     * <p>El algoritmo funciona de la siguiente manera:</p>
+     * <ol>
+     *   <li>Selecciona la estrategia del motor de recomendaciones según el perfil del usuario
+     *       (Trending / Content-Based / Collaborative), exactamente igual que {@link #getRecommendations}.</li>
+     *   <li>Amplía el pool de candidatos a {@value #DICE_POOL_SIZE} para maximizar la variedad.</li>
+     *   <li>Aplica un sorteo ponderado (weighted random) donde cada candidato tiene una probabilidad
+     *       proporcional a su {@code relevanceScore}. Un podcast con score 900 tiene ~3× más
+     *       posibilidades de ser seleccionado que uno con score 300.</li>
+     *   <li>Si el podcast sorteado coincide con el último resultado del mismo usuario,
+     *       se excluye y se repite el sorteo para evitar repeticiones consecutivas.</li>
+     * </ol>
+     *
+     * @param userId ID del usuario autenticado. {@code null} para usuarios anónimos
+     *               (se usa Trending como pool).
+     * @return Un único {@link RecommendationDTO} con {@code strategy = RANDOM_DICE}.
+     * @throws IllegalStateException si no hay podcasts disponibles en el pool.
+     */
+    public RecommendationDTO getRandomDice(Long userId) {
+        List<RecommendationDTO> pool = buildDicePool(userId);
+
+        if (pool.isEmpty()) {
+            throw new IllegalStateException("No hay podcasts disponibles para el dado.");
+        }
+
+        // Excluir el último resultado del usuario para evitar repeticiones consecutivas
+        Long lastResult = userId != null ? lastDiceResultByUser.get(userId) : null;
+        List<RecommendationDTO> candidates = pool;
+        if (lastResult != null && pool.size() > 1) {
+            candidates = pool.stream()
+                    .filter(dto -> !dto.getId().equals(lastResult))
+                    .toList();
+            // Si se filtraron todos (caso extremo), usar pool completo
+            if (candidates.isEmpty()) {
+                candidates = pool;
+            }
+        }
+
+        // Sorteo ponderado por relevanceScore
+        RecommendationDTO selected = weightedRandomSelect(candidates);
+
+        // Registrar resultado para anti-repetición
+        if (userId != null) {
+            lastDiceResultByUser.put(userId, selected.getId());
+        }
+
+        // Retornar con estrategia RANDOM_DICE
+        return RecommendationDTO.builder()
+                .id(selected.getId())
+                .title(selected.getTitle())
+                .description(selected.getDescription())
+                .imageUrl(selected.getImageUrl())
+                .categories(selected.getCategories())
+                .averageViews(selected.getAverageViews())
+                .averageRating(selected.getAverageRating())
+                .createdAt(selected.getCreatedAt())
+                .relevanceScore(selected.getRelevanceScore())
+                .strategy(RecommendationStrategy.RANDOM_DICE)
+                .build();
+    }
+
+    /**
+     * Construye el pool de candidatos para el dado, usando la misma lógica de selección
+     * de estrategia del motor principal pero con un límite ampliado.
+     */
+    private List<RecommendationDTO> buildDicePool(Long userId) {
+        if (userId == null) {
+            return getDicePoolTrending(null);
+        }
+
+        int favoriteCount = recommendationRepository.countUserFavorites(userId);
+
+        if (favoriteCount == 0) {
+            return getDicePoolTrending(userId);
+        } else if (favoriteCount <= COLLABORATIVE_THRESHOLD) {
+            return getDicePoolContentBased(userId);
+        } else {
+            return getDicePoolCollaborative(userId);
+        }
+    }
+
+    private List<RecommendationDTO> getDicePoolTrending(Long userId) {
+        return recommendationRepository.findTrendingPodcasts(userId, DICE_POOL_SIZE).stream()
+                .map(p -> toDTO(p, RecommendationStrategy.TRENDING, computeTrendingScore(p)))
+                .toList();
+    }
+
+    private List<RecommendationDTO> getDicePoolContentBased(Long userId) {
+        List<Podcast> contentBased = recommendationRepository.findContentBasedRecommendations(userId, DICE_POOL_SIZE);
+        if (contentBased.isEmpty()) {
+            return getDicePoolTrending(userId);
+        }
+        return contentBased.stream()
+                .map(p -> toDTO(p, RecommendationStrategy.CONTENT_BASED, computeTrendingScore(p)))
+                .toList();
+    }
+
+    private List<RecommendationDTO> getDicePoolCollaborative(Long userId) {
+        List<Podcast> collaborative = recommendationRepository.findCollaborativeRecommendations(
+                userId, MIN_SHARED_FAVORITES, DICE_POOL_SIZE
+        );
+        List<RecommendationDTO> result = collaborative.stream()
+                .map(p -> toDTO(p, RecommendationStrategy.COLLABORATIVE, computeTrendingScore(p)))
+                .toList();
+
+        if (result.size() < 3) {
+            List<RecommendationDTO> contentBased = getDicePoolContentBased(userId);
+            List<Long> existingIds = result.stream().map(RecommendationDTO::getId).toList();
+            List<RecommendationDTO> combined = new java.util.ArrayList<>(result);
+            contentBased.stream()
+                    .filter(dto -> !existingIds.contains(dto.getId()))
+                    .limit(DICE_POOL_SIZE - result.size())
+                    .forEach(combined::add);
+            return combined;
+        }
+        return result;
+    }
+
+    /**
+     * Selecciona un elemento aleatorio del pool con probabilidad proporcional a su
+     * {@code relevanceScore}.
+     *
+     * <p>Algoritmo: acumula los pesos y genera un número aleatorio en el rango [0, totalWeight).
+     * Recorre la lista sumando pesos hasta superar el valor aleatorio.
+     * Complejidad: O(n) en una sola pasada.</p>
+     */
+    private RecommendationDTO weightedRandomSelect(List<RecommendationDTO> candidates) {
+        double totalWeight = candidates.stream()
+                .mapToDouble(dto -> Math.max(dto.getRelevanceScore(), 0.1))
+                .sum();
+
+        double random = ThreadLocalRandom.current().nextDouble() * totalWeight;
+        double cumulative = 0;
+
+        for (RecommendationDTO candidate : candidates) {
+            cumulative += Math.max(candidate.getRelevanceScore(), 0.1);
+            if (random <= cumulative) {
+                return candidate;
+            }
+        }
+
+        // Fallback: último elemento (no debería llegar aquí por floating-point)
+        return candidates.get(candidates.size() - 1);
     }
 
     // ── Conversión y utilidades ───────────────────────────────────────────────────────
