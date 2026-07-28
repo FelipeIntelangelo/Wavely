@@ -39,7 +39,7 @@ public class PodcastService {
                 .filter(podcastpvt -> podcastpvt.getTitle().equals(podcast.getTitle()))
                 .findFirst()
                 .ifPresent(podcastpvt -> {
-                    throw new AlreadyCreatedException("Podcast with name " + podcast.getTitle() + " already exists");
+                    throw new AlreadyCreatedException("ERR_DUPLICATE_PODCAST", "Podcast with name " + podcast.getTitle() + " already exists");
                 });
         if (podcast.getUser() == null || podcast.getUser().getId() == null) {
             throw new NullUserException("Podcast must have a valid user");

@@ -10,15 +10,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import podcast.cfg.JwtUtil;
 import podcast.model.entities.User;
 import podcast.model.entities.dto.*;
@@ -64,58 +61,6 @@ public class UserController {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.ratingService = ratingService;
-    }
-
-//* ===================================================================================================================
-
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleUserNotFoundException(UserNotFoundException ex) {
-        return ResponseEntity.status(404).body(Map.of("error", ex.getMessage()));
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException ex) {
-        return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
-    }
-
-    @ExceptionHandler(AlreadyCreatedException.class)
-    public ResponseEntity<String> handleAlreadyCreated(AlreadyCreatedException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(PodcastNotFoundException.class)
-    public ResponseEntity<String> handlePodcastNotFound(PodcastNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ex) {
-        String errorMessage = ex.getBindingResult().getFieldErrors().stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage())
-                .reduce((msg1, msg2) -> msg1 + ", " + msg2)
-                .orElse("Validation error");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
-    }
-
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<String> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
-        String errorMessage = "Tipo de dato incorrecto para el parámetro '" + ex.getName() + "': " + ex.getValue();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
-    }
-
-    @ExceptionHandler(CommentaryNotFoundException.class)
-    public ResponseEntity<String> handleCommentaryNotFound(CommentaryNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<String> handleUnauthorized(UnauthorizedException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, String>> handleGeneralException(Exception ex) {
-        return ResponseEntity.status(500).body(Map.of("error", "Ocurrió un error inesperado: " + ex.getMessage()));
     }
 
 //* ===================================================================================================================
@@ -337,12 +282,12 @@ public class UserController {
             @RequestBody @Valid User user) {
         
         if (userService.existsByUsername(user.getUsername())) {
-            throw new AlreadyCreatedException("El usuario con el nombre de usuario ya existe.");
+            throw new AlreadyCreatedException("ERR_DUPLICATE_USERNAME", "El usuario con el nombre de usuario ya existe.");
         }
         
         // Validar que el email no esté en uso (ya sea por una cuenta local o de Google)
         if (userService.existsByEmail(user.getCredential().getEmail())) {
-            throw new AlreadyCreatedException("El email ya se encuentra registrado. Si utilizaste Google anteriormente, iniciá sesión directamente.");
+            throw new AlreadyCreatedException("ERR_DUPLICATE_EMAIL", "El email ya se encuentra registrado. Si utilizaste Google anteriormente, inicia sesión directamente.");
         }
 
         userService.save(user);

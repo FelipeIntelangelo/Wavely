@@ -10,22 +10,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import podcast.model.entities.Podcast;
 import podcast.model.entities.dto.PodcastDTO;
 import podcast.model.entities.dto.PodcastUpdateDTO;
 import podcast.model.entities.enums.Category;
-import podcast.model.exceptions.AlreadyCreatedException;
-import podcast.model.exceptions.NullUserException;
-import podcast.model.exceptions.PodcastNotFoundException;
-import podcast.model.exceptions.UnauthorizedException;
 import podcast.model.services.PodcastService;
 
 import java.util.List;
@@ -43,43 +36,6 @@ public class PodcastController {
 
     @Autowired
     private PodcastService podcastService;
-
-//* ===================================================================================================================
-
-    @ExceptionHandler(PodcastNotFoundException.class)
-    public ResponseEntity<String> handlePodcastNotFound(PodcastNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(AlreadyCreatedException.class)
-    public ResponseEntity<String> handleAlreadyCreated(AlreadyCreatedException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ex) {
-        String errorMessage = ex.getBindingResult().getFieldErrors().stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage())
-                .reduce((msg1, msg2) -> msg1 + ", " + msg2)
-                .orElse("Validation error");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
-    }
-
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<String> handleUnauthorized(UnauthorizedException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<String> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
-        String errorMessage = "Invalid value for parameter '" + ex.getName() + "': " + ex.getValue();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
-    }
-
-    @ExceptionHandler(NullUserException.class)
-    public ResponseEntity<String> handleNullUser(NullUserException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-    }
 
 //* ===================================================================================================================
 

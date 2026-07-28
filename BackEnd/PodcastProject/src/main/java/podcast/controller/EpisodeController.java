@@ -10,14 +10,11 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import podcast.model.entities.Commentary;
 import podcast.model.entities.Episode;
 import podcast.model.entities.dto.CommentaryDTO;
@@ -27,7 +24,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springdoc.core.annotations.ParameterObject;
 import podcast.model.entities.dto.UpdateEpisodeDTO;
-import podcast.model.exceptions.*;
 import podcast.model.services.EpisodeHistoryService;
 import podcast.model.services.EpisodeService;
 import podcast.model.services.RatingService;
@@ -48,63 +44,6 @@ public class EpisodeController {
         this.episodeService = episodeService;
         this.episodeHistoryService = episodeHistoryService;
         this.ratingService = ratingService;
-    }
-
-//* ===================================================================================================================
-
-    @ExceptionHandler(EpisodeNotFoundException.class)
-    public ResponseEntity<String> handleEpisodeNotFound(EpisodeNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<String> handleUnauthorized(UnauthorizedException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(AlreadyCreatedException.class)
-    public ResponseEntity<String> handleAlreadyCreated(AlreadyCreatedException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ex) {
-        String errorMessage = ex.getBindingResult().getFieldErrors().stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage())
-                .reduce((msg1, msg2) -> msg1 + ", " + msg2)
-                .orElse("Validation error");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
-    }
-
-    @ExceptionHandler(ChapterOrSeasonInvalidException.class)
-    public ResponseEntity<String> handleChapterOrSeasonInvalid(ChapterOrSeasonInvalidException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(PodcastNotFoundException.class)
-    public ResponseEntity<String> handlePodcastNotFound(PodcastNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<String> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
-        String errorMessage = "Invalid value for parameter '" + ex.getName() + "': " + ex.getValue();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<String> handleUserNotFound(UserNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(CommentaryNotFoundException.class)
-    public ResponseEntity<String> handleCommentaryNotFound(CommentaryNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
 //* ===================================================================================================================
