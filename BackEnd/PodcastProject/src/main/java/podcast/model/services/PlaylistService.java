@@ -138,7 +138,7 @@ public class PlaylistService {
     private void addItem(Playlist playlist, PlaylistItemType type, Long itemId) {
         if (type == PlaylistItemType.PODCAST) {
             if (playlistItemRepository.existsByPlaylistIdAndPodcastId(playlist.getId(), itemId)) {
-                throw new AlreadyCreatedException("El podcast ya está en esta playlist");
+                throw new AlreadyCreatedException("ERR_ITEM_ALREADY_IN_PLAYLIST", "El podcast ya está en esta playlist");
             }
             Podcast podcast = podcastRepository.findById(itemId)
                     .orElseThrow(() -> new PodcastNotFoundException("Podcast no encontrado"));
@@ -148,7 +148,7 @@ public class PlaylistService {
         } else {
             int episodeId = Math.toIntExact(itemId);
             if (playlistItemRepository.existsByPlaylistIdAndEpisodeId(playlist.getId(), episodeId)) {
-                throw new AlreadyCreatedException("El episodio ya está en esta playlist");
+                throw new AlreadyCreatedException("ERR_ITEM_ALREADY_IN_PLAYLIST", "El episodio ya está en esta playlist");
             }
             Episode episode = episodeRepository.findById(itemId)
                     .orElseThrow(() -> new EpisodeNotFoundException("Episodio no encontrado"));
@@ -175,7 +175,7 @@ public class PlaylistService {
                 ? playlistRepository.existsByUserIdAndNameIgnoreCase(userId, name)
                 : playlistRepository.existsByUserIdAndNameIgnoreCaseAndIdNot(userId, name, playlistId);
         if (exists) {
-            throw new AlreadyCreatedException("Ya existe una playlist con ese nombre");
+            throw new AlreadyCreatedException("ERR_DUPLICATE_PLAYLIST", "Ya existe una playlist con ese nombre");
         }
     }
 

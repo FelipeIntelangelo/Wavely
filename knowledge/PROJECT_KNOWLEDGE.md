@@ -62,6 +62,7 @@ Cada entidad está mapeada a PostgreSQL mediante JPA (`@Entity`).
 *   **`AuthService` / `GoogleAuthService`:** Registro y login (Local y Google). Generación de JWT mediante `JwtUtil`.
 *   **`CloudinaryService`:** Sube (`uploadFile`) y elimina (`deleteFile`) archivos multimedia en la nube.
 *   **`RecommendationService`:** Motor de recomendaciones híbrido de tres capas. Selecciona la estrategia dinámicamente según la cantidad de favoritos del usuario: **TRENDING** (0 favoritos), **CONTENT_BASED** (1-5 favoritos) o **COLLABORATIVE** (más de 5). Incluye la funcionalidad de **Dado Random** (`getRandomDice`): arma un pool de 20 candidatos usando la misma lógica de tres capas y sortea uno al azar con probabilidad ponderada por `relevanceScore`. Evita repetir el mismo podcast en tiradas consecutivas para un mismo usuario. Apoyado por `IRecommendationRepository` con queries SQL nativas.
+*   **`ErrorLogService`:** Persiste en base de datos los errores 500 (errores inesperados del servidor) capturados por `GlobalExceptionHandler`. Los errores 4xx (lógica de negocio esperada) **no** se auditan.
 
 ### 2.3 Endpoints / Controladores REST (`controller`)
 *   `/podcastUTN/v1/auth/**`: `POST /register`, `POST /login`, `POST /google`.
@@ -160,3 +161,13 @@ Rutas principales configuradas en `app.routes.ts`:
 Los usuarios autenticados pueden crear hasta 20 playlists privadas con podcasts y episodios. El modelo utiliza `Playlist` + `PlaylistItem`, evita duplicados, ordena por fecha de agregado y valida siempre la propiedad de la playlist. La creación puede incluir el primer contenido de forma atómica. El detalle pagina sus elementos con 20 resultados por defecto y un máximo de 100 por solicitud.
 
 El frontend expone el selector reutilizable `AddToPlaylistComponent` y la ruta `/playlists`. El contrato completo, decisiones y endpoints se encuentran en `knowledge/playlist_docs.md`.
+
+---
+
+## 6. Manejo Centralizado de Errores (Error Codes)
+
+El backend utiliza `@RestControllerAdvice` en `GlobalExceptionHandler` como punto único de captura de excepciones. Devuelve siempre `ErrorResponseDTO { errorCode, message }` en lugar de strings planos. El frontend resuelve cada `errorCode` a un mensaje amigable en español mediante un diccionario declarativo en `ErrorHandlerService`, eliminando el string matching frágil previo.
+
+Solo los errores 500 (inesperados) se persisten en la base de datos mediante `ErrorLogService`. Los 4xx (errores de negocio esperados) no se auditan.
+
+El contrato completo de error codes, la tabla de excepciones y los tests se encuentran en `knowledge/funcionalities/error_handling_docs.md`.

@@ -2,6 +2,67 @@ import { Injectable } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { EMPTY, Observable, throwError } from 'rxjs';
 
+/**
+ * Mapa de errorCode → mensaje amigable en español.
+ * El backend envía un JSON { errorCode, message } desde GlobalExceptionHandler.
+ * Cada código aquí corresponde exactamente a los definidos en el backend.
+ */
+const ERROR_CODE_DICTIONARY: Record<string, string> = {
+  // Conflictos (409)
+  ERR_DUPLICATE_PODCAST:       'Ya existe un podcast con este título.',
+  ERR_DUPLICATE_EPISODE:       'Ya existe un episodio con ese título en este podcast.',
+  ERR_DUPLICATE_PLAYLIST:      'Ya existe una playlist con ese nombre.',
+  ERR_ITEM_ALREADY_IN_PLAYLIST:'Este contenido ya está en la playlist.',
+  ERR_DUPLICATE_USERNAME:      'El nombre de usuario ya se encuentra en uso.',
+  ERR_DUPLICATE_EMAIL:         'El correo electrónico ya está registrado. Si usaste Google, iniciá sesión directamente.',
+  ERR_CONFLICT:                'Hubo un conflicto con los datos ingresados.',
+
+  // No encontrado (404)
+  ERR_PODCAST_NOT_FOUND:       'El podcast solicitado no existe.',
+  ERR_EPISODE_NOT_FOUND:       'El episodio solicitado no existe.',
+  ERR_USER_NOT_FOUND:          'El usuario solicitado no existe.',
+  ERR_PLAYLIST_NOT_FOUND:      'La playlist solicitada no existe.',
+  ERR_COMMENT_NOT_FOUND:       'El comentario solicitado no existe.',
+  ERR_PLAYLIST_ITEM_NOT_FOUND: 'El elemento de la playlist no existe.',
+
+  // Permisos (403)
+  ERR_FORBIDDEN:               'No tenés permisos para realizar esta acción.',
+
+  // Datos inválidos (400)
+  ERR_NULL_USER:               'El usuario asociado no es válido.',
+  ERR_INVALID_CHAPTER:         'El número de capítulo o temporada no es válido.',
+  ERR_PLAYLIST_LIMIT:          'Alcanzaste el límite máximo de playlists.',
+  ERR_INVALID_ARGUMENT:        'Los datos enviados contienen un valor no válido.',
+  ERR_VALIDATION_FAILED:       'Verificá que todos los campos estén completos y sean correctos.',
+  ERR_TYPE_MISMATCH:           'Uno de los valores enviados tiene un formato incorrecto.',
+  ERR_INVALID_USER_ID:         'No se debe enviar un ID al registrar un usuario nuevo.',
+
+  // Servidor (500)
+  ERR_INTERNAL:                'Ocurrió un error en el servidor. El equipo fue notificado.',
+
+  // Infraestructura y Archivos (400, 413, 405)
+  ERR_FILE_TOO_LARGE:          'El archivo seleccionado es demasiado grande.',
+  ERR_MISSING_FILE:            'Falta adjuntar un archivo requerido (imagen o audio).',
+  ERR_METHOD_NOT_ALLOWED:      'Acción HTTP no permitida en esta ruta.',
+
+  // Autenticación (401)
+  ERR_UNAUTHORIZED:            'Credenciales incorrectas o tu sesión ha expirado.',
+};
+
+/** Mensajes de fallback por código HTTP cuando no viene errorCode del backend. */
+const HTTP_STATUS_FALLBACK: Record<number, string> = {
+  0: 'No se pudo conectar con el servidor. Revisá tu conexión a internet o intentá más tarde.',
+  400: 'Los datos enviados son inválidos. Por favor, verificá la información ingresada.',
+  401: 'Credenciales incorrectas o tu sesión ha expirado.',
+  403: 'No tenés permisos para realizar esta acción.',
+  404: 'El recurso solicitado no fue encontrado.',
+  409: 'Hubo un conflicto con los datos ingresados.',
+  500: 'Ocurrió un error inesperado en el servidor. Intentá de nuevo más tarde.',
+  502: 'Ocurrió un error inesperado en el servidor. Intentá de nuevo más tarde.',
+  503: 'Ocurrió un error inesperado en el servidor. Intentá de nuevo más tarde.',
+  504: 'Ocurrió un error inesperado en el servidor. Intentá de nuevo más tarde.',
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -11,63 +72,45 @@ export class ErrorHandlerService {
 
   /**
    * Mapea un HttpErrorResponse a un mensaje amigable en español.
+   * Prioridad:
+   *  1. errorCode del body JSON (nuevo estándar del backend)
+   *  2. Fallback por HTTP status
+   *  3. Mensaje genérico
    */
   private getFriendlyMessage(error: HttpErrorResponse): string {
     if (error.error instanceof ErrorEvent) {
       return `Ocurrió un error en el navegador: ${error.error.message}`;
     }
 
-    const status = error.status;
-    const rawMessage = error.error?.message || error.error || '';
-
-    // Manejo específico basado en el código de estado HTTP
-    switch (status) {
-      case 400: {
-        const msg400 = typeof rawMessage === 'string' ? rawMessage.toLowerCase() : JSON.stringify(rawMessage).toLowerCase();
-        
-        const badRequestRules = [
-          { keywords: ['file', 'archivo', 'image', 'audio'], message: 'Hubo un problema con el archivo multimedia. Verificá que el formato sea válido.' }
-        ];
-
-        const match400 = badRequestRules.find(rule => rule.keywords.some(kw => msg400.includes(kw)));
-        return match400 ? match400.message : 'Los datos enviados son inválidos. Por favor, verificá la información ingresada.';
+    // 1. Intentar leer errorCode del body estructurado { errorCode, message }
+    let errorObj = error.error;
+    
+    // Si Angular no lo parseó automáticamente como JSON y lo dejó como string
+    if (typeof errorObj === 'string') {
+      try {
+        errorObj = JSON.parse(errorObj);
+      } catch (e) {
+        // No es un JSON válido, seguimos con lo que hay
       }
-      case 401:
-        return 'Credenciales incorrectas o tu sesión ha expirado.';
-      case 403:
-        return 'No tenés permisos para realizar esta acción.';
-      case 404:
-        return 'El recurso solicitado no fue encontrado.';
-      case 409: {
-        const msgLower = typeof rawMessage === 'string' ? rawMessage.toLowerCase() : JSON.stringify(rawMessage).toLowerCase();
-        
-        const conflictRules = [
-          { keywords: ['username', 'usuario'], message: 'El nombre de usuario ya se encuentra en uso.' },
-          { keywords: ['email', 'correo'], message: 'El correo electrónico ya está registrado.' },
-          { keywords: ['podcast', 'title', 'título'], message: 'Ya existe un podcast con este título.' },
-          { keywords: ['episode', 'episodio', 'chapter'], message: 'Ya existe un episodio con ese número o título para esta temporada.' }
-        ];
-
-        const match409 = conflictRules.find(rule => rule.keywords.some(kw => msgLower.includes(kw)));
-        return match409 ? match409.message : 'Hubo un conflicto con los datos ingresados.';
-      }
-      case 500:
-      case 502:
-      case 503:
-      case 504:
-        return 'Ocurrió un error inesperado en el servidor. Intentá de nuevo más tarde.';
-      default:
-        // Si el backend envía un mensaje explícito como string que no es código html, y no es un json grande, 
-        // podríamos mostrarlo, pero como queremos estandarizar:
-        if (typeof rawMessage === 'string' && rawMessage.length < 100 && !rawMessage.includes('<html')) {
-          return rawMessage; // A veces el backend tira un string limpio
-        }
-        return 'Ocurrió un error inesperado. Por favor, intentá nuevamente.';
     }
+
+    const errorCode: string | undefined = errorObj?.errorCode;
+    if (errorCode && ERROR_CODE_DICTIONARY[errorCode]) {
+      return ERROR_CODE_DICTIONARY[errorCode];
+    }
+
+    // 2. Fallback por HTTP status
+    const statusFallback = HTTP_STATUS_FALLBACK[error.status];
+    if (statusFallback) {
+      return statusFallback;
+    }
+
+    // 3. Último recurso
+    return 'Ocurrió un error inesperado. Por favor, intentá nuevamente.';
   }
 
   /**
-   * Maneja errores HTTP de manera genérica
+   * Maneja errores HTTP de manera genérica.
    * @param error - El error HTTP recibido
    * @returns Observable que emite un error formateado
    */
@@ -76,17 +119,17 @@ export class ErrorHandlerService {
 
     if (!(error.error instanceof ErrorEvent) && error.status === 200 && (error.error === null || (typeof error.error === 'string' && error.error.length === 0))) {
       console.log('Successful response with empty body, not treating as error.');
-      return EMPTY; // Complete the stream so subscribers finish normally
+      return EMPTY;
     }
 
     const friendlyMessage = this.getFriendlyMessage(error);
     console.error(`Error procesado: ${friendlyMessage}`, error);
-    
+
     return throwError(() => new Error(friendlyMessage));
   }
 
   /**
-   * Maneja errores específicos con contexto adicional
+   * Maneja errores específicos con contexto adicional.
    * @param error - El error HTTP recibido
    * @param context - Contexto adicional del error (ej: "al obtener usuarios")
    * @returns Observable que emite un error formateado
@@ -102,7 +145,6 @@ export class ErrorHandlerService {
     const friendlyMessage = this.getFriendlyMessage(error);
     console.error(`Error ${context}: ${friendlyMessage}`, error);
 
-    // Adjuntamos el mensaje amigable. El componente no necesita saber el contexto técnico en la UI.
     return throwError(() => new Error(friendlyMessage));
   }
 }

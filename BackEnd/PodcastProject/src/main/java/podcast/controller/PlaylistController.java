@@ -10,19 +10,15 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import podcast.model.entities.User;
 import podcast.model.entities.dto.CreatePlaylistDTO;
 import podcast.model.entities.dto.PlaylistDTO;
 import podcast.model.entities.dto.PlaylistDetailDTO;
 import podcast.model.entities.dto.UpdatePlaylistDTO;
-import podcast.model.exceptions.*;
 import podcast.model.services.PlaylistService;
 import podcast.model.services.UserService;
 
@@ -41,52 +37,6 @@ public class PlaylistController {
     public PlaylistController(PlaylistService playlistService, UserService userService) {
         this.playlistService = playlistService;
         this.userService = userService;
-    }
-
-//* ===================================================================================================================
-
-    @ExceptionHandler(PlaylistNotFoundException.class)
-    public ResponseEntity<String> handlePlaylistNotFound(PlaylistNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
-
-    @ExceptionHandler({PodcastNotFoundException.class, EpisodeNotFoundException.class, PlaylistItemNotFoundException.class})
-    public ResponseEntity<String> handleContentNotFound(RuntimeException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
-
-    @ExceptionHandler({AlreadyCreatedException.class, PlaylistLimitExceededException.class})
-    public ResponseEntity<String> handleConflict(RuntimeException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<String> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body("La operación entra en conflicto con una playlist existente");
-    }
-
-    @ExceptionHandler({IllegalArgumentException.class, ArithmeticException.class})
-    public ResponseEntity<String> handleIllegalArgument(RuntimeException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleValidation(MethodArgumentNotValidException ex) {
-        String message = ex.getBindingResult().getFieldErrors().stream()
-                .findFirst().map(error -> error.getDefaultMessage()).orElse("Datos inválidos");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
-    }
-
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<String> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
-        String message = "Invalid value for parameter '" + ex.getName() + "': " + ex.getValue();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGeneralException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
 //* ===================================================================================================================

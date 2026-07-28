@@ -81,7 +81,7 @@ public class UserService {
     public void save(User user) {
         // Verifica que el id sea nulo pq es autoincremental en la bdd
         if (user.getId() != null) {
-            throw new AlreadyCreatedException("No se debe enviar un ID al registrar un usuario nuevo");
+            throw new AlreadyCreatedException("ERR_INVALID_USER_ID", "No se debe enviar un ID al registrar un usuario nuevo");
         }
 
         // Validar que los usuarios locales tengan contraseña

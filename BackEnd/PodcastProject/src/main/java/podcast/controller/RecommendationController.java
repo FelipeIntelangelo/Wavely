@@ -10,16 +10,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import podcast.model.entities.User;
 import podcast.model.entities.dto.RecommendationDTO;
-import podcast.model.exceptions.UserNotFoundException;
 import podcast.model.services.RecommendationService;
 import podcast.model.services.UserService;
 
@@ -48,30 +45,6 @@ public class RecommendationController {
     public RecommendationController(RecommendationService recommendationService, UserService userService) {
         this.recommendationService = recommendationService;
         this.userService = userService;
-    }
-
-//* ===================================================================================================================
-
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<String> handleUserNotFound(UserNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<String> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
-        String errorMessage = "Invalid value for parameter '" + ex.getName() + "': " + ex.getValue();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGeneralException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Error interno al generar recomendaciones: " + ex.getMessage());
     }
 
 //* ===================================================================================================================

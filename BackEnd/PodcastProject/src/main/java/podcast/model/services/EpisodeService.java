@@ -64,7 +64,7 @@ private final NotificationService notificationService;
         if(existingPodcast.getEpisodes().stream()
                 .anyMatch(e -> e.getTitle().equalsIgnoreCase(episode.getTitle())))
         {
-            throw new AlreadyCreatedException("An episode with the title '" + episode.getTitle() + "' already exists in this podcast");
+            throw new AlreadyCreatedException("ERR_DUPLICATE_EPISODE", "An episode with the title '" + episode.getTitle() + "' already exists in this podcast");
         }
         episode.setPodcast(existingPodcast);
 
@@ -106,7 +106,7 @@ private final NotificationService notificationService;
         // Actualizar los campos del episodio si están presentes en el DTO
         if (updates.getTitle() != null && !updates.getTitle().isBlank()) {
             if(updates.getTitle().equals(episode.getTitle())){
-                throw new AlreadyCreatedException("An episode with the title '" + updates.getTitle() + "' already exists in this podcast");
+                throw new AlreadyCreatedException("ERR_DUPLICATE_EPISODE", "An episode with the title '" + updates.getTitle() + "' already exists in this podcast");
             }
             episode.setTitle(updates.getTitle());
             flag = true;
