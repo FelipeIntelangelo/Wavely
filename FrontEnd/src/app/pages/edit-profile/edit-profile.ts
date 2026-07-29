@@ -8,11 +8,12 @@ import { CloudinaryUploadComponent } from '../../components/shared/cloudinary-up
 import { FormError } from '../../components/shared/form-error/form-error';
 import { UserUpdateDTO } from '../../models/user/user-update-dto';
 import { MediaImageComponent } from '../../components/shared/media-image/media-image';
+import { ImageCropperModalComponent } from '../../components/shared/image-cropper-modal/image-cropper-modal';
 
 @Component({
   selector: 'app-edit-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, CloudinaryUploadComponent, FormError, MediaImageComponent],
+  imports: [CommonModule, ReactiveFormsModule, CloudinaryUploadComponent, FormError, MediaImageComponent, ImageCropperModalComponent],
   templateUrl: './edit-profile.html',
   styleUrl: './edit-profile.css'
 })
@@ -25,6 +26,10 @@ export class EditProfileComponent implements OnInit {
 
   showPassword = false;
   showConfirmPassword = false;
+
+  // Estado cropper modal
+  showCropperModal = false;
+  fileToCrop: File | null = null;
 
   // custom error messages for form-error component
   customErrors: { [controlName: string]: { [key: string]: string } } = {
@@ -190,6 +195,38 @@ export class EditProfileComponent implements OnInit {
 
   toggleConfirmPasswordVisibility(): void {
     this.showConfirmPassword = !this.showConfirmPassword;
+  }
+
+  onFileSelected(file: File): void {
+    if (file && file.type.startsWith('image/')) {
+      this.error = null;
+      this.fileToCrop = file;
+      this.showCropperModal = true;
+    }
+  }
+
+  private applySelectedImage(file: File, src: string): void {
+    if (this.profilePictureUpload) {
+      this.profilePictureUpload.setFile(file);
+    }
+    this.editProfileForm.patchValue({ profilePicture: src });
+  }
+
+  onCropCompleted(croppedFile: File): void {
+    this.showCropperModal = false;
+    this.fileToCrop = null;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const src = e.target?.result as string;
+      this.applySelectedImage(croppedFile, src);
+    };
+    reader.readAsDataURL(croppedFile);
+  }
+
+  onCropCancelled(): void {
+    this.showCropperModal = false;
+    this.fileToCrop = null;
   }
 
   onImageUploaded(url: string): void {

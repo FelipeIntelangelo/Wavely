@@ -33,6 +33,7 @@
                 [maxSizeMB]="5"
                 [defer]="true"
                 #profilePictureUpload
+                (fileSelected)="onFileSelected($event)"
                 (uploadComplete)="onImageUploaded($event)"
                 (uploadError)="onUploadError($event)">
               </app-cloudinary-upload>
@@ -125,3 +126,12 @@
     </form>
   }
 </div>
+
+@if (showCropperModal) {
+  <app-image-cropper-modal
+    [imageFile]="fileToCrop"
+    (cropComplete)="onCropCompleted($event)"
+    (cropCancel)="onCropCancelled()"
+  ></app-image-cropper-modal>
+}
+

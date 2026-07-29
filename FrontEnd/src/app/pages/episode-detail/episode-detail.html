@@ -158,16 +158,33 @@
                   [disabled]="isSubmittingComment"
                 ></textarea>
                 <div class="comment-actions">
+                  @if (commentCharCount > 0) {
+                    <div class="char-limit-indicator"
+                         [class.normal]="commentCharCount < 500"
+                         [class.yellow]="commentCharCount >= 500 && commentCharCount < 750"
+                         [class.orange]="commentCharCount >= 750 && commentCharCount <= 1000"
+                         [class.exceeded]="remainingChars < 0">
+                      <span class="char-count-number">{{ commentCharCount }}/{{ MAX_COMMENT_LENGTH }}</span>
+                      <svg class="char-progress-ring" width="22" height="22" viewBox="0 0 28 28">
+                        <circle class="circle-bg" cx="14" cy="14" r="10" />
+                        <circle class="circle-progress" cx="14" cy="14" r="10"
+                                [style.strokeDasharray]="62.83"
+                                [style.strokeDashoffset]="strokeDashoffset" />
+                      </svg>
+                    </div>
+                  }
+
                   @if (newCommentContent.trim()) {
                     <button type="button" class="cancel-btn" (click)="newCommentContent = ''" [disabled]="isSubmittingComment">
                       Cancelar
                     </button>
                   }
+
                   <button
                     type="button"
                     class="submit-btn"
                     (click)="submitComment()"
-                    [disabled]="isSubmittingComment || !newCommentContent.trim()"
+                    [disabled]="isSubmittingComment || !newCommentContent.trim() || remainingChars < 0"
                   >
                     @if (isSubmittingComment) {
                       <span class="spinner"></span>

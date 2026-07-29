@@ -6,11 +6,12 @@ import { Category } from '../../models/enums/category.enum';
 import { FormError } from '../../components/shared/form-error/form-error';
 import { CloudinaryUploadComponent } from '../../components/shared/cloudinary-upload/cloudinary-upload';
 import { MediaImageComponent } from '../../components/shared/media-image/media-image';
+import { ImageCropperModalComponent } from '../../components/shared/image-cropper-modal/image-cropper-modal';
 
 @Component({
   selector: 'app-podcast-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormError, CloudinaryUploadComponent, MediaImageComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormError, CloudinaryUploadComponent, MediaImageComponent, ImageCropperModalComponent],
   templateUrl: './podcast-form.html',
   styleUrls: ['./podcast-form.css']
 })
@@ -23,6 +24,10 @@ export class PodcastFormComponent implements OnInit, OnChanges {
   podcastForm!: FormGroup;
   categoryKeys: string[] = [];
   @ViewChild('imageUp') imageUp?: CloudinaryUploadComponent;
+
+  // Estado cropper modal
+  showCropperModal = false;
+  fileToCrop: File | null = null;
 
   customErrors = {
     title: {
@@ -172,9 +177,6 @@ export class PodcastFormComponent implements OnInit, OnChanges {
       const file = event.dataTransfer.files[0];
       if (file.type.startsWith('image/')) {
         this.imageError = null;
-        if (this.imageUp) {
-          this.imageUp.setFile(file);
-        }
         this.onFileSelected(file);
       } else {
         this.imageError = 'Por favor selecciona o arrastra un archivo de imagen válido (JPG, PNG, WebP).';
@@ -185,14 +187,35 @@ export class PodcastFormComponent implements OnInit, OnChanges {
   onFileSelected(file: File): void {
     if (file && file.type.startsWith('image/')) {
       this.imageError = null;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.podcastForm.patchValue({ imageUrl: e.target?.result as string });
-      };
-      reader.readAsDataURL(file);
+      this.fileToCrop = file;
+      this.showCropperModal = true;
     } else if (file) {
       this.imageError = 'Por favor selecciona o arrastra un archivo de imagen válido (JPG, PNG, WebP).';
     }
+  }
+
+  private applySelectedImage(file: File, src: string): void {
+    if (this.imageUp) {
+      this.imageUp.setFile(file);
+    }
+    this.podcastForm.patchValue({ imageUrl: src });
+  }
+
+  onCropCompleted(croppedFile: File): void {
+    this.showCropperModal = false;
+    this.fileToCrop = null;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const src = e.target?.result as string;
+      this.applySelectedImage(croppedFile, src);
+    };
+    reader.readAsDataURL(croppedFile);
+  }
+
+  onCropCancelled(): void {
+    this.showCropperModal = false;
+    this.fileToCrop = null;
   }
 
   onImageUploaded(url: string): void {

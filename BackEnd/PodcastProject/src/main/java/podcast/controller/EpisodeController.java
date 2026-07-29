@@ -222,6 +222,28 @@ public class EpisodeController {
 //* ===================================================================================================================
 
     @Operation(
+            summary = "Obtener calificación del usuario para un episodio",
+            description = "Devuelve el puntaje de calificación otorgado por el usuario autenticado para el episodio (0 si no calificó).",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Calificación recuperada exitosamente"),
+            @ApiResponse(responseCode = "401", description = "No autorizado - Token JWT faltante o inválido"),
+            @ApiResponse(responseCode = "404", description = "Episodio o usuario no encontrado")
+    })
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/{episodeId}/rating")
+    public ResponseEntity<Long> getUserRating(
+            @Parameter(description = "ID del episodio", required = true, example = "1")
+            @PathVariable Long episodeId,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails) {
+        Long rating = ratingService.getUserRating(episodeId, userDetails.getUsername());
+        return ResponseEntity.ok(rating);
+    }
+
+//* ===================================================================================================================
+
+    @Operation(
             summary = "Guardar nuevo episodio",
             description = "Crea un nuevo episodio en el sistema"
     )

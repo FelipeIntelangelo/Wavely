@@ -79,4 +79,10 @@ export class EpisodeService {
     );
   }
 
+  getUserRating(episodeId: number): Observable<number> {
+    return this.http.get<number>(`${this.API_URL}/${episodeId}/rating`).pipe(
+      catchError(this.errorHandler.handleError.bind(this.errorHandler))
+    );
+  }
+
 }

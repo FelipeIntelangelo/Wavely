@@ -192,3 +192,11 @@
     <button type="button" (click)="onCancel()">Cancelar</button>
   </div>
 </form>
+
+@if (showCropperModal) {
+  <app-image-cropper-modal
+    [imageFile]="fileToCrop"
+    (cropComplete)="onCropCompleted($event)"
+    (cropCancel)="onCropCancelled()"
+  ></app-image-cropper-modal>
+}

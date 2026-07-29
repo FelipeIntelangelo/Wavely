@@ -157,10 +157,12 @@
 }
 
 .button-row {
+  position: relative;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  gap: 12px;
+  width: 100%;
+  min-height: 42px;
 }
 
 .control-button {
@@ -201,7 +203,8 @@
 }
 
 .control-button.back:hover,
-.control-button.next:hover {
+.control-button.next:hover,
+.control-button.volume-btn:hover {
   background: rgba(255, 255, 255, 0.1);
   transform: none;
   border-radius: 50%;
@@ -211,9 +214,131 @@
   justify-content: center;
   align-items: center;
   display: flex;
-  margin-left: 0;
   gap: 8px;
-  flex: 1;
+}
+
+/* Control de Volumen en reproductor flotante (Cápsula Unificada) */
+.volume-control-wrapper {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+}
+
+.volume-popover-card {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 21px;
+  background: transparent;
+  transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.volume-control-wrapper:hover .volume-popover-card,
+.volume-control-wrapper:focus-within .volume-popover-card {
+  height: 165px;
+  background: #181818;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.65);
+}
+
+.control-button.volume-btn {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 42px;
+  height: 42px;
+  margin: 0;
+}
+
+.volume-percent-text {
+  position: absolute;
+  bottom: 44px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ffffff;
+  font-family: system-ui, -apple-system, sans-serif;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  user-select: none;
+}
+
+.volume-control-wrapper:hover .volume-percent-text,
+.volume-control-wrapper:focus-within .volume-percent-text {
+  opacity: 1;
+  visibility: visible;
+}
+
+.volume-slider-box {
+  position: absolute;
+  bottom: 68px;
+  left: 0;
+  width: 42px;
+  height: 85px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.volume-control-wrapper:hover .volume-slider-box,
+.volume-control-wrapper:focus-within .volume-slider-box {
+  opacity: 1;
+  visibility: visible;
+}
+
+.volume-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 75px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  transform: rotate(-90deg);
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.volume-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.25);
+  background: var(--accent, #9D65D7);
+}
+
+.volume-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
 }
 
 .play-pause-button .icon-pause {
