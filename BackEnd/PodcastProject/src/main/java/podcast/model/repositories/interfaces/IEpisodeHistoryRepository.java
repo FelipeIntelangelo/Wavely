@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface IEpisodeHistoryRepository extends JpaRepository<EpisodeHistory, Long> {
     Optional<EpisodeHistory> findFirstByEpisode_IdAndUser_Id(Long episodeId, Long userId);
 
-    @Query("SELECT eh FROM EpisodeHistory eh WHERE eh.user.id = :userId")
+    @Query("SELECT eh FROM EpisodeHistory eh WHERE eh.user.id = :userId ORDER BY eh.listenedAt DESC")
     List<EpisodeHistory> findEpisodesByUserId(@Param("userId") Long userId);
 
     void deleteByEpisodeId(Long episodeId);

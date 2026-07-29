@@ -137,6 +137,7 @@ export class AddToPlaylistComponent {
   }
 
   private getErrorMessage(error: any): string {
+    if (error?.error?.message) return error.error.message;
     if (typeof error?.error === 'string' && error.error.trim()) return error.error;
     return 'Intentá nuevamente.';
   }
