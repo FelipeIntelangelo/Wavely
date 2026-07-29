@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, effect } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { EpisodeService } from '../../services/episode/episode.service';
 import { CommentaryService } from '../../services/commentary/commentary.service';
@@ -60,6 +60,23 @@ export class EpisodeDetail implements OnInit, OnDestroy {
   userRating: number = 0;
   isSubmittingRating = false;
 
+  // Límite de caracteres para comentarios (estilo Twitter)
+  readonly MAX_COMMENT_LENGTH = 1000;
+
+  get commentCharCount(): number {
+    return this.newCommentContent ? this.newCommentContent.length : 0;
+  }
+
+  get remainingChars(): number {
+    return this.MAX_COMMENT_LENGTH - this.commentCharCount;
+  }
+
+  get strokeDashoffset(): number {
+    const circumference = 62.83;
+    const progress = Math.min(1, this.commentCharCount / this.MAX_COMMENT_LENGTH);
+    return circumference * (1 - progress);
+  }
+
   
   constructor(
     private route: ActivatedRoute,
@@ -70,13 +87,25 @@ export class EpisodeDetail implements OnInit, OnDestroy {
     private userService: UserService,
     private alertService: AlertService,
     private router: Router
-  ) {}
+  ) {
+    // Reaccionar en tiempo real cuando el reproductor flotante contabilice los 30 segundos
+    effect(() => {
+      const state = this.mediaPlayerService.playerState();
+      if (this.episodeId && state.episode?.id === this.episodeId && state.viewCounted) {
+        this.viewCounted = true;
+        this.isInHistory = true;
+      }
+    });
+  }
   
   ngOnInit(): void {
     this.authService.getIsLoggedIn().subscribe(loggedIn => {
       this.isUserLoggedIn = loggedIn;
       if (loggedIn) {
         this.loadUserHistory();
+        if (this.episodeId) {
+          this.loadUserRating(this.episodeId);
+        }
       }
     });
     
@@ -122,13 +151,19 @@ export class EpisodeDetail implements OnInit, OnDestroy {
         this.episode = episode;
         this.isLoading = false;
         this.loadCommentaries(episode.id);
+        if (this.isUserLoggedIn) {
+          this.loadUserRating(episode.id);
+        }
         
         // Verificar si este episodio está reproduciéndose en el flotante
         const playerState = this.mediaPlayerService.playerState();
         if (playerState.isOpen && playerState.episode?.id === episode.id) {
-          // El episodio está en el flotante, mostrar mensaje
+          // El episodio está en el flotante
           this.hideInlinePlayer = true;
           this.viewCounted = playerState.viewCounted;
+          if (playerState.viewCounted) {
+            this.isInHistory = true;
+          }
         } else {
           // Episodio no está en el flotante, resetear estado
           this.hideInlinePlayer = false;
@@ -168,13 +203,27 @@ export class EpisodeDetail implements OnInit, OnDestroy {
         this.isLoadingHistory = false;
         // Verificar si el episodio actual está en el historial
         if (this.episodeId) {
-          this.isInHistory = history.some(h => h.episode.id === this.episodeId);
+          const found = history.some(h => h.episode.id === this.episodeId);
+          if (found) {
+            this.isInHistory = true;
+          }
         }
       },
       error: (err) => {
         console.error('Error loading history:', err);
         this.isLoadingHistory = false;
-        this.isInHistory = false;
+      }
+    });
+  }
+
+  loadUserRating(episodeId: number): void {
+    this.episodeService.getUserRating(episodeId).subscribe({
+      next: (score: number) => {
+        this.userRating = score || 0;
+      },
+      error: (err) => {
+        console.error('Error loading user rating:', err);
+        this.userRating = 0;
       }
     });
   }
@@ -261,8 +310,8 @@ export class EpisodeDetail implements OnInit, OnDestroy {
         this.episodeService.incrementView(this.episode.id).subscribe({
           next: () => {
             this.viewCounted = true;
+            this.isInHistory = true;
             console.log('View contabilizada para episodio:', this.episode?.id);
-            // Recargar el historial para actualizar isInHistory
             if (this.isUserLoggedIn) {
               this.loadUserHistory();
             }
@@ -383,12 +432,12 @@ export class EpisodeDetail implements OnInit, OnDestroy {
   }
 
   submitComment(): void {
-    if (!this.episode || !this.canComment() || !this.newCommentContent.trim()) {
+    if (!this.episode || !this.canComment() || !this.newCommentContent.trim() || this.remainingChars < 0) {
       return;
     }
 
-    if (this.newCommentContent.trim().length > 1000) {
-      this.alertService.error('Comentario muy largo', 'El comentario no puede exceder los 1000 caracteres.');
+    if (this.commentCharCount > this.MAX_COMMENT_LENGTH) {
+      this.alertService.error('Comentario muy largo', `El comentario no puede exceder los ${this.MAX_COMMENT_LENGTH} caracteres.`);
       return;
     }
 

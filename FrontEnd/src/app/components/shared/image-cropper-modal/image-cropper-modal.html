@@ -1,0 +1,69 @@
+<div class="cropper-backdrop" (click)="cancel()">
+  <div class="cropper-modal" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="cropper-header">
+      <h3 class="cropper-title">Editar imagen</h3>
+      <button type="button" class="btn-close" (click)="cancel()" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="cropper-body">
+      <!-- Visor de imagen con máscara y marco cuadrado blanco -->
+      <div 
+        class="cropper-viewport-container"
+        (mousedown)="onMouseDown($event)"
+        (mousemove)="onMouseMove($event)"
+        (mouseup)="onMouseUp()"
+        (mouseleave)="onMouseUp()"
+        (touchstart)="onTouchStart($event)"
+        (touchmove)="onTouchMove($event)"
+        (touchend)="onTouchEnd()"
+      >
+        <canvas #previewCanvas width="360" height="360" class="cropper-canvas"></canvas>
+        
+        <!-- Recuadro marco cuadrado blanco de encuadre 1:1 -->
+        <div class="cropper-square-frame"></div>
+      </div>
+
+      <!-- Controles de Zoom (Estilo Discord con iconos de imagen) -->
+      <div class="cropper-controls">
+        <svg class="slider-icon small" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+          <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+        </svg>
+        
+        <input 
+          type="range" 
+          [min]="minScale" 
+          [max]="maxScale" 
+          step="0.01" 
+          [value]="zoomScale" 
+          (input)="onZoomChange($event)"
+          class="zoom-slider"
+        />
+
+        <svg class="slider-icon large" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+          <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Footer estilo Discord -->
+    <div class="cropper-footer">
+      <button type="button" class="btn-reset" (click)="resetPosition()">
+        Restablecer
+      </button>
+
+      <div class="footer-actions">
+        <button type="button" class="btn-cancel" (click)="cancel()">Cancelar</button>
+        <button type="button" class="btn-confirm" (click)="confirmCrop()">
+          Aplicar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

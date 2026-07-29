@@ -78,4 +78,15 @@ public class RatingService {
         }
         return ratingRepository.findAverageScoreByEpisode(episode);
     }
+
+    public Long getUserRating(Long episodeId, String username) {
+        User user = userRepository.findByCredentialUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado con username: " + username));
+        Episode episode = episodeRepository.findById(episodeId)
+                .orElseThrow(() -> new EpisodeNotFoundException("Episodio no encontrado con id: " + episodeId));
+
+        return ratingRepository.findByUserAndEpisode(user, episode)
+                .map(Rating::getScore)
+                .orElse(0L);
+    }
 }

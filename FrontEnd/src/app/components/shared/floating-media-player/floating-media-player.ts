@@ -252,10 +252,47 @@ export class FloatingMediaPlayerComponent {
     }
   }
   
+  // Control de Volumen
+  volume = 1;
+  isMuted = false;
+  previousVolume = 1;
+
+  get volumePercentage(): number {
+    return this.isMuted ? 0 : Math.round(this.volume * 100);
+  }
+
+  setVolume(newVolume: number) {
+    this.volume = Math.max(0, Math.min(1, newVolume));
+    this.isMuted = this.volume === 0;
+    const element = this.mediaElement?.nativeElement;
+    if (element) {
+      element.volume = this.volume;
+      element.muted = this.isMuted;
+    }
+  }
+
+  toggleMute() {
+    if (this.isMuted || this.volume === 0) {
+      this.setVolume(this.previousVolume > 0 ? this.previousVolume : 1);
+    } else {
+      this.previousVolume = this.volume;
+      this.setVolume(0);
+    }
+  }
+
+  onVolumeInputChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.setVolume(parseFloat(input.value));
+  }
+
   onMetadataLoaded() {
     const element = this.mediaElement?.nativeElement;
-    if (element && 'duration' in element) {
-      this.duration = element.duration || 0;
+    if (element) {
+      if ('duration' in element) {
+        this.duration = element.duration || 0;
+      }
+      element.volume = this.volume;
+      element.muted = this.isMuted;
     }
   }
   
