@@ -174,6 +174,12 @@ export class FloatingMediaPlayerComponent {
     if (element && 'currentTime' in element && 'duration' in element) {
       this.currentTime = element.currentTime || 0;
       this.duration = element.duration || 0;
+      
+      // Registrar vista si pasa de 20 segundos o completa el 80% del audio
+      if (this.currentTime >= 20 || (this.duration > 0 && this.currentTime >= this.duration * 0.8)) {
+        this.mediaPlayerService.registerView();
+      }
+
       if (this.duration > 0) {
         this.progressPercentage = (this.currentTime / this.duration) * 100;
       }
@@ -235,8 +241,6 @@ export class FloatingMediaPlayerComponent {
         // Checkbox checked = quiere reproducir
         element.play().then(() => {
           this.isPlayingState = true;
-          // Iniciar el contador del historial cuando realmente se empieza a reproducir
-          this.mediaPlayerService.startPlaybackCountdown();
           this.cdr.markForCheck();
         }).catch(() => {
           checkbox.checked = false;
@@ -301,8 +305,7 @@ export class FloatingMediaPlayerComponent {
   }
   
   onPlay() {
-    // Iniciar el contador del historial cuando se empieza a reproducir
-    this.mediaPlayerService.startPlaybackCountdown();
+    // Ya no usamos el contador en onPlay, se maneja por currentTime en updateTime
   }
   
   onEnded() {

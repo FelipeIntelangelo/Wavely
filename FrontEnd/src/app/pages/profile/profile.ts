@@ -56,6 +56,12 @@ export class Profile implements OnInit, OnDestroy {
         if (id !== null && !isNaN(id)) { // Check if id is a valid number
           // Cargar usuario actual primero para comparar
           this.loadCurrentUser(() => {
+            if (this.currentUserId === id) {
+              // Si el ID consultado es el mío, redirecciono a mi perfil principal (sin ID)
+              this.router.navigate(['/profile']);
+              return;
+            }
+
             this.userService.getUserById(id).subscribe({
               next: (data) => {
                 this.checkIfOwnProfile(data.id);

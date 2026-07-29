@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.hibernate.annotations.SQLRestriction;
 import podcast.model.entities.dto.UserDTO;
 import java.util.Collection;
 import java.util.List;
@@ -65,6 +66,7 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user")
     @JsonIgnore
+    @SQLRestriction("is_active = true")
     private List<Podcast> podcasts;
 
     @JsonProperty("podcasts")
@@ -80,6 +82,7 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "podcast_id"),
             uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "podcast_id"})
     )
+    @SQLRestriction("is_active = true")
     private List<Podcast> favorites;
 
     @OneToMany(mappedBy = "user")

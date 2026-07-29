@@ -15,8 +15,6 @@ export interface MediaPlayerState {
   providedIn: 'root'
 })
 export class MediaPlayerService {
-  private playbackTimer: any = null;
-
   playerState = signal<MediaPlayerState>({
     episode: null,
     isOpen: false,
@@ -43,7 +41,6 @@ export class MediaPlayerService {
     }
     
     // Nuevo episodio o player cerrado - cargar desde cero
-    this.cancelViewCountdown();
     this.playerState.update(state => ({
       ...state,
       episode,
@@ -54,19 +51,10 @@ export class MediaPlayerService {
       autoplay
     }));
     
-    // No iniciar el countdown automáticamente - se iniciará cuando se dé play
+    // El viewCounted se manejará desde el componente del reproductor
   }
   
-  startPlaybackCountdown() {
-    const currentState = this.playerState();
-    // Solo iniciar countdown si no se ha contado ya y hay un episodio
-    if (!currentState.viewCounted && currentState.episode) {
-      this.startViewCountdown();
-    }
-  }
-
   closePlayer() {
-    this.cancelViewCountdown();
     this.playerState.set({
       episode: null,
       isOpen: false,
@@ -84,30 +72,22 @@ export class MediaPlayerService {
     }));
   }
 
-  private startViewCountdown() {
+  registerView() {
     const currentState = this.playerState();
     if (currentState.viewCounted || !currentState.episode) return;
 
-    this.cancelViewCountdown();
+    // Marcamos inmediatamente para evitar múltiples llamadas concurrentes
+    this.playerState.update(state => ({ ...state, viewCounted: true }));
 
-    this.playbackTimer = setTimeout(() => {
-      const episode = this.playerState().episode;
-      if (episode) {
-        this.episodeService.incrementView(episode.id).subscribe({
-          next: () => {
-            console.log('View contabilizada para episodio:', episode.id);
-            this.playerState.update(state => ({ ...state, viewCounted: true }));
-          },
-          error: (err: any) => console.error('Error al contabilizar view:', err)
-        });
+    this.episodeService.incrementView(currentState.episode.id).subscribe({
+      next: () => {
+        console.log('View contabilizada para episodio:', currentState.episode!.id);
+      },
+      error: (err: any) => {
+        console.error('Error al contabilizar view:', err);
+        // Si falla, revertimos para permitir un reintento
+        this.playerState.update(state => ({ ...state, viewCounted: false }));
       }
-    }, 30000); // 30 segundos
-  }
-
-  private cancelViewCountdown() {
-    if (this.playbackTimer) {
-      clearTimeout(this.playbackTimer);
-      this.playbackTimer = null;
-    }
+    });
   }
 }
