@@ -157,12 +157,9 @@ public class UserService {
         if (updates.getEmail() != null && !updates.getEmail().isBlank()) {
             existingUser.getCredential().setEmail(updates.getEmail());
         }
-        System.out.println(updates.getPassword());
         if (updates.getPassword() != null && !updates.getPassword().isBlank()) {
-            System.out.println(updates.getPassword());
             existingUser.getCredential().setPassword(passwordEncoder.encode(updates.getPassword()));
         }
-        System.out.println("todo correcto");
 
         return userRepository.save(existingUser);
     }
