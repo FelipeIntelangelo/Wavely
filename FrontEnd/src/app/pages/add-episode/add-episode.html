@@ -123,6 +123,20 @@
             <!-- Archivo Multimedia (Audio/Video) -->
             <div class="form-group">
               <label>Archivo Multimedia (Audio o Video) <span class="required-asterisk">*</span></label>
+              <app-cloudinary-upload
+                style="display: none;"
+                acceptedTypes="video/*,audio/*,.mp3,.wav,.ogg,.m4a,.aac,.flac,.mp4,.webm,.mov,.avi"
+                resourceType="auto"
+                label="Subir video/audio del episodio"
+                [maxSizeMB]="500"
+                [defer]="true"
+                #mediaUp
+                (fileSelected)="onMediaFileSelected($event)"
+                (uploadComplete)="onAudioUploaded($event)"
+                (uploadError)="onUploadError($event)"
+                (durationDetected)="onDurationDetected($event)">
+              </app-cloudinary-upload>
+
               @if (!form.value.audioPath) {
                 <div class="media-upload-box"
                      [class.is-dragover]="isMediaDragOver"
@@ -137,20 +151,6 @@
                     <span class="browse-button">Subir Audio/Video</span>
                   </div>
                 </div>
-
-                <app-cloudinary-upload
-                  style="display: none;"
-                  acceptedTypes="video/*,audio/*,.mp3,.wav,.ogg,.m4a,.aac,.flac,.mp4,.webm,.mov,.avi"
-                  resourceType="auto"
-                  label="Subir video/audio del episodio"
-                  [maxSizeMB]="500"
-                  [defer]="true"
-                  #mediaUp
-                  (fileSelected)="onMediaFileSelected($event)"
-                  (uploadComplete)="onAudioUploaded($event)"
-                  (uploadError)="onUploadError($event)"
-                  (durationDetected)="onDurationDetected($event)">
-                </app-cloudinary-upload>
 
                 <div class="media-hint-info">
                   <span class="hint">Archivos soportados: MP3, WAV, M4A, FLAC, MP4, WebM. Mínimo 30 segundos.</span>

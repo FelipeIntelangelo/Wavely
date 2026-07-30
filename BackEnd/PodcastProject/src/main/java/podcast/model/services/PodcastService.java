@@ -56,20 +56,12 @@ public class PodcastService {
     }
 
     public Page<PodcastDTO> getAllFiltered(String title, Integer userId, Category category, Boolean orderByViews, Pageable pageable) {
-        if (orderByViews != null && orderByViews) {
-            // Paginación y ordenamiento en memoria porque averageViews no está en la base de datos
-            List<Podcast> filtered;
-            if (title == null && userId == null && category == null) {
-                filtered = podcastRepository.findAll();
-            } else {
-                filtered = podcastRepository.findByUser_IdOrTitleIgnoreCaseOrCategories(userId, title, category);
-                if (filtered.isEmpty()) {
-                    filtered = podcastRepository.findAll();
-                }
-            }
+        String searchTitle = (title != null && !title.trim().isEmpty()) ? title.trim() : null;
+
+        if (Boolean.TRUE.equals(orderByViews)) {
+            List<Podcast> filtered = podcastRepository.findFilteredPodcastsList(userId, searchTitle, category);
 
             List<PodcastDTO> activeFilteredDTO = filtered.stream()
-                    .filter(p -> Boolean.TRUE.equals(p.getIsActive()))
                     .map(Podcast::toDTO)
                     .sorted((p1, p2) -> Long.compare(p2.getAverageViews(), p1.getAverageViews()))
                     .toList();
@@ -82,17 +74,7 @@ public class PodcastService {
             return new PageImpl<>(pageContent, pageable, activeFilteredDTO.size());
 
         } else {
-            // Paginación a nivel de base de datos
-            Page<Podcast> filteredPage;
-            if (title == null && userId == null && category == null) {
-                filteredPage = podcastRepository.findAllByIsActiveTrue(pageable);
-            } else {
-                filteredPage = podcastRepository.findByUser_IdOrTitleIgnoreCaseOrCategoriesAndIsActiveTrue(userId, title, category, pageable);
-                if (filteredPage.isEmpty()) {
-                    filteredPage = podcastRepository.findAllByIsActiveTrue(pageable);
-                }
-            }
-
+            Page<Podcast> filteredPage = podcastRepository.findFilteredPodcasts(userId, searchTitle, category, pageable);
             return filteredPage.map(Podcast::toDTO);
         }
     }

@@ -479,9 +479,12 @@ export class AddEpisodePage implements OnInit {
       if (this.mediaUp && this.mediaUp.hasFileSelected()) {
         const mediaUrl = await this.mediaUp.performUpload();
         this.form.patchValue({ audioPath: mediaUrl });
-      } else if (!this.form.value.audioPath) {
+      }
+
+      const currentAudioPath = this.form.value.audioPath;
+      if (!currentAudioPath || currentAudioPath.startsWith('blob:')) {
         this.isSubmitting = false;
-        this.errorMessage = 'Debés seleccionar un archivo de audio/video.';
+        this.errorMessage = 'Ocurrió un error al procesar la subida del archivo multimedia. Por favor volvé a seleccionar el archivo.';
         return;
       }
 
