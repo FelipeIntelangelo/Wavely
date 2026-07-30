@@ -9,10 +9,14 @@ import { User } from '../../models/user/user';
 import { CloudinaryUploadComponent } from '../../components/shared/cloudinary-upload/cloudinary-upload';
 import { AlertService } from '../../services/ui/alert.service';
 
+import { FormError } from '../../components/shared/form-error/form-error';
+import { MediaImageComponent } from '../../components/shared/media-image/media-image';
+import { ImageCropperModalComponent } from '../../components/shared/image-cropper-modal/image-cropper-modal';
+
 @Component({
   selector: 'app-edit-episode',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, CloudinaryUploadComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, CloudinaryUploadComponent, FormError, MediaImageComponent, ImageCropperModalComponent],
   templateUrl: './edit-episode.html',
   styleUrl: './edit-episode.css'
 })
@@ -27,6 +31,12 @@ export class EditEpisodePage implements OnInit {
   form!: FormGroup;
   detectedDuration: number = 0;
   originalAudioPath: string = '';
+
+  isDragOver = false;
+  imageError: string | null = null;
+
+  showCropperModal = false;
+  fileToCrop: File | null = null;
 
   @ViewChild('mediaUp') mediaUp?: CloudinaryUploadComponent;
   @ViewChild('imageUp') imageUp?: CloudinaryUploadComponent;
@@ -128,7 +138,86 @@ export class EditEpisodePage implements OnInit {
     }
   }
 
+  customErrors = {
+    title: {
+      required: 'El título del episodio es obligatorio.',
+      minlength: 'El título debe tener al menos 3 caracteres.',
+      maxlength: 'El título no puede superar los 50 caracteres.'
+    },
+    description: {
+      required: 'La descripción del episodio es obligatoria.',
+      minlength: 'La descripción debe tener al menos 5 caracteres.',
+      maxlength: 'La descripción no puede superar los 500 caracteres.'
+    }
+  };
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = true;
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = false;
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = false;
+
+    if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+      const file = event.dataTransfer.files[0];
+      if (file.type.startsWith('image/')) {
+        this.imageError = null;
+        if (this.imageUp) {
+          this.imageUp.setFile(file);
+        }
+        this.onFileSelected(file);
+      } else {
+        this.imageError = 'Por favor selecciona o arrastra un archivo de imagen válido (JPG, PNG, WebP).';
+      }
+    }
+  }
+
+  onFileSelected(file: File): void {
+    if (file && file.type.startsWith('image/')) {
+      this.imageError = null;
+      this.fileToCrop = file;
+      this.showCropperModal = true;
+    } else if (file) {
+      this.imageError = 'Por favor selecciona o arrastra un archivo de imagen válido (JPG, PNG, WebP).';
+    }
+  }
+
+  private applySelectedImage(file: File, src: string): void {
+    if (this.imageUp) {
+      this.imageUp.setFile(file, true);
+    }
+    this.form.patchValue({ imageUrl: src });
+  }
+
+  onCropCompleted(croppedFile: File): void {
+    this.showCropperModal = false;
+    this.fileToCrop = null;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const src = e.target?.result as string;
+      this.applySelectedImage(croppedFile, src);
+    };
+    reader.readAsDataURL(croppedFile);
+  }
+
+  onCropCancelled(): void {
+    this.showCropperModal = false;
+    this.fileToCrop = null;
+  }
+
   onImageUploaded(url: string) {
+    this.imageError = null;
     this.form.patchValue({ imageUrl: url });
   }
 

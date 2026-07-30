@@ -4,7 +4,7 @@
     <div class="edit-profile-column">
       <!-- Portada de Podcast con Varios Tamaños (Steam Style) -->
       <div class="form-group form-group-cover">
-        <label>Portada del Podcast</label>
+        <label>Portada del Podcast <span class="required-asterisk">*</span></label>
         <div class="cover-picture-container">
           @if (podcastForm.get('imageUrl')?.value) {
             <div class="cover-previews-row">
@@ -115,7 +115,7 @@
 
       <!-- Título -->
       <div class="form-group">
-        <label for="title">Título del Podcast</label>
+        <label for="title">Título del Podcast <span class="required-asterisk">*</span></label>
         <input type="text" id="title" formControlName="title" placeholder="Ej. Mi Podcast Asombroso"
                [class.error-input]="podcastForm.get('title')?.invalid && podcastForm.get('title')?.touched">
         <app-form-error controlName="title" [customMessages]="customErrors['title']"></app-form-error>
@@ -137,7 +137,7 @@
     <div class="edit-profile-column">
       <!-- Descripción -->
       <div class="form-group">
-        <label for="description">Descripción</label>
+        <label for="description">Descripción <span class="required-asterisk">*</span></label>
         <textarea id="description" formControlName="description" placeholder="Un podcast acerca de..." style="resize: none;" rows="5"
                   [class.error-input]="podcastForm.get('description')?.invalid && podcastForm.get('description')?.touched"></textarea>
         <app-form-error controlName="description" [customMessages]="customErrors['description']"></app-form-error>
@@ -145,7 +145,7 @@
 
       <!-- Categorías -->
       <div class="form-group">
-        <label class="categories-label">Categorías</label>
+        <label class="categories-label">Categorías <span class="required-asterisk">*</span></label>
         <div class="categories-combobox" [class.open]="categoriesOpen" (click)="toggleCategories()" tabindex="0"
              (keydown.enter)="toggleCategories()" (keydown.space)="toggleCategories()" role="button"
              [attr.aria-expanded]="categoriesOpen">

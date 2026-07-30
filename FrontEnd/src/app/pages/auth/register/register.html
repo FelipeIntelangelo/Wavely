@@ -7,14 +7,14 @@
             <!-- Fila 1: Name y Last Name -->
             <div class="form-row">
                 <div class="input-group">
-                    <label for="nameIn">Name</label>
+                    <label for="nameIn">Name <span class="required-asterisk">*</span></label>
                     <input type="text" id="nameIn" formControlName="name"
                     [class.error-input]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">
                     <app-form-error controlName="name" [customMessages]="customErrors['name']" />
                 </div>
                 
                 <div class="input-group">
-                    <label for="lastNameIn">Last Name</label>
+                    <label for="lastNameIn">Last Name <span class="required-asterisk">*</span></label>
                     <input type="text" id="lastNameIn" formControlName="lastName"
                     [class.error-input]="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched">
                     <app-form-error controlName="lastName" [customMessages]="customErrors['lastName']" />
@@ -22,7 +22,7 @@
             </div>
             
             <div class="input-group">
-                <label for="nicknameIn">Nickname</label>
+                <label for="nicknameIn">Nickname <span class="required-asterisk">*</span></label>
                 <input type="text" id="nicknameIn" formControlName="nickname"
                 [class.error-input]="registerForm.get('nickname')?.invalid && registerForm.get('nickname')?.touched">
                 <app-form-error controlName="nickname" [customMessages]="customErrors['nickname']" />
@@ -41,21 +41,21 @@
             }
         } @else if (currentStep === 2) {
             <div class="input-group">
-                <label for="emailIn">Email</label>
+                <label for="emailIn">Email <span class="required-asterisk">*</span></label>
                 <input type="email" id="emailIn" formControlName="email"
                 [class.error-input]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
                 <app-form-error controlName="email" [customMessages]="customErrors['email']"/>
             </div>
 
             <div class="input-group">
-                <label for="usernameIn">Username</label>
+                <label for="usernameIn">Username <span class="required-asterisk">*</span></label>
                 <input type="text" id="usernameIn" formControlName="username"
                 [class.error-input]="registerForm.get('username')?.invalid && registerForm.get('username')?.touched">
                 <app-form-error controlName="username" [customMessages]="customErrors['username']" />
             </div>
             
             <div class="input-group">
-                <label for="passwordIn">Password</label>
+                <label for="passwordIn">Password <span class="required-asterisk">*</span></label>
                 <div class="password-input-wrapper">
                     <input [type]="showPassword ? 'text' : 'password'" id="passwordIn" formControlName="password"
                     [class.error-input]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
@@ -67,7 +67,7 @@
             </div>
 
             <div class="input-group">
-                <label for="confirmPasswordIn">Retype Password</label>
+                <label for="confirmPasswordIn">Retype Password <span class="required-asterisk">*</span></label>
                 <div class="password-input-wrapper">
                     <input [type]="showConfirmPassword ? 'text' : 'password'" id="confirmPasswordIn" formControlName="confirmPassword"
                     [class.error-input]="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched">

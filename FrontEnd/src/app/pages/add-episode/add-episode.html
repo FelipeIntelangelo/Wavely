@@ -1,146 +1,328 @@
 @if (podcast) {
-  <div class="add-episode-page">
-  <h2>Nuevo episodio para: {{ podcast.title }}</h2>
-
-  <div class="error" [class.show]="!isAuthorized && !!errorMessage">{{ errorMessage }}</div>
-
-  @if (isAuthorized) {
-  <form [formGroup]="form" (ngSubmit)="submit()">
-    <fieldset>
-      <label>Título</label>
-      <input type="text" formControlName="title" />
-      @if (form.get('title')?.invalid && form.get('title')?.touched) {
-        <div class="field-error">
-          @if (form.get('title')?.errors?.['required']) {
-            El título es obligatorio
-          }
-          @if (form.get('title')?.errors?.['minlength']) {
-            El título debe tener al menos 3 caracteres
-          }
-          @if (form.get('title')?.errors?.['maxlength']) {
-            El título no puede superar 50 caracteres
-          }
-        </div>
-      }
-    </fieldset>
-
-    <fieldset>
-      <label>Descripción</label>
-      <textarea formControlName="description" style="resize: none;"></textarea>
-      @if (form.get('description')?.invalid && form.get('description')?.touched) {
-        <div class="field-error">
-          @if (form.get('description')?.errors?.['required']) {
-            La descripción es obligatoria
-          }
-          @if (form.get('description')?.errors?.['minlength']) {
-            La descripción debe tener al menos 5 caracteres
-          }
-          @if (form.get('description')?.errors?.['maxlength']) {
-            La descripción no puede superar 500 caracteres
-          }
-        </div>
-      }
-    </fieldset>
-
-    <div class="grid">
-      <fieldset>
-        <label>Temporada</label>
-        <input type="number" formControlName="season" min="1" (change)="onSeasonChange()" />
-        @if (validationErrors['season']) {
-          <div class="field-error">
-            {{ validationErrors['season'] }}
-          </div>
-        }
-        @if (form.get('season')?.invalid && form.get('season')?.touched) {
-          <div class="field-error">
-            La temporada debe ser al menos 1
-          </div>
-        }
-      </fieldset>
-      <fieldset>
-        <label>Episodio</label>
-        <input type="number" formControlName="chapter" min="1" (change)="onChapterChange()" />
-        @if (validationErrors['chapter']) {
-          <div class="field-error">
-            {{ validationErrors['chapter'] }}
-          </div>
-        }
-        @if (form.get('chapter')?.invalid && form.get('chapter')?.touched) {
-          <div class="field-error">
-            El episodio debe ser al menos 1
-          </div>
-        }
-      </fieldset>
+  <div class="add-episode-container">
+    <div class="page-header">
+      <h1 class="page-title">Nuevo Episodio</h1>
+      <p class="page-subtitle">Agregá un nuevo episodio a <strong>{{ podcast.title }}</strong></p>
     </div>
 
-    <fieldset>
-      <label>Imagen</label>
-      <app-cloudinary-upload
-        acceptedTypes="image/*"
-        resourceType="image"
-        label="Subir portada"
-        [maxSizeMB]="10"
-        [defer]="true"
-        #imageUp
-        (uploadComplete)="onImageUploaded($event)"
-        (uploadError)="onUploadError($event)">
-      </app-cloudinary-upload>
-    </fieldset>
+    @if (isAuthorized) {
+      <form [formGroup]="form" (ngSubmit)="submit()" class="edit-profile-form">
+        <div class="edit-profile-grid">
+          <!-- Columna Izquierda: Portada + Temporada/Episodio, Título, Acciones -->
+          <div class="edit-profile-column">
+            <!-- Fila superior: Portada (240px) + Inputs de Temporada & Episodio N° -->
+            <div class="cover-and-season-row">
+              <!-- Portada del Episodio -->
+              <div class="cover-picture-container">
+                <label class="section-sublabel">Portada (Opcional)</label>
+                <div class="cover-previews-row">
+                  <div class="preview-item main-preview">
+                    <div class="cover-picture-wrapper"
+                         [class.is-dragover]="isDragOver"
+                         (click)="imageUp.triggerFileSelect()"
+                         (dragover)="onDragOver($event)"
+                         (dragenter)="onDragOver($event)"
+                         (dragleave)="onDragLeave($event)"
+                         (drop)="onDrop($event)"
+                         style="cursor: pointer;"
+                         title="Haz clic o arrastra para cambiar la portada del episodio">
+                      <app-media-image 
+                        [src]="form.get('imageUrl')?.value || podcast.imageUrl" 
+                        [alt]="form.get('title')?.value || 'Episode Cover'" 
+                        type="episode" 
+                        customClass="cover-picture">
+                      </app-media-image>
+                      <div class="cover-picture-overlay">
+                        <i class="fas fa-pencil-alt"></i>
+                        <span>Cambiar portada</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-    <fieldset>
-      <label>Video/Audio</label>
-      @if (!form.value.audioPath) {
-        <app-cloudinary-upload
-          acceptedTypes="video/*,audio/*,.mp3,.wav,.ogg,.m4a,.aac,.flac,.mp4,.webm,.mov,.avi"
-          resourceType="auto"
-          label="Subir video/audio del episodio"
-          [maxSizeMB]="500"
-          [defer]="true"
-          #mediaUp
-          (uploadComplete)="onAudioUploaded($event)"
-          (uploadError)="onUploadError($event)"
-          (durationDetected)="onDurationDetected($event)">
-        </app-cloudinary-upload>
-        <div class="hint">Sube un archivo para habilitar el envío.</div>
-        @if (detectedDuration > 0) {
-          <div class="duration-info">Duración detectada: {{ getFormattedDuration() }}</div>
-          @if (detectedDuration > 0 && detectedDuration < 30) {
-            <div class="field-error">El archivo debe durar al menos 30 segundos para poder subirlo.</div>
-          }
-        }
-        @if (form.get('title')?.touched && form.get('description')?.touched && !canSubmit()) {
-          <div class="field-error">
-            Debes seleccionar un archivo de audio/video válido
+                <app-cloudinary-upload
+                  style="display: none;"
+                  acceptedTypes="image/*"
+                  resourceType="image"
+                  label="Subir portada"
+                  [maxSizeMB]="10"
+                  [defer]="true"
+                  #imageUp
+                  (fileSelected)="onFileSelected($event)"
+                  (uploadComplete)="onImageUploaded($event)"
+                  (uploadError)="onUploadError($event)">
+                </app-cloudinary-upload>
+
+                <div class="field-error-wrapper">
+                  @if (imageError) {
+                    <p class="form-error-text">{{ imageError }}</p>
+                  }
+                </div>
+              </div>
+
+              <!-- Inputs de Temporada y Episodio al lado de la portada -->
+              <div class="season-chapter-column">
+                <div class="form-group">
+                  <label for="season">Temporada <span class="required-asterisk">*</span></label>
+                  <input type="number" id="season" formControlName="season" min="1" (change)="onSeasonChange()"
+                         [class.error-input]="(form.get('season')?.invalid && form.get('season')?.touched) || !!validationErrors['season']">
+                  <div class="field-error-wrapper">
+                    @if (validationErrors['season']) {
+                      <p class="form-error-text">{{ validationErrors['season'] }}</p>
+                    } @else if (form.get('season')?.invalid && form.get('season')?.touched) {
+                      <p class="form-error-text">Mínimo temporada 1.</p>
+                    }
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="chapter">Episodio N° <span class="required-asterisk">*</span></label>
+                  <input type="number" id="chapter" formControlName="chapter" min="1" (change)="onChapterChange()"
+                         [class.error-input]="(form.get('chapter')?.invalid && form.get('chapter')?.touched) || !!validationErrors['chapter']">
+                  <div class="field-error-wrapper">
+                    @if (validationErrors['chapter']) {
+                      <p class="form-error-text">{{ validationErrors['chapter'] }}</p>
+                    } @else if (form.get('chapter')?.invalid && form.get('chapter')?.touched) {
+                      <p class="form-error-text">Mínimo episodio 1.</p>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Título -->
+            <div class="form-group">
+              <label for="title">Título del Episodio <span class="required-asterisk">*</span></label>
+              <input type="text" id="title" formControlName="title" placeholder="Ej. Episodio 1: Bienvenidos"
+                     [class.error-input]="form.get('title')?.invalid && form.get('title')?.touched">
+              <app-form-error controlName="title" [customMessages]="customErrors.title"></app-form-error>
+            </div>
+
+            <!-- Descripción (Debajo del Título) -->
+            <div class="form-group">
+              <label for="description">Descripción <span class="required-asterisk">*</span></label>
+              <textarea id="description" formControlName="description" placeholder="Resumen o detalles del episodio..." style="resize: none;" rows="5"
+                        [class.error-input]="form.get('description')?.invalid && form.get('description')?.touched"></textarea>
+              <app-form-error controlName="description" [customMessages]="customErrors.description"></app-form-error>
+            </div>
+
+            <!-- Botones Desktop -->
+            <div class="form-actions desktop-only-actions">
+              <button type="submit" [disabled]="isSubmitting || form.invalid || !canSubmit()">
+                {{ isSubmitting ? 'Creando...' : 'Crear Episodio' }}
+                @if (isSubmitting) {
+                  <span class="spinner"></span>
+                }
+              </button>
+              <a [routerLink]="['/podcast', podcast.id]" class="btn-secondary">Cancelar</a>
+            </div>
           </div>
-        }
-      } @else {
-        <div class="media-preview">
-          <div class="player">
-            @if (isVideo(form.value.audioPath)) {
-              <video [src]="form.value.audioPath" controls playsinline></video>
-            } @else {
-              <audio [src]="form.value.audioPath" controls></audio>
+
+          <!-- Columna Derecha: Archivo Multimedia (Audio/Video) -->
+          <div class="edit-profile-column">
+            <!-- Archivo Multimedia (Audio/Video) -->
+            <div class="form-group">
+              <label>Archivo Multimedia (Audio o Video) <span class="required-asterisk">*</span></label>
+              @if (!form.value.audioPath) {
+                <div class="media-upload-box"
+                     [class.is-dragover]="isMediaDragOver"
+                     (click)="mediaUp.triggerFileSelect()"
+                     (dragover)="onMediaDragOver($event)"
+                     (dragenter)="onMediaDragOver($event)"
+                     (dragleave)="onMediaDragLeave($event)"
+                     (drop)="onMediaDrop($event)">
+                  <div class="media-upload-content">
+                    <i class="fas fa-cloud-upload-alt media-upload-icon"></i>
+                    <p class="media-upload-text">Arrastrar o Seleccionar archivo de audio / video</p>
+                    <span class="browse-button">Subir Audio/Video</span>
+                  </div>
+                </div>
+
+                <app-cloudinary-upload
+                  style="display: none;"
+                  acceptedTypes="video/*,audio/*,.mp3,.wav,.ogg,.m4a,.aac,.flac,.mp4,.webm,.mov,.avi"
+                  resourceType="auto"
+                  label="Subir video/audio del episodio"
+                  [maxSizeMB]="500"
+                  [defer]="true"
+                  #mediaUp
+                  (fileSelected)="onMediaFileSelected($event)"
+                  (uploadComplete)="onAudioUploaded($event)"
+                  (uploadError)="onUploadError($event)"
+                  (durationDetected)="onDurationDetected($event)">
+                </app-cloudinary-upload>
+
+                <div class="media-hint-info">
+                  <span class="hint">Archivos soportados: MP3, WAV, M4A, FLAC, MP4, WebM. Mínimo 30 segundos.</span>
+                </div>
+              } @else {
+                <!-- Reproductor Estático de Audio / Video ocupando el contenedor -->
+                <div class="static-media-player-card" [class.is-video]="isCurrentMediaVideo()">
+                  <div class="media-player-header">
+                    <div class="media-file-info">
+                      <span class="preview-label">Vista previa</span>
+                    </div>
+                    <button type="button" class="btn-replace" (click)="clearAudio()">
+                      <i class="fas fa-sync-alt"></i> Reemplazar
+                    </button>
+                  </div>
+
+                  @if (isCurrentMediaVideo()) {
+                    <!-- Video Player -->
+                    <div class="static-video-wrapper" [class.is-playing]="isStaticVideoPlaying">
+                      <div class="video-overlay-info">
+                        <div class="track-title">{{ form.get('title')?.value || 'Vista previa del episodio' }}</div>
+                        <div class="artist-name">{{ podcast.title }}</div>
+                      </div>
+                      <video 
+                        [src]="form.value.audioPath" 
+                        controls 
+                        disablePictureInPicture 
+                        controlsList="nodownload noremoteplayback noplaybackrate" 
+                        playsinline 
+                        (play)="onStaticVideoPlay()" 
+                        (pause)="onStaticVideoPause()" 
+                        (ended)="onStaticVideoPause()"
+                        class="static-video-player">
+                      </video>
+                    </div>
+                  } @else {
+                    <!-- Audio Player (Estilo Uiverse Floating Media Player) -->
+                    <div class="static-audio-player-box">
+                      <audio 
+                        #staticAudio
+                        [src]="form.value.audioPath" 
+                        (play)="onStaticAudioPlay()" 
+                        (pause)="onStaticAudioPause()" 
+                        (ended)="onStaticAudioPause()" 
+                        (timeupdate)="onStaticAudioTimeUpdate()" 
+                        (loadedmetadata)="onStaticAudioLoadedMetadata()"
+                        style="display: none;">
+                      </audio>
+
+                      <div class="track-info">
+                        <div class="album-art">
+                          <app-media-image 
+                            [src]="form.get('imageUrl')?.value || podcast.imageUrl" 
+                            [alt]="form.get('title')?.value || 'Episode Cover'" 
+                            type="episode" 
+                            customClass="album-art-img">
+                          </app-media-image>
+                        </div>
+                        <div class="track-details">
+                          <div class="track-title">{{ form.get('title')?.value || 'Vista previa del episodio' }}</div>
+                          <div class="artist-name">{{ podcast.title }}</div>
+                        </div>
+                      </div>
+
+                      <div class="playback-controls">
+                        <div class="time-info">
+                          <span class="current-time">{{ formatTime(staticAudioCurrentTime) }}</span>
+                          <span class="remaining-time">{{ formatTime(staticAudioDuration - staticAudioCurrentTime) }}</span>
+                        </div>
+                        <div class="progress-bar" (click)="seekStaticAudio($event)">
+                          <div class="progress-fill" [style.width.%]="staticAudioProgress"></div>
+                          <div class="progress-handle" [style.left.%]="staticAudioProgress"></div>
+                        </div>
+                        <div class="button-row">
+                          <div class="main-control-btns">
+                            <button type="button" class="control-button play-pause-button" (click)="toggleStaticAudioPlay()">
+                              @if (isStaticAudioPlaying) {
+                                <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                                  <path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5m5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5"/>
+                                </svg>
+                              } @else {
+                                <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                                  <path d="M11.596 8.697l-6.363 3.692c-.54.314-1.233-.065-1.233-.696V4.308c0-.63.693-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393"/>
+                                </svg>
+                              }
+                            </button>
+                          </div>
+
+                          <div class="volume-control-wrapper">
+                            <div class="volume-popover-card">
+                              <div class="volume-slider-box">
+                                <input 
+                                  type="range" 
+                                  min="0" 
+                                  max="1" 
+                                  step="0.01" 
+                                  [value]="isStaticAudioMuted ? 0 : staticAudioVolume" 
+                                  (input)="onStaticAudioVolumeChange($event)"
+                                  class="volume-slider"
+                                  title="Ajustar volumen">
+                              </div>
+                              <span class="volume-percent-text">
+                                {{ Math.round((isStaticAudioMuted ? 0 : staticAudioVolume) * 100) }}
+                              </span>
+                              <button type="button" class="control-button volume-btn" (click)="toggleStaticAudioMute()" [title]="isStaticAudioMuted || staticAudioVolume === 0 ? 'Desmutear' : 'Silenciar'">
+                                @if (isStaticAudioMuted || staticAudioVolume === 0) {
+                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73 4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+                                  </svg>
+                                } @else if (staticAudioVolume < 0.5) {
+                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M18.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM5 9v6h4l5 5V4L9 9H5z"/>
+                                  </svg>
+                                } @else {
+                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                                  </svg>
+                                }
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+
+              <!-- Espacio Reservado de Error (Mismo estilo que los otros inputs) -->
+              <div class="field-error-wrapper">
+                @if (mediaError) {
+                  <p class="form-error-text">{{ mediaError }}</p>
+                } @else if ((detectedDuration || staticAudioDuration) > 0 && (detectedDuration || staticAudioDuration) < 30) {
+                  <p class="form-error-text">El archivo debe durar al menos 30 segundos para poder subirlo (duración detectada: {{ getFormattedDuration() }}).</p>
+                }
+              </div>
+            </div>
+
+            @if (errorMessage) {
+              <div class="server-error show">{{ errorMessage }}</div>
             }
           </div>
-          <div class="meta">
-            <span class="ok">Archivo cargado ✔</span>
-            <span class="name">{{ getFileName(form.value.audioPath) }}</span>
-            <button type="button" class="link-btn" (click)="clearAudio()">Reemplazar archivo</button>
-          </div>
         </div>
-      }
-    </fieldset>
 
-    <div class="actions">
-      <button type="submit" [disabled]="isSubmitting || form.invalid || !canSubmit()">{{ isSubmitting ? 'Creando…' : 'Crear episodio' }}</button>
-      <a [routerLink]="['/podcast', podcast.id]" class="cancel">Cancelar</a>
-    </div>
-
-    <div class="error" [class.show]="!!errorMessage">{{ errorMessage }}</div>
-  </form>
-  }
+        <!-- Botones Mobile -->
+        <div class="form-actions mobile-only-actions">
+          <button type="submit" [disabled]="isSubmitting || form.invalid || !canSubmit()">
+            {{ isSubmitting ? 'Creando...' : 'Crear Episodio' }}
+            @if (isSubmitting) {
+              <span class="spinner"></span>
+            }
+          </button>
+          <a [routerLink]="['/podcast', podcast.id]" class="btn-secondary">Cancelar</a>
+        </div>
+      </form>
+    } @else {
+      <div class="server-error show">{{ errorMessage }}</div>
+    }
   </div>
 } @else {
-  <p>Cargando podcast…</p>
-  <div class="error" [class.show]="!!errorMessage">{{ errorMessage }}</div>
+  <div class="add-episode-container">
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando información del podcast...</p>
+    </div>
+  </div>
+}
+
+@if (showCropperModal) {
+  <app-image-cropper-modal
+    [imageFile]="fileToCrop"
+    (cropComplete)="onCropCompleted($event)"
+    (cropCancel)="onCropCancelled()"
+  ></app-image-cropper-modal>
 }
