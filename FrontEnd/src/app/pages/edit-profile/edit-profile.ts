@@ -207,7 +207,7 @@ export class EditProfileComponent implements OnInit {
 
   private applySelectedImage(file: File, src: string): void {
     if (this.profilePictureUpload) {
-      this.profilePictureUpload.setFile(file);
+      this.profilePictureUpload.setFile(file, true);
     }
     this.editProfileForm.patchValue({ profilePicture: src });
   }
