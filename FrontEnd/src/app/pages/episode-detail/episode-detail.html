@@ -119,18 +119,29 @@
             </button>
           </div>
         } @else {
-          <div class="video-player-container">
+          <div class="video-player-container" [class.is-playing]="isVideoPlaying">
             <video 
               #videoPlayer
               [src]="episode.audioPath" 
               [poster]="episode.imageUrl || episode.podcast.imageUrl || 'assets/default-episode.png'"
               controls
+              disablePictureInPicture
+              controlsList="nodownload noremoteplayback noplaybackrate"
               (play)="onVideoPlayerPlay()"
               (pause)="onVideoPlayerPause()"
+              (ended)="onVideoPlayerPause()"
               (timeupdate)="onVideoTimeUpdate($event)"
               class="episode-video-player">
               Tu navegador no soporta el elemento de video.
             </video>
+
+            @if (!isVideoPlaying) {
+              <button type="button" class="center-play-button" (click)="toggleVideoPlay()" aria-label="Reproducir video">
+                <svg class="play-triangle-icon" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+              </button>
+            }
           </div>
         }
       }

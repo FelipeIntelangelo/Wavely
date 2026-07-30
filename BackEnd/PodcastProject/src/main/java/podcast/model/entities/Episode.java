@@ -81,7 +81,7 @@ public class Episode {
     private Podcast podcast;
 
     @OneToMany(mappedBy = "episode", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("episode")
+    @JsonIgnore
     private List<Commentary> commentaries;
 
     @JsonProperty("commentaries")
@@ -90,6 +90,7 @@ public class Episode {
     }
 
     @OneToMany(mappedBy = "episode", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Rating> ratings = new ArrayList<>();
 
     public EpisodeDTO toDTO() {

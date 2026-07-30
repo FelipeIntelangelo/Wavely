@@ -277,6 +277,16 @@ export class EpisodeDetail implements OnInit, OnDestroy {
     this.isVideoPlaying = false;
   }
 
+  toggleVideoPlay(): void {
+    if (!this.videoPlayer) return;
+    const video = this.videoPlayer.nativeElement;
+    if (video.paused) {
+      video.play();
+    } else {
+      video.pause();
+    }
+  }
+
   onVideoTimeUpdate(event: Event): void {
     const video = event.target as HTMLVideoElement;
     if (video) {
