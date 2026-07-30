@@ -146,7 +146,7 @@
   width: 10px;
   height: 10px;
   background-color: white;
-  border-radius: 0;
+  border-radius: 50%;
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
   transition: left 0.1s linear;
   opacity: 0;
@@ -307,11 +307,29 @@
   appearance: none;
   width: 75px;
   height: 4px;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.25);
+  border: none !important;
+  outline: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
   border-radius: 2px;
-  outline: none;
   cursor: pointer;
   transform: rotate(-90deg);
+}
+
+.volume-slider::-webkit-slider-runnable-track {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: none;
+  height: 4px;
+}
+
+.volume-slider::-moz-range-track {
+  background: transparent;
+  border: none;
+  height: 4px;
 }
 
 .volume-slider::-webkit-slider-thumb {
@@ -321,9 +339,11 @@
   height: 12px;
   border-radius: 50%;
   background: #ffffff;
+  border: none;
   cursor: pointer;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
   transition: transform 0.15s ease, background-color 0.15s ease;
+  margin-top: -4px;
 }
 
 .volume-slider::-webkit-slider-thumb:hover {

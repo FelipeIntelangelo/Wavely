@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -11,10 +11,14 @@ import { EpisodeCreatePayload } from '../../models/episode/episode-create-dto';
 import { CloudinaryUploadComponent } from '../../components/shared/cloudinary-upload/cloudinary-upload';
 import { RouterModule } from '@angular/router';
 
+import { FormError } from '../../components/shared/form-error/form-error';
+import { MediaImageComponent } from '../../components/shared/media-image/media-image';
+import { ImageCropperModalComponent } from '../../components/shared/image-cropper-modal/image-cropper-modal';
+
 @Component({
   selector: 'app-add-episode',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, CloudinaryUploadComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, CloudinaryUploadComponent, FormError, MediaImageComponent, ImageCropperModalComponent],
   templateUrl: './add-episode.html',
   styleUrl: './add-episode.css'
 })
@@ -32,8 +36,29 @@ export class AddEpisodePage implements OnInit {
   episodesBySeasons: { [season: number]: number } = {}; // {season: maxChapter}
   validationErrors: { [key: string]: string | null } = {};
 
+  isDragOver = false;
+  isMediaDragOver = false;
+  imageError: string | null = null;
+  mediaError: string | null = null;
+  mediaLocalUrl: string | null = null;
+  selectedMediaFileName: string = '';
+
+  showCropperModal = false;
+  fileToCrop: File | null = null;
+
+  isStaticAudioPlaying = false;
+  isStaticVideoPlaying = false;
+  staticAudioCurrentTime = 0;
+  staticAudioDuration = 0;
+  staticAudioProgress = 0;
+  staticAudioVolume = 1;
+  isStaticAudioMuted = false;
+  previousStaticAudioVolume = 1;
+  Math = Math;
+
   @ViewChild('mediaUp') mediaUp?: CloudinaryUploadComponent;
   @ViewChild('imageUp') imageUp?: CloudinaryUploadComponent;
+  @ViewChild('staticAudio') staticAudioRef?: ElementRef<HTMLAudioElement>;
 
   constructor(
     private route: ActivatedRoute,
@@ -203,7 +228,137 @@ export class AddEpisodePage implements OnInit {
     }
   }
 
+  customErrors = {
+    title: {
+      required: 'El título del episodio es obligatorio.',
+      minlength: 'El título debe tener al menos 3 caracteres.',
+      maxlength: 'El título no puede superar los 50 caracteres.'
+    },
+    description: {
+      required: 'La descripción del episodio es obligatoria.',
+      minlength: 'La descripción debe tener al menos 5 caracteres.',
+      maxlength: 'La descripción no puede superar los 500 caracteres.'
+    }
+  };
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = true;
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = false;
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = false;
+
+    if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+      const file = event.dataTransfer.files[0];
+      if (file.type.startsWith('image/')) {
+        this.imageError = null;
+        this.onFileSelected(file);
+      } else {
+        this.imageError = 'Por favor selecciona o arrastra un archivo de imagen válido (JPG, PNG, WebP).';
+      }
+    }
+  }
+
+  onMediaDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isMediaDragOver = true;
+  }
+
+  onMediaDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isMediaDragOver = false;
+  }
+
+  onMediaDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isMediaDragOver = false;
+
+    if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+      const file = event.dataTransfer.files[0];
+      const isAudio = file.type.startsWith('audio/') || /\.(mp3|wav|ogg|m4a|aac|flac)$/i.test(file.name);
+      const isVid = file.type.startsWith('video/') || /\.(mp4|webm|mov|avi|mkv)$/i.test(file.name);
+
+      if (isAudio || isVid) {
+        this.mediaError = null;
+        if (this.mediaUp) {
+          this.mediaUp.setFile(file);
+        }
+        this.onMediaFileSelected(file);
+      } else {
+        this.mediaError = 'Por favor selecciona o arrastra un archivo de audio o video válido (MP3, WAV, FLAC, MP4, WebM, etc.).';
+      }
+    }
+  }
+
+  onMediaFileSelected(file: File): void {
+    if (!file) return;
+
+    const isAudio = file.type.startsWith('audio/') || /\.(mp3|wav|ogg|m4a|aac|flac)$/i.test(file.name);
+    const isVid = file.type.startsWith('video/') || /\.(mp4|webm|mov|avi|mkv)$/i.test(file.name);
+
+    if (isAudio || isVid) {
+      this.mediaError = null;
+      this.selectedMediaFileName = file.name;
+
+      if (this.mediaLocalUrl) {
+        URL.revokeObjectURL(this.mediaLocalUrl);
+      }
+      this.mediaLocalUrl = URL.createObjectURL(file);
+      this.form.patchValue({ audioPath: this.mediaLocalUrl });
+    } else {
+      this.mediaError = 'Por favor selecciona o arrastra un archivo de audio o video válido (MP3, WAV, FLAC, MP4, WebM, etc.).';
+    }
+  }
+
+  onFileSelected(file: File): void {
+    if (file && file.type.startsWith('image/')) {
+      this.imageError = null;
+      this.fileToCrop = file;
+      this.showCropperModal = true;
+    } else if (file) {
+      this.imageError = 'Por favor selecciona o arrastra un archivo de imagen válido (JPG, PNG, WebP).';
+    }
+  }
+
+  private applySelectedImage(file: File, src: string): void {
+    if (this.imageUp) {
+      this.imageUp.setFile(file, true);
+    }
+    this.form.patchValue({ imageUrl: src });
+  }
+
+  onCropCompleted(croppedFile: File): void {
+    this.showCropperModal = false;
+    this.fileToCrop = null;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const src = e.target?.result as string;
+      this.applySelectedImage(croppedFile, src);
+    };
+    reader.readAsDataURL(croppedFile);
+  }
+
+  onCropCancelled(): void {
+    this.showCropperModal = false;
+    this.fileToCrop = null;
+  }
+
   onImageUploaded(url: string) {
+    this.imageError = null;
     this.form.patchValue({ imageUrl: url });
   }
 
@@ -212,7 +367,7 @@ export class AddEpisodePage implements OnInit {
   }
 
   onUploadError(message: string) {
-    this.errorMessage = message;
+    this.mediaError = message;
   }
 
   onDurationDetected(durationInSeconds: number): void {
@@ -220,10 +375,11 @@ export class AddEpisodePage implements OnInit {
   }
 
   getFormattedDuration(): string {
-    if (!this.detectedDuration) return 'No detectada';
-    const hours = Math.floor(this.detectedDuration / 3600);
-    const minutes = Math.floor((this.detectedDuration % 3600) / 60);
-    const seconds = Math.floor(this.detectedDuration % 60);
+    const dur = this.detectedDuration || this.staticAudioDuration || 0;
+    if (!dur) return 'No detectada';
+    const hours = Math.floor(dur / 3600);
+    const minutes = Math.floor((dur % 3600) / 60);
+    const seconds = Math.floor(dur % 60);
     
     if (hours > 0) {
       return minutes > 0 ? `${hours}hr ${minutes}m` : `${hours}hr`;
@@ -233,6 +389,18 @@ export class AddEpisodePage implements OnInit {
       return `${seconds}s`;
     }
     return '0s';
+  }
+
+  isCurrentMediaVideo(): boolean {
+    if (this.selectedMediaFileName) {
+      return /\.(mp4|webm|mov|avi|mkv)$/i.test(this.selectedMediaFileName);
+    }
+    return this.isVideo(this.form.value.audioPath);
+  }
+
+  getMediaFileName(): string {
+    if (this.selectedMediaFileName) return this.selectedMediaFileName;
+    return this.getFileName(this.form.value.audioPath);
   }
 
   isVideo(url?: string): boolean {
@@ -256,14 +424,23 @@ export class AddEpisodePage implements OnInit {
   }
 
   clearAudio(): void {
+    if (this.mediaLocalUrl) {
+      URL.revokeObjectURL(this.mediaLocalUrl);
+      this.mediaLocalUrl = null;
+    }
+    this.selectedMediaFileName = '';
+    this.detectedDuration = 0;
+    this.staticAudioDuration = 0;
+    this.mediaError = null;
     this.form.patchValue({ audioPath: '' });
   }
 
   canSubmit(): boolean {
     // Verificar que haya archivo seleccionado y duración detectada
     const hasFile = (this.mediaUp?.hasFileSelected() || !!this.form.value.audioPath);
+    const dur = this.detectedDuration || this.staticAudioDuration || 0;
     // Requerimos duración mínima de 30 segundos
-    const hasDuration = this.detectedDuration >= 30;
+    const hasDuration = dur >= 30;
     return hasFile && hasDuration;
   }
 
@@ -344,5 +521,93 @@ export class AddEpisodePage implements OnInit {
         this.errorMessage = err?.message || 'No se pudo crear el episodio.';
       }
     });
+  }
+
+  toggleStaticAudioPlay() {
+    const audio = this.staticAudioRef?.nativeElement;
+    if (!audio) return;
+    if (this.isStaticAudioPlaying) {
+      audio.pause();
+    } else {
+      audio.play();
+    }
+  }
+
+  onStaticAudioPlay() {
+    this.isStaticAudioPlaying = true;
+  }
+
+  onStaticAudioPause() {
+    this.isStaticAudioPlaying = false;
+  }
+
+  onStaticVideoPlay() {
+    this.isStaticVideoPlaying = true;
+  }
+
+  onStaticVideoPause() {
+    this.isStaticVideoPlaying = false;
+  }
+
+  onStaticAudioTimeUpdate() {
+    const audio = this.staticAudioRef?.nativeElement;
+    if (!audio) return;
+    this.staticAudioCurrentTime = audio.currentTime;
+    this.staticAudioDuration = audio.duration || this.detectedDuration || 0;
+    this.staticAudioProgress = this.staticAudioDuration > 0 
+      ? (this.staticAudioCurrentTime / this.staticAudioDuration) * 100 
+      : 0;
+  }
+
+  onStaticAudioLoadedMetadata() {
+    const audio = this.staticAudioRef?.nativeElement;
+    if (!audio) return;
+    this.staticAudioDuration = audio.duration || this.detectedDuration || 0;
+    if (audio.duration && !this.detectedDuration) {
+      this.detectedDuration = audio.duration;
+    }
+  }
+
+  seekStaticAudio(event: MouseEvent) {
+    const audio = this.staticAudioRef?.nativeElement;
+    if (!audio || !this.staticAudioDuration) return;
+    const progressBar = event.currentTarget as HTMLElement;
+    const rect = progressBar.getBoundingClientRect();
+    const offsetX = event.clientX - rect.left;
+    const percentage = Math.max(0, Math.min(1, offsetX / rect.width));
+    audio.currentTime = percentage * this.staticAudioDuration;
+  }
+
+  formatTime(seconds: number): string {
+    if (!seconds || isNaN(seconds) || seconds < 0) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  }
+
+  onStaticAudioVolumeChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const val = parseFloat(input.value);
+    this.staticAudioVolume = val;
+    this.isStaticAudioMuted = val === 0;
+    if (this.staticAudioRef?.nativeElement) {
+      this.staticAudioRef.nativeElement.volume = val;
+      this.staticAudioRef.nativeElement.muted = this.isStaticAudioMuted;
+    }
+  }
+
+  toggleStaticAudioMute() {
+    const audio = this.staticAudioRef?.nativeElement;
+    if (!audio) return;
+    if (this.isStaticAudioMuted) {
+      this.isStaticAudioMuted = false;
+      this.staticAudioVolume = this.previousStaticAudioVolume || 1;
+    } else {
+      this.previousStaticAudioVolume = this.staticAudioVolume;
+      this.isStaticAudioMuted = true;
+      this.staticAudioVolume = 0;
+    }
+    audio.muted = this.isStaticAudioMuted;
+    audio.volume = this.staticAudioVolume;
   }
 }
