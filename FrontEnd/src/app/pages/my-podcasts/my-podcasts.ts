@@ -5,10 +5,11 @@ import { AlertService } from '../../services/ui/alert.service';
 import { Router } from '@angular/router';
 import { EpisodeService } from '../../services/episode/episode.service';
 import { MediaImageComponent } from '../../components/shared/media-image/media-image';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-my-podcasts',
-  imports: [MediaImageComponent],
+  imports: [MediaImageComponent, CommonModule],
   templateUrl: './my-podcasts.html',
   styleUrl: './my-podcasts.css'
 })

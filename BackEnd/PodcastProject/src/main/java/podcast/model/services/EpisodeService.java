@@ -218,7 +218,7 @@ private final NotificationService notificationService;
 
         commentary = commentaryRepository.save(commentary);
 
-        String message = "💬 " + user.getNickname() + " comentó en tu episodio '" + episode.getTitle() + "': '" + 
+        String message = user.getNickname() + " comentó en tu episodio '" + episode.getTitle() + "': '" + 
                          (comment.length() > 20 ? comment.substring(0, 20) + "..." : comment) + "'";
         notificationService.notify(NotificationType.NEW_COMMENTARY, user, episode.getPodcast().getUser(), episode.getPodcast(), episode, commentary, message);
     }

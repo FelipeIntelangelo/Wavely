@@ -1,7 +1,7 @@
 <div class="notification-item" [class.unread]="!notification.isRead" (click)="onClick()">
     <div class="notification-avatar">
         <app-media-image [src]="notification.senderProfilePicture" [alt]="notification.senderName || ''" type="user"></app-media-image>
-        <div class="notification-icon">{{ getIcon() }}</div>
+        <div class="notification-icon" [innerHTML]="getSvgIcon()"></div>
     </div>
     
     <div class="notification-content">

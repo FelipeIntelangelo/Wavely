@@ -56,7 +56,7 @@ public class UserFollowService {
 
         userFollowRepository.save(userFollow);
 
-        String message = "👤 " + follower.getNickname() + " comenzó a seguirte";
+        String message = follower.getNickname() + " comenzó a seguirte";
         notificationService.notify(NotificationType.NEW_FOLLOWER, follower, followed, null, null, null, message);
     }
 

@@ -67,7 +67,7 @@ public class NotificationService {
         List<User> subscribers = podcast.getFavoritedBy();
         if (subscribers != null) {
             for (User subscriber : subscribers) {
-                String message = "🎙️ " + creator.getNickname() + " publicó un nuevo episodio en " + podcast.getTitle() + ": '" + episode.getTitle() + "'";
+                String message = creator.getNickname() + " publicó un nuevo episodio en " + podcast.getTitle() + ": '" + episode.getTitle() + "'";
                 notify(NotificationType.NEW_EPISODE, creator, subscriber, podcast, episode, null, message);
                 notifiedUserIds.add(subscriber.getId());
             }
@@ -77,7 +77,7 @@ public class NotificationService {
         List<User> bellFollowers = userFollowService.getFollowersWithBell(creator.getId());
         for (User follower : bellFollowers) {
             if (!notifiedUserIds.contains(follower.getId())) {
-                String message = "🔔 " + creator.getNickname() + " publicó un nuevo episodio: '" + episode.getTitle() + "'";
+                String message = creator.getNickname() + " publicó un nuevo episodio: '" + episode.getTitle() + "'";
                 notify(NotificationType.NEW_EPISODE, creator, follower, podcast, episode, null, message);
             }
         }

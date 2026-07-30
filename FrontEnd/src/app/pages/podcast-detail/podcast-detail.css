@@ -16,6 +16,7 @@
   color: white;
   width: 100%;
   box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 /* Header similar a Profile */
@@ -52,11 +53,49 @@
 
 .title-actions-wrapper {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+  width: 100%;
 }
 
+/* Categorías sobre el título — estilo YT Music: pills minimalistas */
+.title-categories {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: nowrap;
+}
+
+.title-categories .chip {
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  background: rgba(157, 101, 215, 0.1);
+  border: 1px solid rgba(157, 101, 215, 0.2);
+  color: rgba(157, 101, 215, 0.75);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: background 0.2s, color 0.2s;
+}
+
+.title-categories .chip-btn:hover {
+  background: rgba(157, 101, 215, 0.2);
+  color: rgba(157, 101, 215, 1);
+  border-color: rgba(157, 101, 215, 0.4);
+  text-decoration: none;
+}
+
+.title-categories .chip-more {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.55rem;
+  background: rgba(157, 101, 215, 0.12);
+  border-color: rgba(157, 101, 215, 0.25);
+  color: rgba(157, 101, 215, 0.8);
+}
+
+/* El título ya no necesita flex:1 porque está en column */
 .podcast-main-title {
   font-size: 1.75rem;
   font-weight: 600;
@@ -64,6 +103,15 @@
   color: white;
   letter-spacing: 0.5px;
   flex: 1;
+}
+
+/* Fila interior: título a la izquierda, botones a la derecha */
+.title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
 }
 
 .creator-link-main {
@@ -118,13 +166,67 @@
   align-items: center;
   gap: 0.75rem;
   flex-wrap: wrap;
-  margin-top: 0.25rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .creator-follow-actions {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+/* Ícono SVG del botón Follow (Uiverse by vinodjangid07) */
+.follow-svgIcon {
+  width: 14px;
+  height: auto;
+  transition: transform 0.2s ease;
+}
+
+.follow-button-small:hover .follow-svgIcon {
+  transform: scale(1.25);
+}
+
+/* Tooltip de seguidores sobre el botón Follow */
+.follow-tooltip-container {
+  position: relative;
+  display: inline-flex;
+}
+
+.follow-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.3em 0.7em;
+  background: rgba(30, 20, 45, 0.95);
+  border: 1px solid rgba(157, 101, 215, 0.3);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.72rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, bottom 0.25s ease;
+  backdrop-filter: blur(6px);
+  z-index: 300;
+}
+
+.follow-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: rgba(157, 101, 215, 0.3);
+}
+
+.follow-tooltip-container:hover .follow-tooltip {
+  opacity: 1;
+  bottom: calc(100% + 10px);
 }
 
 .follow-button-small {
@@ -192,6 +294,9 @@
   flex-wrap: wrap;
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.7);
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .stat-item-main {
@@ -245,6 +350,8 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 /* ── Nuevo Botón de Favorito Animado (SVG) ────────────────────────────────── */
@@ -618,21 +725,38 @@
 
 .categories-popup {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 0.4rem);
   left: 0;
-  margin-top: 0.5rem;
-  background: var(--bg-surface);
-  border: 1px solid rgba(var(--accent-rgb), 0.3);
-  border-radius: 8px;
-  padding: 0.5rem;
+  background: #1e1e2e;
+  border: 1px solid rgba(157, 101, 215, 0.35);
+  border-radius: 10px;
+  padding: 0.4rem;
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
-  min-width: 140px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(6px);
-  z-index: 100;
-  animation: popupSlideIn 0.2s ease-out;
+  gap: 0.2rem;
+  min-width: 150px;
+  max-height: calc(4 * 2.2rem); /* exactamente 4 items visibles */
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  z-index: 200;
+  animation: popupSlideIn 0.18s ease-out;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(157, 101, 215, 0.4) transparent;
+}
+
+.categories-popup::-webkit-scrollbar {
+  width: 4px;
+}
+
+.categories-popup::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.categories-popup::-webkit-scrollbar-thumb {
+  background: rgba(157, 101, 215, 0.4);
+  border-radius: 4px;
 }
 
 @keyframes popupSlideIn {
@@ -650,12 +774,12 @@
   background: transparent;
   border: none;
   color: var(--text-secondary);
-  padding: 0.35rem 0.5rem;
+  padding: 0.2rem 0.5rem;
   border-radius: 6px;
   text-align: left;
   cursor: pointer;
   transition: background .2s, color .2s, text-decoration .2s;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
