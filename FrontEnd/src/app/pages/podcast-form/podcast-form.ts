@@ -196,7 +196,7 @@ export class PodcastFormComponent implements OnInit, OnChanges {
 
   private applySelectedImage(file: File, src: string): void {
     if (this.imageUp) {
-      this.imageUp.setFile(file);
+      this.imageUp.setFile(file, true);
     }
     this.podcastForm.patchValue({ imageUrl: src });
   }

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ElementRef, ViewChild, AfterViewInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ElementRef, ViewChild, AfterViewInit, OnChanges, SimpleChanges, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -18,6 +18,8 @@ export class ImageCropperModalComponent implements AfterViewInit, OnChanges {
   zoomScale = 1;
   minScale = 1;
   maxScale = 3;
+
+  constructor(private ngZone: NgZone) {}
 
   private img: HTMLImageElement | null = null;
   
@@ -218,7 +220,9 @@ export class ImageCropperModalComponent implements AfterViewInit, OnChanges {
       (blob) => {
         if (blob) {
           const croppedFile = new File([blob], fileName, { type: fileType });
-          this.cropComplete.emit(croppedFile);
+          this.ngZone.run(() => {
+            this.cropComplete.emit(croppedFile);
+          });
         }
       },
       fileType,

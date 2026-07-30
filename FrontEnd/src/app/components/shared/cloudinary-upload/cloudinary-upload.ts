@@ -43,7 +43,7 @@ export class CloudinaryUploadComponent {
     this.setFile(input.files[0]);
   }
 
-  setFile(file: File): void {
+  setFile(file: File, skipEmit: boolean = false): void {
     if (!file) return;
 
     // Validar tamaño
@@ -68,7 +68,9 @@ export class CloudinaryUploadComponent {
     }
 
     this.selectedFile = file;
-    this.fileSelected.emit(file);
+    if (!skipEmit) {
+      this.fileSelected.emit(file);
+    }
 
     if (!this.defer) {
       void this.uploadFile(file);
