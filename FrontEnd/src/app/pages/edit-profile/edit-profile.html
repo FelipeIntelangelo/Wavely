@@ -51,16 +51,14 @@
               <div class="form-row">
                 <div class="form-group">
                   <label for="name">Nombre</label>
-                  <input type="text" id="name" formControlName="name"
-                         [class.error-input]="editProfileForm.get('name')?.invalid && editProfileForm.get('name')?.touched">
-                  <app-form-error controlName="name" [customMessages]="customErrors['name']"></app-form-error>
+                  <input type="text" id="name" formControlName="name" readonly class="disabled-input">
+                  <app-form-error controlName="name"></app-form-error>
                 </div>
 
                 <div class="form-group">
                   <label for="lastName">Apellido</label>
-                  <input type="text" id="lastName" formControlName="lastName"
-                         [class.error-input]="editProfileForm.get('lastName')?.invalid && editProfileForm.get('lastName')?.touched">
-                  <app-form-error controlName="lastName" [customMessages]="customErrors['lastName']"></app-form-error>
+                  <input type="text" id="lastName" formControlName="lastName" readonly class="disabled-input">
+                  <app-form-error controlName="lastName"></app-form-error>
                 </div>
               </div>
             </div>
