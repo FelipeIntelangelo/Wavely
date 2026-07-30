@@ -146,6 +146,10 @@ export class EditProfileComponent implements OnInit {
         confirmPassword: ['']
       }, { validators: this.passwordMatchValidator });
 
+      // Nombre y Apellido no se pueden editar nunca
+      this.editProfileForm.get('name')?.disable();
+      this.editProfileForm.get('lastName')?.disable();
+
       if (this.isGoogleUser) {
         this.editProfileForm.get('email')?.disable();
         this.editProfileForm.get('password')?.disable();
