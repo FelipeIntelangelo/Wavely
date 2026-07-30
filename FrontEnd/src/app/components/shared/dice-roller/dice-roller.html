@@ -31,10 +31,10 @@
           }
           <div class="result-meta">
             @if (result.averageRating) {
-              <span class="meta-item">⭐ {{ result.averageRating | number:'1.1-1' }}</span>
+              <span class="meta-item"><span class="icon-star-small" style="display: inline-block; vertical-align: middle; margin-right: 4px;"></span>{{ result.averageRating | number:'1.1-1' }}</span>
             }
             @if (result.averageViews) {
-              <span class="meta-item">👁️ {{ result.averageViews }}</span>
+              <span class="meta-item"><span class="icon-eye-small" style="display: inline-block; vertical-align: middle; margin-right: 4px;"></span>{{ result.averageViews }}</span>
             }
           </div>
         </div>

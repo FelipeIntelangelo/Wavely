@@ -5,11 +5,12 @@ import { Playlist, PlaylistDetail, PlaylistItem } from '../../models/playlist/pl
 import { PlaylistService } from '../../services/playlist/playlist-service';
 import { AlertService } from '../../services/ui/alert.service';
 import { MediaImageComponent } from '../../components/shared/media-image/media-image';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-playlists',
   standalone: true,
-  imports: [FormsModule, MediaImageComponent],
+  imports: [FormsModule, MediaImageComponent, CommonModule],
   templateUrl: './playlists.html',
   styleUrl: './playlists.css'
 })

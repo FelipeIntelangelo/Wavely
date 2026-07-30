@@ -7,7 +7,7 @@ import { AlertService } from '../../services/ui/alert.service';
 import { User } from '../../models/user/user';
 import { EpisodeService } from '../../services/episode/episode.service';
 import { EpisodeDTO } from '../../models/episode/episode-dto';
-import { DatePipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { AddToPlaylistComponent } from '../../components/shared/add-to-playlist/add-to-playlist';
 import { FollowService } from '../../services/follow/follow-service';
 import { FollowStatusDTO } from '../../models/user/follow-status-dto';
@@ -15,7 +15,7 @@ import { MediaImageComponent } from '../../components/shared/media-image/media-i
 
 @Component({
   selector: 'app-podcast-detail',
-  imports: [DatePipe, RouterLink, AddToPlaylistComponent, MediaImageComponent],
+  imports: [DatePipe, DecimalPipe, RouterLink, AddToPlaylistComponent, MediaImageComponent],
   templateUrl: './podcast-detail.html',
   styleUrl: './podcast-detail.css'
 })

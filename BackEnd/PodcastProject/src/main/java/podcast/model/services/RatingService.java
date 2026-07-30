@@ -64,7 +64,7 @@ public class RatingService {
         podcastRepository.save(podcast);
 
         if (!existing.isPresent()) {
-            String message = "⭐ " + user.getNickname() + " calificó tu episodio '" + episode.getTitle() + "' con " + score + " estrellas";
+            String message = user.getNickname() + " calificó tu episodio '" + episode.getTitle() + "' con " + score + " estrellas";
             notificationService.notify(NotificationType.NEW_RATING, user, podcast.getUser(), podcast, episode, null, message);
         }
     }

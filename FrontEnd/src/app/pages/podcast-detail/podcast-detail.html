@@ -11,8 +11,32 @@
       </div>
       <div class="podcast-info-section">
         <div class="title-actions-wrapper">
-          <h1 class="podcast-main-title">{{ podcast.title }}</h1>
-          <div class="podcast-actions-main">
+
+          <!-- Categorías sobre el título -->
+          @if (podcast.categories && podcast.categories.length) {
+            <div class="title-categories" (click)="$event.stopPropagation()">
+              @for (cat of podcast.categories.slice(0, 2); track $index) {
+                <button type="button" class="chip chip-btn" (click)="goToCategory(cat, $event)" [attr.title]="'Ver podcasts de ' + cat">{{ cat }}</button>
+              }
+              @if (podcast.categories.length > 2) {
+                <div class="categories-popup-container">
+                  <button type="button" class="chip chip-more" (click)="toggleCategoriesPopup($event)" title="Ver todas las categorías">+{{ podcast.categories.length - 2 }}</button>
+                  @if (showCategoriesPopup) {
+                    <div class="categories-popup">
+                      @for (cat of podcast.categories.slice(2); track $index) {
+                        <button type="button" class="popup-category" (click)="goToCategory(cat, $event)" [attr.title]="'Ver podcasts de ' + cat">{{ cat }}</button>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+
+          <div class="title-row">
+            <h1 class="podcast-main-title">{{ podcast.title }}</h1>
+
+            <div class="podcast-actions-main">
             <div class="favorite-wrapper">
               <input type="checkbox" id="toggle-heart" [checked]="isFavorited" (change)="toggleFavorite()" [disabled]="!currentUser">
               <label for="toggle-heart" class="favorite-container">
@@ -41,6 +65,7 @@
               </svg>
             </button>
             }
+            </div>
           </div>
         </div>
         
@@ -53,20 +78,33 @@
           </a>
           @if (currentUser && podcast.user.id !== currentUser.id) {
             <div class="creator-follow-actions">
-              <button
-                type="button"
-                id="btn-follow-creator"
-                class="follow-button-small"
-                [class.following]="followStatus?.isFollowing"
-                (click)="toggleFollowCreator()">
-                @if (followStatus?.isFollowing) {
-                  <i class="fas fa-user-check"></i>
-                  <span>Following</span>
-                } @else {
-                  <i class="fas fa-user-plus"></i>
-                  <span>Follow</span>
-                }
-              </button>
+              <div class="follow-tooltip-container">
+                <span class="follow-tooltip">{{ followStatus?.followersCount ?? 0 }} seguidores</span>
+                <button
+                  type="button"
+                  id="btn-follow-creator"
+                  class="follow-button-small"
+                  [class.following]="followStatus?.isFollowing"
+                  (click)="toggleFollowCreator()">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 95 114"
+                    class="follow-svgIcon"
+                  >
+                    <rect fill="currentColor" rx="28.5" height="57" width="57" x="19"></rect>
+                    <path
+                      fill="currentColor"
+                      d="M0 109.5C0 83.2665 21.2665 62 47.5 62V62C73.7335 62 95 83.2665 95 109.5V114H0V109.5Z"
+                    ></path>
+                  </svg>
+                  @if (followStatus?.isFollowing) {
+                    <span>Following</span>
+                  } @else {
+                    <span>Follow</span>
+                  }
+                </button>
+              </div>
               @if (followStatus?.isFollowing) {
                 <button
                   type="button"
@@ -89,7 +127,7 @@
         <div class="podcast-stats-main">
           <div class="stat-item-main">
             <span class="icon-star"></span>
-            <span>{{ podcast.averageRating || 0 }}</span>
+            <span>{{ (podcast.averageRating || 0) | number:'1.0-1' }}</span>
           </div>
           <div class="stat-item-main">
             <span class="views-count-main">
@@ -99,23 +137,6 @@
               {{ formatViews(getTotalViews()) }}
             </span>
           </div>
-          @if (podcast.categories.length) {
-            @for (cat of podcast.categories.slice(0, 4); track $index) {
-              <button type="button" class="chip chip-btn" (click)="goToCategory(cat, $event)" [attr.title]="'Ver podcast de ' + cat">{{ cat }}</button>
-            }
-            @if (podcast.categories.length > 4) {
-              <div class="categories-popup-container">
-                <button type="button" class="chip chip-more" (click)="toggleCategoriesPopup($event)" title="Ver todas las categorías">+{{ podcast.categories.length - 4 }}</button>
-                @if (showCategoriesPopup) {
-                  <div class="categories-popup">
-                    @for (cat of podcast.categories.slice(4); track $index) {
-                      <button type="button" class="popup-category" (click)="goToCategory(cat, $event)" [attr.title]="'Ver podcast de ' + cat">{{ cat }}</button>
-                    }
-                  </div>
-                }
-              </div>
-            }
-          }
         </div>
         
         <!-- Descripción -->

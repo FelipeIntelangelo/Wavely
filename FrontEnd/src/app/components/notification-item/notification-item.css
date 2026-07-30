@@ -64,9 +64,11 @@
     background-color: #150020;
     border: 1px solid rgba(157, 101, 215, 0.3);
     border-radius: 50%;
-    padding: 2px;
-    font-size: 11px;
-    line-height: 1;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
