@@ -226,7 +226,7 @@ export class FloatingMediaPlayerComponent {
   isVideo(url: string): boolean {
     if (!url) return false;
     const lower = url.toLowerCase();
-    if (lower.includes('.mp3') || lower.includes('.wav') || lower.includes('.m4a') || lower.includes('.ogg') || lower.includes('.flac')) {
+    if (lower.includes('.mp3') || lower.includes('.wav') || lower.includes('.ogg') || lower.includes('.flac')) {
       return false;
     }
     return lower.includes('.mp4') || lower.includes('.webm') || lower.includes('/video/');

@@ -16,4 +16,5 @@ public interface IPlaylistItemRepository extends JpaRepository<PlaylistItem, Lon
     Optional<PlaylistItem> findByPlaylistIdAndEpisodeId(Long playlistId, Integer episodeId);
     Page<PlaylistItem> findByPlaylistIdOrderByAddedAtDesc(Long playlistId, Pageable pageable);
     long countByPlaylistId(Long playlistId);
+    void deleteByEpisodeId(Integer episodeId);
 }

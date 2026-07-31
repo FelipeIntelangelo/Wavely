@@ -285,7 +285,7 @@ export class AddEpisodePage implements OnInit {
 
     if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length > 0) {
       const file = event.dataTransfer.files[0];
-      const isAudio = file.type.startsWith('audio/') || /\.(mp3|wav|ogg|m4a|aac|flac)$/i.test(file.name);
+      const isAudio = file.type.startsWith('audio/') || /\.(mp3|wav|ogg|aac|flac)$/i.test(file.name);
       const isVid = file.type.startsWith('video/') || /\.(mp4|webm|mov|avi|mkv)$/i.test(file.name);
 
       if (isAudio || isVid) {
@@ -303,7 +303,7 @@ export class AddEpisodePage implements OnInit {
   onMediaFileSelected(file: File): void {
     if (!file) return;
 
-    const isAudio = file.type.startsWith('audio/') || /\.(mp3|wav|ogg|m4a|aac|flac)$/i.test(file.name);
+    const isAudio = file.type.startsWith('audio/') || /\.(mp3|wav|ogg|aac|flac)$/i.test(file.name);
     const isVid = file.type.startsWith('video/') || /\.(mp4|webm|mov|avi|mkv)$/i.test(file.name);
 
     if (isAudio || isVid) {
@@ -316,7 +316,7 @@ export class AddEpisodePage implements OnInit {
       this.mediaLocalUrl = URL.createObjectURL(file);
       this.form.patchValue({ audioPath: this.mediaLocalUrl });
     } else {
-      this.mediaError = 'Por favor selecciona o arrastra un archivo de audio o video válido (MP3, WAV, FLAC, MP4, WebM, etc.).';
+      this.mediaError = 'Por favor selecciona o arrastra un archivo de audio o video válido (MP3, WAV, FLAC, MP4, WebM, etc.). Los archivos M4A no están soportados.';
     }
   }
 
@@ -403,7 +403,7 @@ export class AddEpisodePage implements OnInit {
   isVideo(url?: string): boolean {
     if (!url) return false;
     const u = url.toLowerCase();
-    if (/\.(mp3|wav|ogg|m4a|aac|flac)(?:$|[?#])/.test(u)) return false;
+    if (/\.(mp3|wav|ogg|aac|flac)(?:$|[?#])/.test(u)) return false;
     if (u.includes('/video/upload')) return true;
     if (u.includes('/audio/upload')) return false;
     return /\.(mp4|webm|mov|mkv)(?:$|[?#])/.test(u);

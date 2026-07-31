@@ -257,7 +257,7 @@ export class EpisodeDetail implements OnInit, OnDestroy {
   isVideo(): boolean {
     if (!this.episode?.audioPath) return false;
     const url = this.episode.audioPath.toLowerCase();
-    if (url.includes('.mp3') || url.includes('.wav') || url.includes('.m4a') || url.includes('.ogg') || url.includes('.flac')) {
+    if (url.includes('.mp3') || url.includes('.wav') || url.includes('.ogg') || url.includes('.flac')) {
       return false;
     }
     return url.includes('.mp4') || url.includes('.webm') || url.includes('/video/');
