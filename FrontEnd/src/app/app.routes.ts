@@ -19,28 +19,29 @@ import { HistoryComponent } from './pages/history/history';
 import { PlaylistsComponent } from './pages/playlists/playlists';
 import { FollowingComponent } from './pages/following/following';
 import { FollowersComponent } from './pages/followers/followers';
+import { authGuard } from './services/auth/auth.guard';
 
 export const routes: Routes = [
     {path: "", component: Home},
     {path: "auth/register", component: Register},
     {path: "auth/login", component: Login},
-    {path: "profile/edit", component: EditProfileComponent},
+    {path: "profile/edit", component: EditProfileComponent, canActivate: [authGuard]},
     {path: "profile/:id", component: Profile},
-    {path: "profile", component: Profile},
+    {path: "profile", component: Profile, canActivate: [authGuard]},
     {path: "search/:term", component: Search},
     {path: "search", component:Search},
     {path: "podcast/:id", component:PodcastDetail},
     {path: "episode/:id", component:EpisodeDetail},
-    {path: "episode/:id/edit", component:EditEpisodePage},
-    {path: "podcast/:id/add-episode", component: AddEpisodePage},
-    {path: "create-podcast", component: CreatePodcastComponent},
-    {path: "podcast/:id/edit", component: EditPodcastComponent},
+    {path: "episode/:id/edit", component:EditEpisodePage, canActivate: [authGuard]},
+    {path: "podcast/:id/add-episode", component: AddEpisodePage, canActivate: [authGuard]},
+    {path: "create-podcast", component: CreatePodcastComponent, canActivate: [authGuard]},
+    {path: "podcast/:id/edit", component: EditPodcastComponent, canActivate: [authGuard]},
     {path: "explore", component: ExploreCategories},
     {path: "explore/:category", component: CategoryPodcasts},
-    {path: "myPodcasts", component: MyPodcasts},
-    {path: "favorites", component: FavoritesComponent},
-    {path: "history", component: HistoryComponent},
-    {path: "playlists", component: PlaylistsComponent},
-    {path: "following", component: FollowingComponent},
+    {path: "myPodcasts", component: MyPodcasts, canActivate: [authGuard]},
+    {path: "favorites", component: FavoritesComponent, canActivate: [authGuard]},
+    {path: "history", component: HistoryComponent, canActivate: [authGuard]},
+    {path: "playlists", component: PlaylistsComponent, canActivate: [authGuard]},
+    {path: "following", component: FollowingComponent, canActivate: [authGuard]},
     {path: "profile/:id/followers", component: FollowersComponent}
 ];

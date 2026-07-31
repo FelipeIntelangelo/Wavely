@@ -14,7 +14,11 @@ public interface IPlaylistItemRepository extends JpaRepository<PlaylistItem, Lon
     boolean existsByPlaylistIdAndEpisodeId(Long playlistId, Integer episodeId);
     Optional<PlaylistItem> findByPlaylistIdAndPodcastId(Long playlistId, Long podcastId);
     Optional<PlaylistItem> findByPlaylistIdAndEpisodeId(Long playlistId, Integer episodeId);
-    Page<PlaylistItem> findByPlaylistIdOrderByAddedAtDesc(Long playlistId, Pageable pageable);
+    @org.springframework.data.jpa.repository.Query("SELECT i FROM PlaylistItem i WHERE i.playlist.id = :playlistId ORDER BY CASE WHEN i.orderIndex IS NULL THEN 1 ELSE 0 END ASC, i.orderIndex ASC, i.addedAt DESC")
+    Page<PlaylistItem> findByPlaylistIdCustomOrder(@org.springframework.data.repository.query.Param("playlistId") Long playlistId, Pageable pageable);
+
     long countByPlaylistId(Long playlistId);
     void deleteByEpisodeId(Integer episodeId);
+    
+    java.util.List<PlaylistItem> findByPlaylistIdAndIdIn(Long playlistId, java.util.List<Long> ids);
 }

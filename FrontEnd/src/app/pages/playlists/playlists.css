@@ -113,6 +113,50 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.playlist-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.playlist-title-group h2 {
+  margin: 0;
+}
+
+/* Edit Playlist Button - Adapted from Uiverse.io */
+.edit-playlist-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Adaptado a la paleta morada de la página */
+  background-image: linear-gradient(to top, var(--primary-color, #9D65D7) 0%, #4a2176 100%);
+  border: solid 2px transparent;
+  background-clip: padding-box;
+  box-shadow: 0px 0px 0px 2px #ffffff00;
+  color: white;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 50%;
+  transition: all .5s ease;
+  cursor: pointer;
+}
+
+.edit-playlist-btn:active {
+  transform: scale(.9);
+  transition: all 100ms ease;
+}
+
+.edit-playlist-btn:hover {
+  box-shadow: 0px 0px 0px 2px rgba(157, 101, 215, 0.5);
+}
+
+.edit-playlist-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
 .delete-playlist,
 .remove-item {
   border: 0;
@@ -135,7 +179,7 @@
 
 .playlist-item {
   display: grid;
-  grid-template-columns: 90px minmax(0, 1fr) auto 40px;
+  grid-template-columns: 30px 90px minmax(0, 1fr) auto 40px;
   align-items: center;
   gap: 1rem;
   min-height: 90px;
@@ -222,7 +266,7 @@
   }
 
   .playlist-item {
-    grid-template-columns: 72px minmax(0, 1fr) 32px;
+    grid-template-columns: 24px 72px minmax(0, 1fr) 32px;
   }
 
   .item-image {
@@ -233,4 +277,51 @@
   .item-stats {
     display: none;
   }
+}
+
+/* Drag and Drop CDK styles */
+.drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: grab;
+  height: 100%;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.drag-handle:hover {
+  color: white;
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 4px;
+  box-shadow: 0 5px 15px -3px rgba(0, 0, 0, 0.5),
+              0 8px 25px 1px rgba(0, 0, 0, 0.4);
+  background: #2a262f !important;
+  opacity: 0.95;
+  display: grid;
+  grid-template-columns: 30px 90px minmax(0, 1fr) auto 40px;
+  align-items: center;
+  gap: 1rem;
+  padding: 0;
+  color: white;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.3;
+  background: rgba(157, 101, 215, 0.1);
+  border: 1px dashed rgba(157, 101, 215, 0.4);
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.playlist-items.cdk-drop-list-dragging .playlist-item:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }

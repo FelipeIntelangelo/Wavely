@@ -46,15 +46,16 @@ private User user;
 @JsonIgnoreProperties("commentaries")
 private Episode episode;
 
-public CommentaryDTO toDTO() {
-    return CommentaryDTO.builder()
-            .id(id)
-            .content(content)
-            .createdAt(createdAt)
-            .userName(user.getNickname())
-            .userProfilePicture(user.getProfilePicture())
-            .build();
-}
+    public CommentaryDTO toDTO() {
+        return CommentaryDTO.builder()
+                .id(id)
+                .content(content)
+                .createdAt(createdAt)
+                .userName(user.getNickname())
+                .userProfilePicture(user.getProfilePicture())
+                .userCredentialUsername(user.getCredential().getUsername())
+                .build();
+    }
 
 @Override
 public boolean equals(Object o) {

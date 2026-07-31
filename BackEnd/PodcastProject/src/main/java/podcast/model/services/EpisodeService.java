@@ -241,11 +241,40 @@ private final INotificationRepository notificationRepository;
     }
 
     public List<Commentary> getComments(Long episodeId) {
-    Episode episode = episodeRepository.findById(episodeId)
-            .orElseThrow(() -> new EpisodeNotFoundException("Episode not found for ID: " + episodeId));
+        Episode episode = episodeRepository.findById(episodeId)
+                .orElseThrow(() -> new EpisodeNotFoundException("Episode not found for ID: " + episodeId));
         if (episode.getCommentaries().isEmpty()) {
             throw new CommentaryNotFoundException("No comments found for episode ID: " + episodeId);
         }
         return episode.getCommentaries();
+    }
+
+    @Transactional
+    public void editComment(Long commentaryId, String newContent, String username) {
+        if (newContent == null || newContent.isBlank()) {
+            throw new IllegalArgumentException("Comment cannot be null or blank");
+        }
+        
+        Commentary commentary = commentaryRepository.findById(commentaryId)
+                .orElseThrow(() -> new CommentaryNotFoundException("Commentary not found with ID: " + commentaryId));
+                
+        if (!commentary.getUser().getCredential().getUsername().equals(username)) {
+            throw new UnauthorizedException("You are not authorized to edit this comment");
+        }
+        
+        commentary.setContent(newContent);
+        commentaryRepository.save(commentary);
+    }
+    
+    @Transactional
+    public void deleteComment(Long commentaryId, String username) {
+        Commentary commentary = commentaryRepository.findById(commentaryId)
+                .orElseThrow(() -> new CommentaryNotFoundException("Commentary not found with ID: " + commentaryId));
+                
+        if (!commentary.getUser().getCredential().getUsername().equals(username)) {
+            throw new UnauthorizedException("You are not authorized to delete this comment");
+        }
+        
+        commentaryRepository.delete(commentary);
     }
 }

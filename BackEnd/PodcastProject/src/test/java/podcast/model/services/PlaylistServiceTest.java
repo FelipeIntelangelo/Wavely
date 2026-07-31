@@ -181,7 +181,7 @@ class PlaylistServiceTest {
         PageRequest pageRequest = PageRequest.of(1, 20);
 
         when(playlistRepository.findByIdAndUserId(3L, 7L)).thenReturn(Optional.of(playlist));
-        when(playlistItemRepository.findByPlaylistIdOrderByAddedAtDesc(3L, pageRequest))
+        when(playlistItemRepository.findByPlaylistIdCustomOrder(3L, pageRequest))
                 .thenReturn(new PageImpl<>(List.of(item), pageRequest, 21));
 
         var result = playlistService.getPlaylist(3L, user, 1, 20);

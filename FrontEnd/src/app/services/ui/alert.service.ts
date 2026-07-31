@@ -155,4 +155,31 @@ export class AlertService {
             theme: 'dark'
         });
     }
+
+    // Método de prompt para solicitar texto
+    prompt(title: string, inputPlaceholder: string, inputValue: string = ''): Promise<string | null> {
+        return Swal.fire({
+            title,
+            input: 'text',
+            inputValue,
+            inputPlaceholder,
+            showCancelButton: true,
+            confirmButtonColor: "#9D65D7",
+            cancelButtonColor: "#dc3545",
+            confirmButtonText: "Guardar",
+            cancelButtonText: "Cancelar",
+            theme: 'dark',
+            inputValidator: (value) => {
+                if (!value || !value.trim()) {
+                    return 'Este campo no puede estar vacío';
+                }
+                return null;
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                return result.value;
+            }
+            return null;
+        });
+    }
 }

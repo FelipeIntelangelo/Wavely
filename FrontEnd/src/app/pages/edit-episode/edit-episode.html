@@ -34,7 +34,7 @@
                          style="cursor: pointer;"
                          title="Haz clic o arrastra para cambiar la portada del episodio">
                       <app-media-image 
-                        [src]="form.get('imageUrl')?.value || episode.imageUrl || episode.podcast?.imageUrl" 
+                        [src]="form.get('imageUrl')?.value || episode.imageUrl || episode.podcast.imageUrl" 
                         [alt]="form.get('title')?.value || 'Episode Cover'" 
                         type="episode" 
                         customClass="cover-picture">

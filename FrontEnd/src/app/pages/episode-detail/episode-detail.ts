@@ -63,17 +63,17 @@ export class EpisodeDetail implements OnInit, OnDestroy {
   // Límite de caracteres para comentarios (estilo Twitter)
   readonly MAX_COMMENT_LENGTH = 1000;
 
-  get commentCharCount(): number {
-    return this.newCommentContent ? this.newCommentContent.length : 0;
+  getCharCount(content: string): number {
+    return content ? content.length : 0;
   }
 
-  get remainingChars(): number {
-    return this.MAX_COMMENT_LENGTH - this.commentCharCount;
+  getRemainingChars(content: string): number {
+    return this.MAX_COMMENT_LENGTH - this.getCharCount(content);
   }
 
-  get strokeDashoffset(): number {
+  getStrokeDashoffset(content: string): number {
     const circumference = 62.83;
-    const progress = Math.min(1, this.commentCharCount / this.MAX_COMMENT_LENGTH);
+    const progress = Math.min(1, this.getCharCount(content) / this.MAX_COMMENT_LENGTH);
     return circumference * (1 - progress);
   }
 
@@ -442,11 +442,11 @@ export class EpisodeDetail implements OnInit, OnDestroy {
   }
 
   submitComment(): void {
-    if (!this.episode || !this.canComment() || !this.newCommentContent.trim() || this.remainingChars < 0) {
+    if (!this.episode || !this.canComment() || !this.newCommentContent.trim() || this.getRemainingChars(this.newCommentContent) < 0) {
       return;
     }
 
-    if (this.commentCharCount > this.MAX_COMMENT_LENGTH) {
+    if (this.getCharCount(this.newCommentContent) > this.MAX_COMMENT_LENGTH) {
       this.alertService.error('Comentario muy largo', `El comentario no puede exceder los ${this.MAX_COMMENT_LENGTH} caracteres.`);
       return;
     }
@@ -481,5 +481,78 @@ export class EpisodeDetail implements OnInit, OnDestroy {
     event.stopPropagation();
     // Siempre reproducir cuando se hace clic en el botón
     this.playInFloatingPlayer();
+  }
+
+  editingCommentId: number | null = null;
+  editContent: string = '';
+  isUpdatingComment = false;
+
+  startEditComment(comment: CommentaryDTO): void {
+    if (!this.episode || !comment.id) return;
+    this.editingCommentId = comment.id;
+    this.editContent = comment.content;
+  }
+
+  cancelEditComment(): void {
+    this.editingCommentId = null;
+    this.editContent = '';
+    this.isUpdatingComment = false;
+  }
+
+  saveEditComment(comment: CommentaryDTO): void {
+    if (!this.episode || !comment.id || this.getRemainingChars(this.editContent) < 0) return;
+
+    const newContent = this.editContent.trim();
+    if (newContent === comment.content) {
+      this.cancelEditComment();
+      return;
+    }
+    
+    if (!newContent) {
+      this.alertService.error('Error', 'El comentario no puede estar vacío');
+      return;
+    }
+    
+    if (newContent.length > this.MAX_COMMENT_LENGTH) {
+      this.alertService.error('Error', `El comentario excede los ${this.MAX_COMMENT_LENGTH} caracteres`);
+      return;
+    }
+
+    this.isUpdatingComment = true;
+    const updateDto = { content: newContent };
+    this.commentaryService.updateCommentary(this.episode.id, comment.id, updateDto).subscribe({
+      next: () => {
+        comment.content = newContent; // Actualizar localmente
+        this.cancelEditComment();
+        this.alertService.success('Actualizado', 'Tu comentario ha sido actualizado');
+      },
+      error: (err) => {
+        this.isUpdatingComment = false;
+        console.error('Error updating comment', err);
+        this.alertService.error('Error', err.error || 'No se pudo actualizar el comentario');
+      }
+    });
+  }
+
+  deleteComment(comment: CommentaryDTO): void {
+    if (!this.episode || !comment.id) return;
+
+    this.alertService.confirm(
+      'Eliminar comentario',
+      '¿Estás seguro de que deseas eliminar este comentario? Esta acción no se puede deshacer.'
+    ).then((isConfirmed) => {
+      if (isConfirmed) {
+        this.commentaryService.deleteCommentary(this.episode!.id, comment.id).subscribe({
+          next: () => {
+            this.commentaries = this.commentaries.filter(c => c.id !== comment.id);
+            this.alertService.success('Eliminado', 'El comentario ha sido eliminado');
+          },
+          error: (err) => {
+            console.error('Error deleting comment', err);
+            this.alertService.error('Error', err.error || 'No se pudo eliminar el comentario');
+          }
+        });
+      }
+    });
   }
 }

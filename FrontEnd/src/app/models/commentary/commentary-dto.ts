@@ -3,5 +3,6 @@ export interface CommentaryDTO {
   content: string;
   userName: string;
   userProfilePicture: string | null;
+  userCredentialUsername: string;
   createdAt: string;
 }

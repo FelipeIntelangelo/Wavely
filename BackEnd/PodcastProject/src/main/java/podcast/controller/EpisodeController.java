@@ -374,4 +374,58 @@ public class EpisodeController {
         episodeService.deleteById(episodeId, userDetails.getUsername());
         return ResponseEntity.ok("Episode deleted successfully");
     }
+
+    @Operation(
+            summary = "Actualizar comentario de episodio",
+            description = "Permite al autor editar su propio comentario en un episodio"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Comentario actualizado correctamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(type = "string", example = "Comment updated successfully")
+                    )
+            ),
+            @ApiResponse(responseCode = "400", description = "Comentario inválido"),
+            @ApiResponse(responseCode = "401", description = "No autorizado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado")
+    })
+    @PreAuthorize("isAuthenticated()")
+    @PatchMapping("/{episodeId}/commentaries/{commentaryId}")
+    public ResponseEntity<String> updateCommentEpisode(
+            @Parameter(description = "ID del episodio") @PathVariable("episodeId") Long episodeId,
+            @Parameter(description = "ID del comentario") @PathVariable("commentaryId") Long commentaryId,
+            @Parameter(description = "Texto del comentario actualizado") @RequestBody @Valid podcast.model.entities.dto.UpdateCommentaryDTO updates,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails) {
+        episodeService.editComment(commentaryId, updates.getContent(), userDetails.getUsername());
+        return ResponseEntity.ok("Comment updated successfully");
+    }
+
+    @Operation(
+            summary = "Eliminar comentario de episodio",
+            description = "Permite al autor eliminar su propio comentario en un episodio"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Comentario eliminado correctamente",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(type = "string", example = "Comment deleted successfully")
+                    )
+            ),
+            @ApiResponse(responseCode = "401", description = "No autorizado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado")
+    })
+    @PreAuthorize("isAuthenticated()")
+    @DeleteMapping("/{episodeId}/commentaries/{commentaryId}")
+    public ResponseEntity<String> deleteCommentEpisode(
+            @Parameter(description = "ID del episodio") @PathVariable("episodeId") Long episodeId,
+            @Parameter(description = "ID del comentario") @PathVariable("commentaryId") Long commentaryId,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails) {
+        episodeService.deleteComment(commentaryId, userDetails.getUsername());
+        return ResponseEntity.ok("Comment deleted successfully");
+    }
 }
