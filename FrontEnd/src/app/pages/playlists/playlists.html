@@ -56,7 +56,14 @@
         } @else if (selectedPlaylist) {
           <div class="playlist-detail-header">
             <div>
-              <h2>{{ selectedPlaylist.name }}</h2>
+              <div class="playlist-title-group">
+                <h2>{{ selectedPlaylist.name }}</h2>
+                <button type="button" class="edit-playlist-btn" (click)="editPlaylistName()" title="Editar nombre">
+                  <svg stroke-linejoin="round" stroke-linecap="round" fill="none" stroke-width="2" stroke="#FFFFFF" height="24" width="24" viewBox="0 0 24 24">
+                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                  </svg>
+                </button>
+              </div>
               @if (selectedPlaylist.description) {
                 <p>{{ selectedPlaylist.description }}</p>
               }
@@ -69,9 +76,14 @@
           @if (selectedPlaylist.items.content.length === 0) {
             <div class="empty-state compact">Esta playlist está vacía.</div>
           } @else {
-            <div class="playlist-items">
+            <div class="playlist-items" cdkDropList (cdkDropListDropped)="drop($event)">
               @for (item of selectedPlaylist.items.content; track item.id) {
-                <article class="playlist-item" (click)="openItem(item)">
+                <article class="playlist-item" (click)="openItem(item)" cdkDrag>
+                  <!-- Drag Handle -->
+                  <div class="drag-handle" cdkDragHandle (click)="$event.stopPropagation()" title="Arrastrar para reordenar">
+                    <i class="fas fa-grip-vertical"></i>
+                  </div>
+                  
                   <div class="item-image">
                     <app-media-image [src]="item.imageUrl" [alt]="item.title" [type]="item.type === 'PODCAST' ? 'podcast' : 'episode'"></app-media-image>
                   </div>

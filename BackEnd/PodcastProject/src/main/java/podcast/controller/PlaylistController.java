@@ -19,6 +19,7 @@ import podcast.model.entities.dto.CreatePlaylistDTO;
 import podcast.model.entities.dto.PlaylistDTO;
 import podcast.model.entities.dto.PlaylistDetailDTO;
 import podcast.model.entities.dto.UpdatePlaylistDTO;
+import podcast.model.entities.dto.ReorderPlaylistRequestDTO;
 import podcast.model.services.PlaylistService;
 import podcast.model.services.UserService;
 
@@ -154,6 +155,20 @@ public class PlaylistController {
             @PathVariable Long episodeId,
             @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails) {
         playlistService.removeEpisode(playlistId, episodeId, getUser(userDetails));
+        return ResponseEntity.noContent().build();
+    }
+
+//* ===================================================================================================================
+
+    @Operation(summary = "Reordenar elementos", description = "Reordena los elementos de una playlist propia basándose en la lista de IDs proporcionada")
+    @ApiResponses({@ApiResponse(responseCode = "204", description = "Elementos reordenados"), @ApiResponse(responseCode = "404", description = "Playlist no encontrada")})
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/{playlistId}/items/reorder")
+    public ResponseEntity<Void> reorderItems(
+            @PathVariable Long playlistId,
+            @Valid @RequestBody ReorderPlaylistRequestDTO request,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserDetails userDetails) {
+        playlistService.reorderItems(playlistId, request.getItemIds(), getUser(userDetails));
         return ResponseEntity.noContent().build();
     }
 

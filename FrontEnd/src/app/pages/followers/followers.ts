@@ -9,7 +9,7 @@ import { MediaImageComponent } from '../../components/shared/media-image/media-i
 @Component({
   selector: 'app-followers',
   standalone: true,
-  imports: [CommonModule, RouterLink, MediaImageComponent],
+  imports: [CommonModule, MediaImageComponent],
   templateUrl: './followers.html',
   styleUrl: './followers.css'
 })

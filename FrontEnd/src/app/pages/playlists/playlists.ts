@@ -6,11 +6,12 @@ import { PlaylistService } from '../../services/playlist/playlist-service';
 import { AlertService } from '../../services/ui/alert.service';
 import { MediaImageComponent } from '../../components/shared/media-image/media-image';
 import { CommonModule } from '@angular/common';
+import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-playlists',
   standalone: true,
-  imports: [FormsModule, MediaImageComponent, CommonModule],
+  imports: [FormsModule, MediaImageComponent, CommonModule, DragDropModule],
   templateUrl: './playlists.html',
   styleUrl: './playlists.css'
 })
@@ -160,5 +161,52 @@ export class PlaylistsComponent implements OnInit {
     this.router.navigate([route, item.contentId]);
   }
 
+  drop(event: CdkDragDrop<PlaylistItem[]>): void {
+    if (!this.selectedPlaylist) return;
+    
+    // Mueve el elemento localmente en el arreglo
+    moveItemInArray(this.selectedPlaylist!.items.content, event.previousIndex, event.currentIndex);
+    
+    // Si el índice no cambió, no hacemos nada en el backend
+    if (event.previousIndex === event.currentIndex) {
+      return;
+    }
 
+    // Extrae los IDs en el nuevo orden y envíalos al backend
+    const itemIds = this.selectedPlaylist!.items.content.map(item => item.id);
+    this.playlistService.reorderItems(this.selectedPlaylist!.id, itemIds).subscribe({
+      error: (err) => {
+        this.alertService.error('Error', 'No se pudo guardar el nuevo orden de la playlist.');
+        // Opcional: Revertir el orden local en caso de error
+        moveItemInArray(this.selectedPlaylist!.items.content, event.currentIndex, event.previousIndex);
+      }
+    });
+  }
+
+  async editPlaylistName(): Promise<void> {
+    if (!this.selectedPlaylist) return;
+    
+    const newName = await this.alertService.prompt(
+      'Editar nombre',
+      'Ingresá el nuevo nombre de la playlist',
+      this.selectedPlaylist.name
+    );
+    
+    if (newName && newName.trim() !== this.selectedPlaylist.name) {
+      this.playlistService.update(this.selectedPlaylist.id, { name: newName.trim() }).subscribe({
+        next: (updatedPlaylist) => {
+          if (this.selectedPlaylist) {
+            this.selectedPlaylist.name = updatedPlaylist.name;
+          }
+          // Actualizar en la lista lateral
+          const summary = this.playlists.find(p => p.id === this.selectedPlaylist?.id);
+          if (summary) {
+            summary.name = updatedPlaylist.name;
+          }
+          this.alertService.success('Guardado', 'El nombre se actualizó correctamente');
+        },
+        error: () => this.alertService.error('Error', 'No se pudo actualizar el nombre')
+      });
+    }
+  }
 }

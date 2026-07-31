@@ -55,4 +55,8 @@ export class PlaylistService {
     const segment = type === 'PODCAST' ? 'podcasts' : 'episodes';
     return this.http.delete<void>(`${this.API_URL}/${playlistId}/${segment}/${contentId}`);
   }
+
+  reorderItems(playlistId: number, itemIds: number[]): Observable<void> {
+    return this.http.put<void>(`${this.API_URL}/${playlistId}/items/reorder`, { itemIds });
+  }
 }

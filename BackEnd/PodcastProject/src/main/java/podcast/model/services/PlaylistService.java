@@ -53,7 +53,7 @@ public class PlaylistService {
         Playlist playlist = getOwnedPlaylist(playlistId, user);
         Pageable pageable = PageRequest.of(page, size);
         Page<PlaylistItemDTO> items = playlistItemRepository
-                .findByPlaylistIdOrderByAddedAtDesc(playlistId, pageable)
+                .findByPlaylistIdCustomOrder(playlistId, pageable)
                 .map(this::toItemDTO);
         return toDetailDTO(playlist, items);
     }
@@ -132,6 +132,22 @@ public class PlaylistService {
                 .orElseThrow(() -> new PlaylistItemNotFoundException("El episodio no está en esta playlist"));
         playlist.getItems().remove(item);
         playlistItemRepository.delete(item);
+        touch(playlist);
+    }
+
+    @Transactional
+    public void reorderItems(Long playlistId, List<Long> itemIds, User user) {
+        Playlist playlist = getOwnedPlaylist(playlistId, user);
+        
+        List<PlaylistItem> itemsToReorder = playlistItemRepository.findByPlaylistIdAndIdIn(playlistId, itemIds);
+        
+        // Asignar orderIndex basado en la posición en itemIds
+        for (PlaylistItem item : itemsToReorder) {
+            int newIndex = itemIds.indexOf(item.getId());
+            item.setOrderIndex(newIndex);
+        }
+        
+        playlistItemRepository.saveAll(itemsToReorder);
         touch(playlist);
     }
 

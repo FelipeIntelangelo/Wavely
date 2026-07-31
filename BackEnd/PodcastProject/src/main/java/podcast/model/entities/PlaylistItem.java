@@ -39,6 +39,10 @@ public class PlaylistItem {
     @Column(name = "added_at", nullable = false, updatable = false)
     private LocalDateTime addedAt;
 
+    @Column(name = "order_index")
+    private Integer orderIndex;
+
+
     @PrePersist
     protected void onCreate() {
         boolean hasPodcast = podcast != null;

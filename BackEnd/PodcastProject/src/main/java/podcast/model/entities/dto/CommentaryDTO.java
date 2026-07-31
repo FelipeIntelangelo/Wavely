@@ -14,5 +14,6 @@ public class CommentaryDTO {
     private String content;
     private String userName;
     private String userProfilePicture;
+    private String userCredentialUsername;
     private LocalDateTime createdAt;
 }
