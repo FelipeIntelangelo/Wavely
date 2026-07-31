@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, finalize, Observable } from 'rxjs';
 import { Notification } from '../../models/notification/notification';
 import { PageResponse } from '../../models/page-response';
 import { Client } from '@stomp/stompjs';
@@ -61,34 +61,49 @@ export class NotificationService {
       .set('page', this.currentPage)
       .set('size', this.PAGE_SIZE);
 
-    this.http.get<PageResponse<Notification>>(this.apiUrl, { params }).subscribe(pageData => {
-      this.notificationsSubject.next(pageData.content);
-      this.hasMorePages = !pageData.last;
-      this.hasMoreSubject.next(!pageData.last);
-      this.isLoadingSubject.next(false);
+    this.http.get<PageResponse<Notification>>(this.apiUrl, { params }).pipe(
+      finalize(() => this.isLoadingSubject.next(false))
+    ).subscribe({
+      next: (pageData) => {
+        this.notificationsSubject.next(pageData.content);
+        this.hasMorePages = !pageData.last;
+        this.hasMoreSubject.next(!pageData.last);
+      },
+      error: () => {
+        this.hasMorePages = false;
+        this.hasMoreSubject.next(false);
+      }
     });
 
-    this.http.get<number>(`${this.apiUrl}/unread-count`).subscribe(count => {
-      this.unreadCountSubject.next(count);
+    this.http.get<number>(`${this.apiUrl}/unread-count`).subscribe({
+      next: (count) => this.unreadCountSubject.next(count),
+      error: () => this.unreadCountSubject.next(0)
     });
   }
 
   loadNextPage(): void {
     if (!this.hasMorePages || this.isLoadingSubject.value) return;
 
-    this.currentPage++;
+    const nextPage = this.currentPage + 1;
     this.isLoadingSubject.next(true);
 
     const params = new HttpParams()
-      .set('page', this.currentPage)
+      .set('page', nextPage)
       .set('size', this.PAGE_SIZE);
 
-    this.http.get<PageResponse<Notification>>(this.apiUrl, { params }).subscribe(pageData => {
-      const current = this.notificationsSubject.value;
-      this.notificationsSubject.next([...current, ...pageData.content]);
-      this.hasMorePages = !pageData.last;
-      this.hasMoreSubject.next(!pageData.last);
-      this.isLoadingSubject.next(false);
+    this.http.get<PageResponse<Notification>>(this.apiUrl, { params }).pipe(
+      finalize(() => this.isLoadingSubject.next(false))
+    ).subscribe({
+      next: (pageData) => {
+        const current = this.notificationsSubject.value;
+        this.notificationsSubject.next([...current, ...pageData.content]);
+        this.currentPage = nextPage;
+        this.hasMorePages = !pageData.last;
+        this.hasMoreSubject.next(!pageData.last);
+      },
+      error: () => {
+        // Se conserva la página actual para que el próximo intento solicite la misma página.
+      }
     });
   }
 
