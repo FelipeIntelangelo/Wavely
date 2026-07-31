@@ -31,6 +31,8 @@ private final ICommentaryRepository commentaryRepository;
 private final IUserFollowRepository userFollowRepository;
 private final CloudinaryService cloudinaryService;
 private final NotificationService notificationService;
+private final IPlaylistItemRepository playlistItemRepository;
+private final INotificationRepository notificationRepository;
 
     @Autowired
     public EpisodeService(IEpisodeRepository episodeRepository,
@@ -40,7 +42,9 @@ private final NotificationService notificationService;
                           ICommentaryRepository commentaryRepository,
                           IUserFollowRepository userFollowRepository,
                           CloudinaryService cloudinaryService,
-                          NotificationService notificationService) {
+                          NotificationService notificationService,
+                          IPlaylistItemRepository playlistItemRepository,
+                          INotificationRepository notificationRepository) {
         this.episodeRepository = episodeRepository;
         this.podcastRepository = podcastRepository;
         this.episodeHistoryRepository = episodeHistoryRepository;
@@ -49,6 +53,8 @@ private final NotificationService notificationService;
         this.userFollowRepository = userFollowRepository;
         this.cloudinaryService = cloudinaryService;
         this.notificationService = notificationService;
+        this.playlistItemRepository = playlistItemRepository;
+        this.notificationRepository = notificationRepository;
     }
 
     // SAVE
@@ -146,7 +152,10 @@ private final NotificationService notificationService;
         cloudinaryService.deleteFile(episode.getImageUrl());
         cloudinaryService.deleteFile(episode.getAudioPath());
 
+        // Eliminar registros dependientes para evitar FK constraint violations
         episodeHistoryRepository.deleteByEpisodeId(episodeId);
+        playlistItemRepository.deleteByEpisodeId(episode.getId());
+        notificationRepository.deleteByEpisodeId(episodeId);
 
         // DELETE de BD
         System.out.println("⚠️ DELETING EPISODE FROM DATABASE...");

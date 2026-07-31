@@ -46,6 +46,12 @@ export class CloudinaryUploadComponent {
   setFile(file: File, skipEmit: boolean = false): void {
     if (!file) return;
 
+    // Bloquear archivos M4A (Cloudinary los convierte a MP4 y rompe la detección audio/video)
+    if (/\.m4a$/i.test(file.name) || file.type === 'audio/x-m4a' || file.type === 'audio/mp4') {
+      this.uploadError.emit('El formato M4A no está soportado. Por favor convertí el archivo a MP3 o AAC antes de subirlo.');
+      return;
+    }
+
     // Validar tamaño
     const maxSizeBytes = this.maxSizeMB * 1024 * 1024;
     if (file.size > maxSizeBytes) {
