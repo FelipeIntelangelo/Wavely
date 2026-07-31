@@ -109,9 +109,9 @@ export class PodcastDetail implements OnInit{
 
   loadEpisodes(podcastId: number): void {
     this.isLoadingEpisodes = true;
-    this.episodeService.getAll(undefined, podcastId).subscribe({
-      next: (pageResponse) => {
-        this.episodes = pageResponse.content;
+    this.episodeService.getAllByPodcast(podcastId).subscribe({
+      next: (episodes) => {
+        this.episodes = episodes;
         this.updateAvailableSeasons();
         this.isLoadingEpisodes = false;
       },

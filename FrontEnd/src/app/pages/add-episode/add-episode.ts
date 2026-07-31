@@ -8,6 +8,7 @@ import { EpisodeService } from '../../services/episode/episode.service';
 import { Podcast } from '../../models/podcast/podcast';
 import { User } from '../../models/user/user';
 import { EpisodeCreatePayload } from '../../models/episode/episode-create-dto';
+import { EpisodeDTO } from '../../models/episode/episode-dto';
 import { CloudinaryUploadComponent } from '../../components/shared/cloudinary-upload/cloudinary-upload';
 import { RouterModule } from '@angular/router';
 
@@ -32,7 +33,7 @@ export class AddEpisodePage implements OnInit {
   form!: FormGroup;
   detectedDuration: number = 0; // Duración en segundos detectada automáticamente
 
-  existingEpisodes: any[] = [];
+  existingEpisodes: EpisodeDTO[] = [];
   episodesBySeasons: { [season: number]: number } = {}; // {season: maxChapter}
   validationErrors: { [key: string]: string | null } = {};
 
@@ -103,9 +104,9 @@ export class AddEpisodePage implements OnInit {
   }
 
   private loadExistingEpisodes(podcastId: number): void {
-    this.episodeService.getAll(undefined, podcastId).subscribe({
-      next: (pageResponse) => {
-        this.existingEpisodes = pageResponse.content || [];
+    this.episodeService.getAllByPodcast(podcastId).subscribe({
+      next: (episodes) => {
+        this.existingEpisodes = episodes;
         this.processEpisodesBySeasons();
         this.autoFillEpisodeNumber();
       },
@@ -136,10 +137,6 @@ export class AddEpisodePage implements OnInit {
 
   onSeasonChange(): void {
     this.autoFillEpisodeNumber();
-    this.validateSeasonAndChapter();
-  }
-
-  onChapterChange(): void {
     this.validateSeasonAndChapter();
   }
 
@@ -406,9 +403,10 @@ export class AddEpisodePage implements OnInit {
   isVideo(url?: string): boolean {
     if (!url) return false;
     const u = url.toLowerCase();
+    if (/\.(mp3|wav|ogg|m4a|aac|flac)(?:$|[?#])/.test(u)) return false;
     if (u.includes('/video/upload')) return true;
     if (u.includes('/audio/upload')) return false;
-    return /\.(mp4|webm|ogg|mov|mkv)$/.test(u);
+    return /\.(mp4|webm|mov|mkv)(?:$|[?#])/.test(u);
   }
 
   getFileName(url?: string): string {

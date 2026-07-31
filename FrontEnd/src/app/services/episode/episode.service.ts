@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, Observable } from 'rxjs';
+import { catchError, EMPTY, expand, Observable, reduce } from 'rxjs';
 import { ErrorHandlerService } from '../error/error-handler.service';
 import { EpisodeDTO } from '../../models/episode/episode-dto';
 import { Episode } from '../../models/episode/episode';
@@ -30,6 +30,20 @@ export class EpisodeService {
     
     return this.http.get<PageResponse<EpisodeDTO>>(url).pipe(
       catchError(this.errorHandler.handleError.bind(this.errorHandler))
+    );
+  }
+
+  getAllByPodcast(podcastId: number): Observable<EpisodeDTO[]> {
+    return this.getAll(undefined, podcastId).pipe(
+      expand(pageResponse =>
+        pageResponse.last
+          ? EMPTY
+          : this.getAll(undefined, podcastId, pageResponse.number + 1, pageResponse.size)
+      ),
+      reduce(
+        (episodes, pageResponse) => [...episodes, ...pageResponse.content],
+        [] as EpisodeDTO[]
+      )
     );
   }
 

@@ -76,9 +76,15 @@
                 </div>
 
                 <div class="form-group">
-                  <label for="chapter">Episodio N° <span class="required-asterisk">*</span></label>
-                  <input type="number" id="chapter" formControlName="chapter" min="1" (change)="onChapterChange()"
+                  <label for="chapter">
+                    Episodio N°
+                    <span class="automatic-field-label">Automático</span>
+                  </label>
+                  <input type="number" id="chapter" formControlName="chapter" min="1" readonly
+                         title="El número de episodio se calcula automáticamente"
+                         aria-describedby="chapter-help"
                          [class.error-input]="(form.get('chapter')?.invalid && form.get('chapter')?.touched) || !!validationErrors['chapter']">
+                  <small id="chapter-help" class="automatic-field-help">Se asigna según el último episodio publicado.</small>
                   <div class="field-error-wrapper">
                     @if (validationErrors['chapter']) {
                       <p class="form-error-text">{{ validationErrors['chapter'] }}</p>

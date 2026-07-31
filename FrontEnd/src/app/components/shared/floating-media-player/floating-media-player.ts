@@ -64,10 +64,10 @@ export class FloatingMediaPlayerComponent {
     }
     
     // Cargar episodios del podcast
-    this.episodeService.getAll(undefined, podcastId).subscribe({
-      next: (pageResponse) => {
+    this.episodeService.getAllByPodcast(podcastId).subscribe({
+      next: (episodes) => {
         // Ordenar por temporada y capítulo
-        this.episodes = pageResponse.content.sort((a, b) => {
+        this.episodes = episodes.sort((a, b) => {
           if (a.season !== b.season) {
             return a.season - b.season;
           }
