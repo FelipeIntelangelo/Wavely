@@ -2,14 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { PodcastService } from '../../services/podcast/podcast-service';
 import { PodcastTotalDTO } from '../../models/podcast/podcast-total-dto';
 import { AlertService } from '../../services/ui/alert.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { EpisodeService } from '../../services/episode/episode.service';
 import { MediaImageComponent } from '../../components/shared/media-image/media-image';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-my-podcasts',
-  imports: [MediaImageComponent, CommonModule],
+  standalone: true,
+  imports: [MediaImageComponent, CommonModule, RouterLink],
   templateUrl: './my-podcasts.html',
   styleUrl: './my-podcasts.css'
 })

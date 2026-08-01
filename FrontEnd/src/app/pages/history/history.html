@@ -9,8 +9,9 @@
     </div>
   } @else if (history.length === 0) {
     <div class="empty-state">
-      <h2>No tienes historial aún</h2>
-      <p>Los episodios que reproduzcas aparecerán aquí</p>
+      <i class="fas fa-history"></i>
+      <h2>Aún no tenés historial</h2>
+      <p>Explorá la plataforma y reproducí episodios desde <a class="empty-state-link" routerLink="/home">acá</a> para que aparezcan en tu historial.</p>
     </div>
   } @else {
     <div class="history-list">
