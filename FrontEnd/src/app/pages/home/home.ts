@@ -13,6 +13,8 @@ import { RecommendationStrategy } from '../../models/enums/recommendation-strate
 import { DiceRollerComponent } from '../../components/shared/dice-roller/dice-roller';
 import { MediaImageComponent } from '../../components/shared/media-image/media-image';
 
+import { UserSearchDTO } from '../../models/user/userSearchDTO';
+
 interface CarouselState {
   hasBeenClicked: boolean;
   atStart: boolean;
@@ -44,6 +46,7 @@ export class Home implements OnInit, AfterViewInit {
   @ViewChild('masEscuchadosWrapper') masEscuchadosWrapper!: ElementRef<HTMLElement>;
   @ViewChild('mejoresValoradosWrapper') mejoresValoradosWrapper!: ElementRef<HTMLElement>;
   @ViewChild('favoritosWrapper') favoritosWrapper!: ElementRef<HTMLElement>;
+  @ViewChild('creadoresWrapper') creadoresWrapper!: ElementRef<HTMLElement>;
 
   carousels: { [key: string]: CarouselState } = {
     recomendaciones: { hasBeenClicked: false, atStart: true, atEnd: false },
@@ -51,6 +54,7 @@ export class Home implements OnInit, AfterViewInit {
     masEscuchados: { hasBeenClicked: false, atStart: true, atEnd: false },
     mejoresValorados: { hasBeenClicked: false, atStart: true, atEnd: false },
     favoritos: { hasBeenClicked: false, atStart: true, atEnd: false },
+    creadoresDestacados: { hasBeenClicked: false, atStart: true, atEnd: false },
   };
 
   recomendacionesPodcasts: PodcastForDisplay[] = [];
@@ -59,13 +63,15 @@ export class Home implements OnInit, AfterViewInit {
   masEscuchadosPodcasts: PodcastForDisplay[] = [];
   mejoresValoradosPodcasts: PodcastForDisplay[] = [];
   favoritosPodcasts: PodcastForDisplay[] = [];
+  creadoresDestacados: UserSearchDTO[] = [];
 
   isLoading = {
     recomendaciones: false,
     novedades: false,
     masEscuchados: false,
     mejoresValorados: false,
-    favoritos: false
+    favoritos: false,
+    creadoresDestacados: false
   };
 
   isLoggedIn = false;
@@ -96,6 +102,26 @@ export class Home implements OnInit, AfterViewInit {
     this.loadNovedades();
     this.loadMasEscuchados();
     this.loadMejoresValorados();
+    this.loadCreadoresDestacados();
+  }
+
+  loadCreadoresDestacados(): void {
+    this.isLoading.creadoresDestacados = true;
+    this.userService.getFeaturedCreators(10).subscribe({
+      next: (creadores) => {
+        this.creadoresDestacados = creadores;
+        this.isLoading.creadoresDestacados = false;
+        setTimeout(() => {
+          if (this.creadoresWrapper) {
+            this.handleScroll('creadoresDestacados', this.creadoresWrapper.nativeElement);
+          }
+        }, 100);
+      },
+      error: (error) => {
+        console.error('Error loading creadores destacados:', error);
+        this.isLoading.creadoresDestacados = false;
+      }
+    });
   }
 
   loadRecomendaciones(): void {
@@ -264,7 +290,8 @@ export class Home implements OnInit, AfterViewInit {
       { key: 'novedades', ref: this.novedadesWrapper },
       { key: 'masEscuchados', ref: this.masEscuchadosWrapper },
       { key: 'mejoresValorados', ref: this.mejoresValoradosWrapper },
-      { key: 'favoritos', ref: this.favoritosWrapper }
+      { key: 'favoritos', ref: this.favoritosWrapper },
+      { key: 'creadoresDestacados', ref: this.creadoresWrapper }
     ];
 
     wrappers.forEach(({ key, ref }) => {
@@ -281,7 +308,8 @@ export class Home implements OnInit, AfterViewInit {
       { key: 'novedades', ref: this.novedadesWrapper },
       { key: 'masEscuchados', ref: this.masEscuchadosWrapper },
       { key: 'mejoresValorados', ref: this.mejoresValoradosWrapper },
-      { key: 'favoritos', ref: this.favoritosWrapper }
+      { key: 'favoritos', ref: this.favoritosWrapper },
+      { key: 'creadoresDestacados', ref: this.creadoresWrapper }
     ];
 
     wrappers.forEach(({ key, ref }) => {
@@ -355,7 +383,8 @@ export class Home implements OnInit, AfterViewInit {
       'novedades': this.novedadesWrapper,
       'masEscuchados': this.masEscuchadosWrapper,
       'mejoresValorados': this.mejoresValoradosWrapper,
-      'favoritos': this.favoritosWrapper
+      'favoritos': this.favoritosWrapper,
+      'creadoresDestacados': this.creadoresWrapper
     };
 
     const wrapper = wrapperMap[key];

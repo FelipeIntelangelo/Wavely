@@ -24,13 +24,22 @@ export class UserService {
   ) {}
 
   /* -------------------- Login, Register & Profile LOGIC -------------------- */
-  getUsersDTO(nickname?: string, page: number = 0, size: number = 10): Observable<PageResponse<UserSearchDTO>> {
+  getUsersDTO(nickname?: string, sortByFollowers: boolean = false, page: number = 0, size: number = 10): Observable<PageResponse<UserSearchDTO>> {
     const params = new URLSearchParams();
     if (nickname) params.append('nickname', nickname);
     params.append('page', page.toString());
     params.append('size', size.toString());
+    if (sortByFollowers) {
+      params.append('orderByFollowers', 'true');
+    }
     
     return this.http.get<PageResponse<UserSearchDTO>>(`${this.API_URL}?${params.toString()}`).pipe(
+      catchError(this.errorHandler.handleError.bind(this.errorHandler))
+    );
+  }
+
+  getFeaturedCreators(limit: number = 10): Observable<UserSearchDTO[]> {
+    return this.http.get<UserSearchDTO[]>(`${this.API_URL}/featured?limit=${limit}`).pipe(
       catchError(this.errorHandler.handleError.bind(this.errorHandler))
     );
   }

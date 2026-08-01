@@ -52,11 +52,37 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado con username: " + username));
     }
 
-    public Page<UserDTO> getAllUsersAsDTO(String nickname, Pageable pageable) {
+    public Page<UserDTO> getAllUsersAsDTO(String nickname, Boolean orderByFollowers, Pageable pageable) {
+        if (Boolean.TRUE.equals(orderByFollowers)) {
+            org.springframework.data.domain.Pageable unpagedSort = org.springframework.data.domain.PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+            return userRepository.findUsersOrderByFollowersDesc(nickname, unpagedSort).map(User::toDTO);
+        }
+        
         if (nickname != null && !nickname.isBlank()) {
             return userRepository.findByNicknameContainingIgnoreCase(nickname, pageable).map(User::toDTO);
         }
         return userRepository.findAll(pageable).map(User::toDTO);
+    }
+
+    public List<UserDTO> getFeaturedCreators(int limit) {
+        List<User> allUsers = userRepository.findAll();
+        
+        return allUsers.stream()
+                .filter(u -> u.getPodcasts() != null && !u.getPodcasts().isEmpty())
+                .sorted((u1, u2) -> Long.compare(calculateScore(u2), calculateScore(u1)))
+                .limit(limit)
+                .map(User::toDTO)
+                .toList();
+    }
+    
+    private long calculateScore(User user) {
+        long followersScore = (user.getFollowers() != null ? user.getFollowers().size() : 0) * 5L;
+        long viewsScore = user.getPodcasts().stream()
+                .filter(p -> Boolean.TRUE.equals(p.getIsActive()))
+                .flatMap(p -> p.getEpisodes() != null ? p.getEpisodes().stream() : java.util.stream.Stream.<podcast.model.entities.Episode>empty())
+                .mapToLong(e -> e.getViews() != null ? e.getViews() : 0)
+                .sum();
+        return followersScore + viewsScore;
     }
 
     public UserDTO getUserByIdAsDTO(Long id) {

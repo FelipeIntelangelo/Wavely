@@ -157,6 +157,18 @@
                             </svg>
                         }
                     </h2>
+                    <div class="sort-controls">
+                        <button 
+                            class="sort-button" 
+                            [class.active]="isOrderedByViews"
+                            (click)="toggleSortByViews()">
+                            @if (isOrderedByViews) {
+                                Ordenado por popularidad
+                            } @else {
+                                Ordenar por popularidad
+                            }
+                        </button>
+                    </div>
                 </div>
                 <div class="users-grid">
                     @for (user of filteredUsers; track user.id) {

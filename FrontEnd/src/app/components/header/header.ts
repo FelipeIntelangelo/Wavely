@@ -132,7 +132,7 @@ export class Header implements OnInit{
       const queryClean = this.searchQuery.trim().toLowerCase();
 
       // Trae los usuarios buscando por nickname
-      this.userService.getUsersDTO(queryClean, 0, 5).subscribe({
+      this.userService.getUsersDTO(queryClean, false, 0, 5).subscribe({
         next: (pageResponse) => {
           this.searchResults = pageResponse.content;
         },

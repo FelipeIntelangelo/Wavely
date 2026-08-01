@@ -126,9 +126,33 @@ public class UserController {
     @GetMapping
     public ResponseEntity<Page<UserDTO>> getAllUsers(
             @RequestParam(required = false) String nickname,
+            @Parameter(description = "Ordenar resultados por número de seguidores (true = descendente)")
+            @RequestParam(required = false) Boolean orderByFollowers,
             @ParameterObject Pageable pageable
     ) {
-        return ResponseEntity.ok(userService.getAllUsersAsDTO(nickname, pageable));
+        return ResponseEntity.ok(userService.getAllUsersAsDTO(nickname, orderByFollowers, pageable));
+    }
+
+    @Operation(
+        summary = "Obtener creadores destacados",
+        description = "Recupera una lista de creadores destacados basados en popularidad (seguidores y vistas)"
+    )
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200",
+            description = "Lista de creadores encontrada exitosamente",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(type = "array", implementation = UserDTO.class)
+            )
+        )
+    })
+    @GetMapping("/featured")
+    public ResponseEntity<List<UserDTO>> getFeaturedCreators(
+            @Parameter(description = "Límite de creadores a retornar")
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        return ResponseEntity.ok(userService.getFeaturedCreators(limit));
     }
 
     @Operation(

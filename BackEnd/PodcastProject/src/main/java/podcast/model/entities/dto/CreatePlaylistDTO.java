@@ -13,7 +13,7 @@ import podcast.model.entities.enums.PlaylistItemType;
 public class CreatePlaylistDTO {
 
     @NotBlank(message = "El nombre de la playlist es obligatorio")
-    @Size(max = 80, message = "El nombre de la playlist no puede superar los 80 caracteres")
+    @Size(max = 30, message = "El nombre de la playlist no puede superar los 30 caracteres")
     private String name;
 
     @Size(max = 300, message = "La descripción no puede superar los 300 caracteres")

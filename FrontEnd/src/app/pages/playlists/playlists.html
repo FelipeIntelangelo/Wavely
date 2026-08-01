@@ -18,7 +18,7 @@
 
   @if (showCreateForm) {
     <form class="create-panel" (submit)="createPlaylist()">
-      <input type="text" name="name" [(ngModel)]="newName" maxlength="80" placeholder="Nombre" required>
+      <input type="text" name="name" [(ngModel)]="newName" maxlength="30" placeholder="Nombre" required>
       <textarea name="description" [(ngModel)]="newDescription" maxlength="300" placeholder="Descripción opcional"></textarea>
       <div class="form-actions">
         <button type="button" (click)="showCreateForm = false">Cancelar</button>
@@ -57,12 +57,24 @@
           <div class="playlist-detail-header">
             <div>
               <div class="playlist-title-group">
-                <h2>{{ selectedPlaylist.name }}</h2>
-                <button type="button" class="edit-playlist-btn" (click)="editPlaylistName()" title="Editar nombre">
-                  <svg stroke-linejoin="round" stroke-linecap="round" fill="none" stroke-width="2" stroke="#FFFFFF" height="24" width="24" viewBox="0 0 24 24">
-                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-                  </svg>
-                </button>
+                @if (isEditingName) {
+                  <div class="inline-edit-name">
+                    <input type="text" [(ngModel)]="editingNameValue" maxlength="30" (keyup.enter)="savePlaylistName()" (keyup.escape)="cancelEditName()" class="inline-edit-input" autofocus>
+                    <button type="button" class="inline-save-btn" (click)="savePlaylistName()" title="Guardar">
+                      <i class="fas fa-check"></i>
+                    </button>
+                    <button type="button" class="inline-cancel-btn" (click)="cancelEditName()" title="Cancelar">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                } @else {
+                  <h2>{{ selectedPlaylist.name }}</h2>
+                  <button type="button" class="edit-playlist-btn" (click)="startEditName()" title="Editar nombre">
+                    <svg stroke-linejoin="round" stroke-linecap="round" fill="none" stroke-width="2" stroke="currentColor" height="24" width="24" viewBox="0 0 24 24">
+                      <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                    </svg>
+                  </button>
+                }
               </div>
               @if (selectedPlaylist.description) {
                 <p>{{ selectedPlaylist.description }}</p>

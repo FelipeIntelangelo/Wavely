@@ -178,7 +178,7 @@ export class Search implements OnInit, OnDestroy, AfterViewInit {
   private loadUsers(): void {
     if (!this.hasMoreUsers) return;
     this.isUsersLoading = true;
-    this.userService.getUsersDTO(this.term, this.userPage, this.userSize).subscribe({
+    this.userService.getUsersDTO(this.term, this.isOrderedByViews, this.userPage, this.userSize).subscribe({
       next: (pageResponse) => {
         this.filteredUsers = [...this.filteredUsers, ...pageResponse.content];
         this.hasMoreUsers = !pageResponse.last;
@@ -271,6 +271,11 @@ export class Search implements OnInit, OnDestroy, AfterViewInit {
       this.podcastPage = 0;
       this.hasMorePodcasts = true;
       this.loadPodcasts();
+
+      this.filteredUsers = [];
+      this.userPage = 0;
+      this.hasMoreUsers = true;
+      this.loadUsers();
     }
   }
 }
