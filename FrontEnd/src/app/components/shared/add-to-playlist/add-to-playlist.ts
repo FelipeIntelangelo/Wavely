@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Playlist, PlaylistItemType } from '../../../models/playlist/playlist';
 import { AuthService } from '../../../services/auth/auth.service';
+import { AuthModalService } from '../../../services/auth/auth-modal.service';
 import { PlaylistService } from '../../../services/playlist/playlist-service';
 import { AlertService } from '../../../services/ui/alert.service';
 
@@ -27,13 +28,15 @@ export class AddToPlaylistComponent {
   isLoading = false;
   isCreating = false;
   newPlaylistName = '';
+  newPlaylistDescription = '';
 
   constructor(
     private playlistService: PlaylistService,
     private authService: AuthService,
     private alertService: AlertService,
     private router: Router,
-    private elementRef: ElementRef<HTMLElement>
+    private elementRef: ElementRef<HTMLElement>,
+    private authModalService: AuthModalService
   ) {}
 
   toggle(event: Event): void {
@@ -43,8 +46,7 @@ export class AddToPlaylistComponent {
     subscription.unsubscribe();
 
     if (!isLoggedIn) {
-      this.alertService.error('Iniciá sesión', 'Necesitás una cuenta para usar playlists.');
-      this.router.navigate(['/auth/login']);
+      this.authModalService.open('login');
       return;
     }
 
@@ -73,6 +75,7 @@ export class AddToPlaylistComponent {
     this.stopEvent(event);
     this.isCreating = true;
     this.newPlaylistName = '';
+    this.newPlaylistDescription = '';
   }
 
   createAndAdd(event: Event): void {
@@ -83,6 +86,7 @@ export class AddToPlaylistComponent {
     this.isLoading = true;
     this.playlistService.create({
       name,
+      description: this.newPlaylistDescription.trim() || undefined,
       itemType: this.contentType,
       itemId: this.contentId
     }).subscribe({

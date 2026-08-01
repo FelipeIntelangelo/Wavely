@@ -193,7 +193,7 @@
       } @else {
         <div class="episodes-list">
           @for (episode of filteredEpisodes; track episode.id) {
-            <article class="episode-card" (click)="viewEpisode(episode.id)">
+            <article class="episode-card" [class.watched]="isWatched(episode.id)" (click)="viewEpisode(episode.id)">
               <div class="episode-image">
                 <app-media-image [src]="episode.imageUrl || podcast.imageUrl" [alt]="episode.title" type="episode"></app-media-image>
               </div>
@@ -201,7 +201,19 @@
                 <div class="episode-header">
                   <div class="episode-info">
                     <h3 class="episode-title">{{ episode.title }}</h3>
-                    <span class="episode-meta">S{{ episode.season }} · E{{ episode.chapter }}</span>
+                    <span class="episode-meta">
+                      S{{ episode.season }} · E{{ episode.chapter }}
+                      @if (isWatched(episode.id)) {
+                        <span class="watched-badge" title="Ya escuchaste este episodio">
+                          <div class="uiverse-check">
+                            <svg viewBox="0 0 16 14" height="10" width="12">
+                              <path d="M2 8.5L6 12.5L14 1.5"></path>
+                            </svg>
+                          </div>
+                          Visto
+                        </span>
+                      }
+                    </span>
                   </div>
                   <app-add-to-playlist contentType="EPISODE" [contentId]="episode.id"></app-add-to-playlist>
                   @if (canDeleteEpisode(episode)) {

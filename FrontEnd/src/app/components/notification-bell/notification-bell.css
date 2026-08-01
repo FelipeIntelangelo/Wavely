@@ -43,7 +43,7 @@
     margin-top: 8px;
     width: 350px;
     background-color: #0b080f;
-    background: radial-gradient(circle at top left, #2a0050 0%, #0b080f 100%);
+    background: radial-gradient(circle at top left, #1a1225 0%, #0b080f 100%);
     border: 1px solid rgba(157, 101, 215, 0.25);
     border-radius: 8px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(157, 101, 215, 0.15);

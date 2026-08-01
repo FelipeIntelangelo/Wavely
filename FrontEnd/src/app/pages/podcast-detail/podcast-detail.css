@@ -358,7 +358,7 @@
 .favorite-wrapper {
   position: relative;
   display: inline-block;
-  z-index: 9999;
+  z-index: 10;
 }
 
 [id='toggle-heart'] {
@@ -411,7 +411,7 @@
   white-space: nowrap;
   pointer-events: none;
   animation: fadeIn 0.3s;
-  z-index: 99999;
+  z-index: 100;
 }
 
 /* Animación del tooltip */
@@ -461,7 +461,7 @@
   visibility: hidden;
   transition: opacity 0.3s, visibility 0.3s, bottom 0.3s;
   pointer-events: none;
-  z-index: 99999;
+  z-index: 100;
 }
 
 /* Triángulo debajo de la nube */
@@ -1134,4 +1134,46 @@
 
 .episodes-list .episode-card {
   overflow: visible;
+}
+
+/* Watched Episode Styles */
+.episode-card.watched {
+  opacity: 0.65;
+  border: 1px solid rgba(157, 101, 215, 0.45);
+}
+
+.episode-card.watched:hover {
+  opacity: 0.9;
+  border-color: var(--primary-color);
+}
+
+.watched-badge {
+  color: var(--primary-color);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: 0.5rem;
+}
+
+.uiverse-check {
+  background: var(--primary-color);
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 1px var(--primary-color);
+}
+
+.uiverse-check svg {
+  fill: none;
+}
+
+.uiverse-check svg path {
+  stroke: #fff;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }

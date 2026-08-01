@@ -32,6 +32,7 @@ export class PodcastDetail implements OnInit{
   selectedSeason: number = 0;
   availableSeasons: number[] = [];
   followStatus: FollowStatusDTO | null = null;
+  watchedEpisodeIds: Set<number> = new Set();
 
   constructor(
     private route: ActivatedRoute,
@@ -65,6 +66,7 @@ export class PodcastDetail implements OnInit{
         this.currentUser = user;
         this.isAdmin = user.credential.roles.includes('ADMIN');
         this.loadFavoriteStatus();
+        this.loadUserHistory();
         if (this.podcast) {
           this.loadFollowStatus();
         }
@@ -72,6 +74,7 @@ export class PodcastDetail implements OnInit{
       error: () => {
         this.currentUser = undefined;
         this.isAdmin = false;
+        this.watchedEpisodeIds.clear();
       }
     });
   }
@@ -85,6 +88,18 @@ export class PodcastDetail implements OnInit{
       },
       error: () => {
         this.isFavorited = false;
+      }
+    });
+  }
+
+  loadUserHistory(): void {
+    if (!this.currentUser) return;
+    this.userService.getMyHistory().subscribe({
+      next: (history) => {
+        this.watchedEpisodeIds = new Set(history.map(h => h.episode.id));
+      },
+      error: (err) => {
+        console.error('Error loading history:', err);
       }
     });
   }
@@ -138,6 +153,10 @@ export class PodcastDetail implements OnInit{
       return this.episodes;
     }
     return this.episodes.filter(ep => ep.season === this.selectedSeason);
+  }
+
+  isWatched(episodeId: number): boolean {
+    return this.watchedEpisodeIds.has(episodeId);
   }
 
   getTotalViews(): number {
