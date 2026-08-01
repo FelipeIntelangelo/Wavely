@@ -13,7 +13,7 @@ import { AddToPlaylistComponent } from '../../components/shared/add-to-playlist/
 @Component({
   selector: 'app-following',
   standalone: true,
-  imports: [CommonModule, DurationPipe, MediaImageComponent, AddToPlaylistComponent],
+  imports: [CommonModule, DurationPipe, MediaImageComponent, AddToPlaylistComponent, RouterLink],
   templateUrl: './following.html',
   styleUrl: './following.css'
 })

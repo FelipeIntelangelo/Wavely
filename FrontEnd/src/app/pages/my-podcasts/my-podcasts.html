@@ -9,8 +9,9 @@
     </div>
   } @else if (myPodcasts.length === 0) {
     <div class="empty-state">
-      <h2>Aún no tienes podcasts</h2>
-      <p>Crea tu primer podcast y comienza a compartir tu contenido</p>
+      <i class="fas fa-microphone"></i>
+      <h2>Aún no tenés podcasts</h2>
+      <p>Empezá a compartir tu contenido creando tu primer podcast desde <a class="empty-state-link" routerLink="/create-podcast">acá</a>.</p>
     </div>
   } @else {
     <div class="podcasts-list">

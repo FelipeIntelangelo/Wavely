@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../services/client/user-service';
 import { EpisodeHistoryDTO } from '../../models/episode/episode-history-dto';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DurationPipe } from '../../pipes/duration.pipe';
 import { MediaImageComponent } from '../../components/shared/media-image/media-image';
@@ -9,7 +9,7 @@ import { MediaImageComponent } from '../../components/shared/media-image/media-i
 @Component({
   selector: 'app-history',
   standalone: true,
-  imports: [CommonModule, DurationPipe, MediaImageComponent],
+  imports: [CommonModule, DurationPipe, MediaImageComponent, RouterLink],
   templateUrl: './history.html',
   styleUrl: './history.css'
 })

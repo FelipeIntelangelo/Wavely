@@ -256,19 +256,6 @@
   color: rgba(255, 255, 255, 0.65);
 }
 
-.empty-state {
-  display: grid;
-  place-items: center;
-  gap: 0.8rem;
-  min-height: 280px;
-  color: rgba(255, 255, 255, 0.65);
-  text-align: center;
-}
-
-.empty-state.compact {
-  min-height: 160px;
-}
-
 @media (max-width: 767px) {
   .playlists-page {
     padding: 1.5rem 1rem;

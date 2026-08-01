@@ -39,28 +39,7 @@
   color: var(--text-tertiary);
 }
 
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 500px;
-  text-align: center;
-  padding: 2rem;
-}
 
-.empty-state h2 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.8rem;
-  color: var(--text-primary);
-}
-
-.empty-state p {
-  margin: 0;
-  color: var(--text-tertiary);
-  font-size: 1rem;
-  max-width: 400px;
-}
 
 /* Los estilos de las cards están en styles.css como estilos compartidos */
 
