@@ -27,8 +27,8 @@ public class Playlist {
     private Long id;
 
     @NotBlank(message = "El nombre de la playlist es obligatorio")
-    @Size(max = 80, message = "El nombre de la playlist no puede superar los 80 caracteres")
-    @Column(nullable = false, length = 80)
+    @Size(max = 30, message = "El nombre de la playlist no puede superar los 30 caracteres")
+    @Column(nullable = false, length = 30)
     private String name;
 
     @Size(max = 300, message = "La descripción no puede superar los 300 caracteres")

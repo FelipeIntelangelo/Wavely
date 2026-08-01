@@ -124,6 +124,64 @@
             </div>
         </div>
 
+        <!-- CREADORES DESTACADOS -->
+        @if (creadoresDestacados.length > 0 || isLoading.creadoresDestacados) {
+            <div class="carouselSection">
+                <div class="carouselContainer">
+                    <div class="carousel-header">
+                        <h2>Creadores Destacados</h2>
+                        <div class="carousel-navigation">
+                            @if (carousels['creadoresDestacados'].hasBeenClicked) {
+                                <button 
+                                    class="arrowButton arrowBack"
+                                    (click)="goBack('creadoresDestacados')"
+                                    [disabled]="carousels['creadoresDestacados'].atStart">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                            }
+
+                            @if (!carousels['creadoresDestacados'].hasBeenClicked) {
+                                <button 
+                                    class="arrowButton arrowNext arrowInitial"
+                                    (click)="onArrowClick('creadoresDestacados')"
+                                    [disabled]="carousels['creadoresDestacados'].atEnd">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            }
+
+                            @if (carousels['creadoresDestacados'].hasBeenClicked) {
+                                <button 
+                                    class="arrowButton arrowNext"
+                                    (click)="goNext('creadoresDestacados')"
+                                    [disabled]="carousels['creadoresDestacados'].atEnd">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            }
+                        </div>
+                    </div>
+                    <div class="carouselWrapper" #creadoresWrapper (scroll)="handleScroll('creadoresDestacados', creadoresWrapper)">
+                        <div class="carouselContent">
+                            @if (isLoading.creadoresDestacados) {
+                                <div style="color: white; padding: 2rem;">Cargando creadores...</div>
+                            } @else {
+                                @for (creador of creadoresDestacados; track creador.id) {
+                                    <div class="cardHome" [routerLink]="['/profile', creador.id]">
+                                        <app-media-image class="podcastImage" [src]="creador.profilePicture" [alt]="creador.nickname" type="user" customClass="podcastImage"></app-media-image>
+                                        <h3>{{ creador.nickname }}</h3>
+                                        @if (creador.bio) {
+                                            <h4>{{ creador.bio.length > 50 ? (creador.bio.substring(0, 50) + '...') : creador.bio }}</h4>
+                                        }
+                                    </div>
+                                } @empty {
+                                    <div style="color: white; padding: 2rem;">No hay creadores destacados disponibles</div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
         <!-- MÁS ESCUCHADOS -->
         <div class="carouselSection">
             <div class="carouselContainer">

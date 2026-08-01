@@ -70,7 +70,7 @@ public class User implements UserDetails {
     private List<Podcast> podcasts;
 
     @JsonProperty("podcasts")
-    public List<String> getPodcasts() {
+    public List<String> getPodcastTitles() {
         return podcasts != null ? podcasts.stream().map(x -> x.getTitle()).toList() : List.of();
     }
 

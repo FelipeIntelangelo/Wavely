@@ -111,6 +111,10 @@ export class PlaylistsComponent implements OnInit {
     }
     const name = this.newName.trim();
     if (!name) return;
+    if (name.length > 30) {
+      this.alertService.error('Nombre muy largo', 'El nombre de la playlist no puede superar los 30 caracteres.');
+      return;
+    }
 
     this.playlistService.create({ name, description: this.newDescription.trim() }).subscribe({
       next: (playlist) => {
@@ -183,30 +187,44 @@ export class PlaylistsComponent implements OnInit {
     });
   }
 
-  async editPlaylistName(): Promise<void> {
+  isEditingName = false;
+  editingNameValue = '';
+
+  startEditName(): void {
     if (!this.selectedPlaylist) return;
-    
-    const newName = await this.alertService.prompt(
-      'Editar nombre',
-      'Ingresá el nuevo nombre de la playlist',
-      this.selectedPlaylist.name
-    );
-    
-    if (newName && newName.trim() !== this.selectedPlaylist.name) {
-      this.playlistService.update(this.selectedPlaylist.id, { name: newName.trim() }).subscribe({
-        next: (updatedPlaylist) => {
-          if (this.selectedPlaylist) {
-            this.selectedPlaylist.name = updatedPlaylist.name;
-          }
-          // Actualizar en la lista lateral
-          const summary = this.playlists.find(p => p.id === this.selectedPlaylist?.id);
-          if (summary) {
-            summary.name = updatedPlaylist.name;
-          }
-          this.alertService.success('Guardado', 'El nombre se actualizó correctamente');
-        },
-        error: () => this.alertService.error('Error', 'No se pudo actualizar el nombre')
-      });
+    this.isEditingName = true;
+    this.editingNameValue = this.selectedPlaylist.name;
+  }
+
+  cancelEditName(): void {
+    this.isEditingName = false;
+  }
+
+  savePlaylistName(): void {
+    if (!this.selectedPlaylist) return;
+    const newName = this.editingNameValue.trim();
+    if (newName.length > 30) {
+      this.alertService.error('Nombre muy largo', 'El nombre de la playlist no puede superar los 30 caracteres.');
+      return;
     }
+    if (!newName || newName === this.selectedPlaylist.name) {
+      this.isEditingName = false;
+      return;
+    }
+    
+    this.playlistService.update(this.selectedPlaylist.id, { name: newName }).subscribe({
+      next: (updatedPlaylist) => {
+        if (this.selectedPlaylist) {
+          this.selectedPlaylist.name = updatedPlaylist.name;
+        }
+        // Actualizar en la lista lateral
+        const summary = this.playlists.find(p => p.id === this.selectedPlaylist?.id);
+        if (summary) {
+          summary.name = updatedPlaylist.name;
+        }
+        this.isEditingName = false;
+      },
+      error: () => this.alertService.error('Error', 'No se pudo actualizar el nombre')
+    });
   }
 }

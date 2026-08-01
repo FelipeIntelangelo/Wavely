@@ -218,7 +218,11 @@ public class PlaylistService {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("El nombre de la playlist es obligatorio");
         }
-        return name.trim();
+        String normalized = name.trim();
+        if (normalized.length() > 30) {
+            throw new IllegalArgumentException("El nombre de la playlist no puede superar los 30 caracteres");
+        }
+        return normalized;
     }
 
     private String normalizeDescription(String description) {
