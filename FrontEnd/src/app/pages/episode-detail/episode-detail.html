@@ -119,23 +119,30 @@
             </button>
           </div>
         } @else {
-          <div class="video-player-container" [class.is-playing]="isVideoPlaying">
+          <div class="video-player-container" [class.is-playing]="isVideoPlaying" [class.has-started]="hasVideoStarted">
+            @if (hasVideoStarted) {
+              <div class="video-overlay-info">
+                <div class="track-title">{{ episode.title }}</div>
+                <div class="artist-name">{{ episode.podcast.title }}</div>
+              </div>
+            }
+
             <video 
               #videoPlayer
               [src]="episode.audioPath" 
               [poster]="episode.imageUrl || episode.podcast.imageUrl || 'assets/default-episode.png'"
               controls
-              disablePictureInPicture
               controlsList="nodownload noremoteplayback noplaybackrate"
               (play)="onVideoPlayerPlay()"
               (pause)="onVideoPlayerPause()"
               (ended)="onVideoPlayerPause()"
               (timeupdate)="onVideoTimeUpdate($event)"
+              (enterpictureinpicture)="onEnterPictureInPicture($event)"
               class="episode-video-player">
               Tu navegador no soporta el elemento de video.
             </video>
 
-            @if (!isVideoPlaying) {
+            @if (!hasVideoStarted) {
               <button type="button" class="center-play-button" (click)="toggleVideoPlay()" aria-label="Reproducir video">
                 <svg class="play-triangle-icon" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M8 5v14l11-7z"/>

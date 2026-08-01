@@ -66,20 +66,14 @@
 }
 
 
-.video-player-container .episode-video-player {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-radius: 0;
-}
-
+.video-player-container .episode-video-player,
 .episode-video-player {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100% !important;
   background: #000000;
   border-radius: 0;
-  object-fit: contain;
+  object-fit: contain !important;
   accent-color: var(--accent) !important;
 }
 
@@ -1592,7 +1586,7 @@
   stroke: #ff5252;
 }
 
-/* Video Player en Episode Detail (Aspect Ratio 16:9) */
+/* Video Player en Episode Detail (Estilos idénticos a Preview de Add Episode) */
 .video-player-container {
   position: relative;
   width: 100%;
@@ -1602,12 +1596,82 @@
   overflow: hidden;
   border-radius: 0;
   margin: 1.5rem 0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+}
+
+.video-player-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 55%;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0) 100%);
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.video-player-container.has-started::before {
+  opacity: 1;
+}
+
+.video-player-container .video-overlay-info {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  z-index: 3;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: calc(100% - 32px);
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+/* Cuando el video está reproduciendo, ocultar la info y la sombra al quitar el mouse */
+.video-player-container.is-playing::before,
+.video-player-container.is-playing .video-overlay-info {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Durante la reproducción, mostrar el overlay al hacer hover o al interactuar */
+.video-player-container.is-playing:hover::before,
+.video-player-container.is-playing:focus-within::before,
+.video-player-container.is-playing:hover .video-overlay-info,
+.video-player-container.is-playing:focus-within .video-overlay-info {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.video-player-container .video-overlay-info .track-title {
+  font-size: 1.15em;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.video-player-container .video-overlay-info .artist-name {
+  font-size: 0.85em;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.9);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .episode-video-player {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  background: #000;
   border-radius: 0;
   display: block;
 }
