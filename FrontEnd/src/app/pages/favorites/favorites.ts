@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../services/client/user-service';
 import { PodcastDTO } from '../../models/podcast/podcast-dto';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AlertService } from '../../services/ui/alert.service';
 import { MediaImageComponent } from '../../components/shared/media-image/media-image';
@@ -9,7 +9,7 @@ import { MediaImageComponent } from '../../components/shared/media-image/media-i
 @Component({
   selector: 'app-favorites',
   standalone: true,
-  imports: [CommonModule, MediaImageComponent],
+  imports: [CommonModule, MediaImageComponent, RouterLink],
   templateUrl: './favorites.html',
   styleUrl: './favorites.css'
 })
