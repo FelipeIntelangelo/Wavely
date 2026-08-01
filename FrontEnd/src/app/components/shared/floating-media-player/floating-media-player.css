@@ -466,43 +466,23 @@
   height: 100%;
   border: none;
   object-fit: contain;
-  background: #000;
-  accent-color: var(--accent) !important;
+  background: #000000;
+  outline: none;
+  border-radius: 0;
 }
 
-/* Estilos para los controles nativos del video */
-.video-container video::-webkit-media-controls-panel {
-  background-color: rgba(0, 0, 0, 0.6) !important;
-}
-
-.video-container video::-webkit-media-controls-current-time-display,
-.video-container video::-webkit-media-controls-time-remaining-display {
-  color: #ffffff !important;
-  font-variant-numeric: tabular-nums !important;
-}
-
-.video-container video::-webkit-media-controls-timeline {
-  background-color: rgba(255, 255, 255, 0.1) !important;
-  border-radius: 0 !important;
-  height: 4px !important;
-}
-
-.video-container video::-webkit-media-controls-timeline::-webkit-media-slider-thumb {
-  background-color: white !important;
-  border-radius: 0 !important;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.5) !important;
-}
-
-.video-container video::-webkit-media-controls-volume-slider {
-  background-color: rgba(255, 255, 255, 0.1) !important;
-  border-radius: 0 !important;
-}
-
-.video-container video::-webkit-media-controls-mute-button,
-.video-container video::-webkit-media-controls-play-button,
-.video-container video::-webkit-media-controls-fullscreen-button {
-  background-color: transparent !important;
-  border-radius: 0 !important;
+.video-container video::-webkit-media-controls-overflow-button,
+.video-container video::-webkit-media-controls-overflow-menu-list,
+.video-container video::-webkit-media-controls-overflow-menu-button,
+.video-container video::-internal-media-controls-overflow-button {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* Hide video container when player is minimized */

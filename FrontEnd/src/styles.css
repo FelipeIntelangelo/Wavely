@@ -14,6 +14,29 @@ body {
 }
 
 
+/* Ocultar menú de 3 puntos (overflow button / toolkit) de TODOS los reproductores de video */
+video::-webkit-media-controls-overflow-button,
+video::-webkit-media-controls-overflow-menu-list,
+video::-webkit-media-controls-overflow-menu-button,
+video::-internal-media-controls-overflow-button,
+.episode-video-player::-webkit-media-controls-overflow-button,
+.episode-video-player::-webkit-media-controls-overflow-menu-list,
+.episode-video-player::-webkit-media-controls-overflow-menu-button,
+.episode-video-player::-internal-media-controls-overflow-button,
+.static-video-player::-webkit-media-controls-overflow-button,
+.static-video-player::-webkit-media-controls-overflow-menu-list,
+.static-video-player::-webkit-media-controls-overflow-menu-button,
+.static-video-player::-internal-media-controls-overflow-button {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 :root {
     --header-height: 84px;
     --footer-height: 176px; /* Aproximadamente: padding (3rem*2) + logo (80px) */

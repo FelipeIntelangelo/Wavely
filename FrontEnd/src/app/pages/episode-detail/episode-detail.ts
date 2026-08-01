@@ -292,9 +292,26 @@ export class EpisodeDetail implements OnInit, OnDestroy {
     this.playInFloatingPlayer();
   }
 
+  initialRandomFrameSet = false;
+
+  onVideoLoadedMetadata(event: Event): void {
+    const video = event.target as HTMLVideoElement;
+    if (video && !this.hasVideoStarted && video.duration && !this.initialRandomFrameSet) {
+      const randomTime = Math.min(
+        Math.max(2, Math.floor(video.duration * (0.15 + Math.random() * 0.45))),
+        Math.max(0, video.duration - 1)
+      );
+      video.currentTime = randomTime;
+      this.initialRandomFrameSet = true;
+    }
+  }
+
   toggleVideoPlay(): void {
     if (!this.videoPlayer) return;
     const video = this.videoPlayer.nativeElement;
+    if (!this.hasVideoStarted && this.initialRandomFrameSet) {
+      video.currentTime = 0;
+    }
     if (video.paused) {
       video.play();
     } else {

@@ -52,70 +52,17 @@
   margin-top: 1rem;
 }
 
-/* Reproductor de video MP4 - Estilos del reproductor flotante */
+/* Reproductor de video MP4 - Estilos idénticos a Add Episode */
 .video-player-container {
-  display: inline-block;
-  margin: 3rem 0;
-  margin-top: 3rem;
-  padding: 0;
   position: relative;
-  background: #000000;
-  border-radius: 0;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-  font-family: -apple-system, system-ui, sans-serif;
-}
-
-
-.video-player-container .episode-video-player,
-.episode-video-player {
-  display: block;
   width: 100%;
-  height: 100% !important;
+  max-width: 640px;
+  aspect-ratio: 16 / 9;
+  border-radius: 0;
+  overflow: hidden;
   background: #000000;
-  border-radius: 0;
-  object-fit: contain !important;
-  accent-color: var(--accent) !important;
-}
-
-/* Estilos para los controles nativos del video */
-.episode-video-player::-webkit-media-controls-panel {
-  background-color: transparent;
-}
-
-.episode-video-player::-webkit-media-controls-play-button {
-  background-color: transparent;
-  border-radius: 50%;
-}
-
-.episode-video-player::-webkit-media-controls-current-time-display,
-.episode-video-player::-webkit-media-controls-time-remaining-display {
-  color: #8e8e93;
-  font-variant-numeric: tabular-nums;
-}
-
-.episode-video-player::-webkit-media-controls-timeline {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 0;
-}
-
-.episode-video-player::-webkit-media-controls-timeline::-webkit-media-slider-thumb {
-  background-color: white;
-  border-radius: 0;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
-}
-
-.episode-video-player::-webkit-media-controls-volume-slider {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.episode-video-player::-webkit-media-controls-mute-button {
-  background-color: transparent;
-  border-radius: 0;
-}
-
-.episode-video-player::-webkit-media-controls-fullscreen-button {
-  background-color: transparent;
-  border-radius: 0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+  margin: 1.5rem 0;
 }
 
 .left-section {
@@ -1590,13 +1537,14 @@
 .video-player-container {
   position: relative;
   width: 100%;
-  max-width: 640px;
+  max-width: 920px;
+  max-height: 65vh;
   aspect-ratio: 16 / 9;
-  background: #000;
+  background: #000000;
   overflow: hidden;
   border-radius: 0;
-  margin: 1.5rem 0;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+  margin: 1rem 0;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7);
 }
 
 .video-player-container::before {
@@ -1609,12 +1557,8 @@
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0) 100%);
   pointer-events: none;
   z-index: 2;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.video-player-container.has-started::before {
   opacity: 1;
+  transition: opacity 0.3s ease;
 }
 
 .video-player-container .video-overlay-info {
@@ -1670,25 +1614,64 @@
 .episode-video-player {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  background: #000;
-  border-radius: 0;
   display: block;
+  object-fit: contain;
+  background: #000000;
+  outline: none;
+  border-radius: 0;
 }
 
-.episode-video-player::-webkit-media-controls-panel {
-  display: flex !important;
+/* Botón Picture in Picture en la esquina superior derecha del video */
+.pip-overlay-btn {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  z-index: 10;
+  background: transparent;
+  border: none !important;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease, background-color 0.2s ease, transform 0.2s ease;
+  width: 34px;
+  height: 34px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+  opacity: 1;
 }
 
+.pip-overlay-btn:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  transform: scale(1.1);
+}
+
+.video-player-container.is-playing .pip-overlay-btn {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.video-player-container.is-playing:hover .pip-overlay-btn,
+.video-player-container.is-playing:focus-within .pip-overlay-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Ocultar menú de 3 puntos (overflow button / toolkit) de los controles nativos */
 .episode-video-player::-webkit-media-controls-overflow-button,
 .episode-video-player::-webkit-media-controls-overflow-menu-list,
+.episode-video-player::-webkit-media-controls-overflow-menu-button,
 .episode-video-player::-internal-media-controls-overflow-button {
   display: none !important;
   opacity: 0 !important;
   pointer-events: none !important;
+  visibility: hidden !important;
   width: 0 !important;
   height: 0 !important;
   margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* BotÃ³n Play central en reproductor de video (Solo SVG) */
