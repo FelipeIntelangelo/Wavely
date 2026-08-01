@@ -120,19 +120,26 @@
           </div>
         } @else {
           <div class="video-player-container" [class.is-playing]="isVideoPlaying" [class.has-started]="hasVideoStarted">
-            @if (hasVideoStarted) {
-              <div class="video-overlay-info">
-                <div class="track-title">{{ episode.title }}</div>
-                <div class="artist-name">{{ episode.podcast.title }}</div>
-              </div>
-            }
+            <div class="video-overlay-info">
+              <div class="track-title">{{ episode.title }}</div>
+              <div class="artist-name">{{ episode.podcast.title }}</div>
+            </div>
+
+            <!-- Botón Picture in Picture flotante (reemplazo de 3 puntos del toolkit) -->
+            <button type="button" class="pip-overlay-btn" (click)="playInFloatingPlayer()" title="Reproducir en reproductor flotante (Picture-in-Picture)">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                <path d="M19 11h-8v6h8v-6zm4-8H1c-.55 0-1 .45-1 1v16c0 .55.45 1 1 1h22c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1zm-2 16H3V5h18v14z"/>
+              </svg>
+            </button>
 
             <video 
               #videoPlayer
               [src]="episode.audioPath" 
-              [poster]="episode.imageUrl || episode.podcast.imageUrl || 'assets/default-episode.png'"
+              preload="metadata"
               controls
-              controlsList="nodownload noremoteplayback noplaybackrate"
+              disablepictureinpicture
+              controlsList="nodownload noremoteplayback noplaybackrate nopip"
+              (loadedmetadata)="onVideoLoadedMetadata($event)"
               (play)="onVideoPlayerPlay()"
               (pause)="onVideoPlayerPause()"
               (ended)="onVideoPlayerPause()"
