@@ -71,7 +71,7 @@
 }
 
 .track-title {
-  font-size: 1.3em;
+  font-size: 1.15rem;
   font-weight: 600;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -86,7 +86,7 @@
 }
 
 .artist-name {
-  font-size: 0.9em;
+  font-size: 0.9rem;
   color: #d1d1d6;
   margin-top: 2px;
   white-space: nowrap;
@@ -390,24 +390,25 @@
 .minimize-btn {
   position: absolute;
   top: 14px;
-  right: 54px;
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  color: white;
+  right: 50px;
+  background: transparent;
+  border: none !important;
+  color: #ffffff;
   cursor: pointer;
-  padding: 6px;
-  border-radius: 0;
+  padding: 4px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s;
+  transition: background-color 0.2s ease, transform 0.2s ease;
   z-index: 10;
   width: 32px;
   height: 32px;
 }
 
 .minimize-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15) !important;
+  transform: scale(1.08);
 }
 
 .close-button {
@@ -415,22 +416,23 @@
   top: 14px;
   right: 14px;
   background: transparent;
-  border: none;
-  color: white;
+  border: none !important;
+  color: #ffffff;
   cursor: pointer;
-  padding: 6px;
-  border-radius: 0;
+  padding: 4px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s;
+  transition: background-color 0.2s ease, transform 0.2s ease;
   z-index: 10;
   width: 32px;
   height: 32px;
 }
 
 .close-button:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15) !important;
+  transform: scale(1.08);
 }
 
 /* Video Container and element styles */
@@ -463,7 +465,8 @@
   width: 100%;
   height: 100%;
   border: none;
-  object-fit: cover;
+  object-fit: contain;
+  background: #000;
   accent-color: var(--accent) !important;
 }
 
@@ -517,8 +520,8 @@
 
 .main-music-card.has-video .track-info {
   position: absolute;
-  top: 20px;
-  left: 20px;
+  top: 14px;
+  left: 16px;
   z-index: 3;
   pointer-events: none;
   background: transparent;
@@ -532,58 +535,104 @@
 .main-music-card.has-video .track-details {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .main-music-card.has-video .track-title {
-  font-size: 2.1rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  letter-spacing: -0.5px;
   color: #ffffff;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.main-music-card.has-video .track-title:hover {
+  color: var(--accent);
+  text-decoration: underline;
 }
 
 .main-music-card.has-video .artist-name {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.85);
   text-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.9);
   pointer-events: auto;
   margin-top: 0;
+  cursor: pointer;
+}
+
+.main-music-card.has-video .artist-name:hover {
+  color: var(--accent);
+  text-decoration: underline;
 }
 
 /* Float overlay minimize/close buttons on video top right */
 .main-music-card.has-video .close-button,
 .main-music-card.has-video .minimize-btn {
-  top: 16px;
-  background: rgba(0, 0, 0, 0.5) !important;
-  border-radius: 50% !important;
-  color: white;
+  top: 14px;
+  background: transparent;
+  border-radius: 50%;
+  color: #ffffff;
   width: 32px;
   height: 32px;
+  padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: background-color 0.2s, transform 0.2s;
+  border: none !important;
+  box-shadow: none !important;
+  transition: background-color 0.2s ease, transform 0.2s ease;
   z-index: 10;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
 }
 
 .main-music-card.has-video .close-button:hover,
 .main-music-card.has-video .minimize-btn:hover {
-  background: rgba(0, 0, 0, 0.8) !important;
-  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.2) !important;
+  transform: scale(1.08);
 }
 
 .main-music-card.has-video .close-button {
-  right: 16px;
+  right: 14px;
 }
 
 .main-music-card.has-video .minimize-btn {
-  right: 56px;
+  right: 50px;
+}
+
+/* Fade-out de títulos, gradiente y botones al quitar el cursor únicamente MIENTRAS SE REPRODUCE el video flotante */
+.main-music-card.has-video.is-playing:not(.minimized) .video-container::before,
+.main-music-card.has-video.is-playing:not(.minimized) .track-info,
+.main-music-card.has-video.is-playing:not(.minimized) .close-button,
+.main-music-card.has-video.is-playing:not(.minimized) .minimize-btn {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, background-color 0.2s ease, transform 0.2s ease;
+}
+
+.main-music-card.has-video.is-playing:not(.minimized):hover .video-container::before,
+.main-music-card.has-video.is-playing:not(.minimized):focus-within .video-container::before,
+.main-music-card.has-video.is-playing:not(.minimized):hover .track-info,
+.main-music-card.has-video.is-playing:not(.minimized):focus-within .track-info,
+.main-music-card.has-video.is-playing:not(.minimized):hover .close-button,
+.main-music-card.has-video.is-playing:not(.minimized):focus-within .close-button,
+.main-music-card.has-video.is-playing:not(.minimized):hover .minimize-btn,
+.main-music-card.has-video.is-playing:not(.minimized):focus-within .minimize-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Cuando el video flotante está PAUSADO, los títulos y controles se mantienen siempre visibles */
+.main-music-card.has-video:not(.is-playing):not(.minimized) .video-container::before,
+.main-music-card.has-video:not(.is-playing):not(.minimized) .track-info,
+.main-music-card.has-video:not(.is-playing):not(.minimized) .close-button,
+.main-music-card.has-video:not(.is-playing):not(.minimized) .minimize-btn {
+  opacity: 1 !important;
+  pointer-events: auto !important;
 }
 
 /* Restore normal compact layout on minimize even if it's a video */
@@ -593,6 +642,8 @@
 }
 
 .main-music-card.has-video.minimized .track-info {
+  opacity: 1 !important;
+  pointer-events: auto !important;
   position: static !important;
   width: auto !important;
 }
