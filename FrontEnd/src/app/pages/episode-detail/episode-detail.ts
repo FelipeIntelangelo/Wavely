@@ -29,6 +29,7 @@ export class EpisodeDetail implements OnInit, OnDestroy {
   hideInlinePlayer = false;
   videoCurrentTime = 0;
   isVideoPlaying = false;
+  hasVideoStarted = false;
   @ViewChild('videoPlayer') videoPlayer?: ElementRef<HTMLVideoElement>;
   
   // Contador de tiempo manual
@@ -265,6 +266,13 @@ export class EpisodeDetail implements OnInit, OnDestroy {
 
   onVideoPlayerPlay(): void {
     this.isVideoPlaying = true;
+    this.hasVideoStarted = true;
+    
+    // Si el reproductor flotante está abierto con otro episodio o con este mismo, cerrarlo para evitar doble reproducción
+    if (this.mediaPlayerService.playerState().isOpen) {
+      this.mediaPlayerService.closePlayer();
+    }
+
     if (!this.timerInterval) {
       this.startTimer();
     }
@@ -275,6 +283,13 @@ export class EpisodeDetail implements OnInit, OnDestroy {
 
   onVideoPlayerPause(): void {
     this.isVideoPlaying = false;
+  }
+
+  onEnterPictureInPicture(event: Event): void {
+    if (document.pictureInPictureElement) {
+      document.exitPictureInPicture().catch(() => {});
+    }
+    this.playInFloatingPlayer();
   }
 
   toggleVideoPlay(): void {
@@ -366,10 +381,21 @@ export class EpisodeDetail implements OnInit, OnDestroy {
   }
 
   showInlinePlayer(): void {
+    const floatingTime = this.mediaPlayerService.getCurrentTime();
     this.hideInlinePlayer = false;
+    this.hasVideoStarted = true;
+    this.isVideoPlaying = true;
     this.mediaPlayerService.closePlayer();
-    this.estimatedPlaybackTime = 0;
-    this.stopTimer();
+
+    setTimeout(() => {
+      if (this.videoPlayer?.nativeElement) {
+        const video = this.videoPlayer.nativeElement;
+        if (floatingTime > 0) {
+          video.currentTime = floatingTime;
+        }
+        video.play().catch(() => {});
+      }
+    }, 50);
   }
 
   ngOnDestroy(): void {

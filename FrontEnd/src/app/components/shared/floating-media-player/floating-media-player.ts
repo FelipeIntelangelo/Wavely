@@ -301,7 +301,14 @@ export class FloatingMediaPlayerComponent {
   }
   
   onTimeUpdate() {
-    this.updateTime();
+    const element = this.mediaElement?.nativeElement;
+    if (element) {
+      this.currentTime = element.currentTime;
+      this.duration = element.duration || 0;
+      this.progressPercentage = this.duration > 0 ? (this.currentTime / this.duration) * 100 : 0;
+      this.mediaPlayerService.updateCurrentTime(this.currentTime);
+      this.cdr.markForCheck();
+    }
   }
   
   onPlay() {

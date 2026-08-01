@@ -116,6 +116,7 @@
                   <span class="badge-value">{{ getFormattedDuration() }}</span>
                 </div>
               </div>
+              <div class="field-error-wrapper"></div>
             </div>
 
             <!-- Archivo de Audio / Video (No editable) -->
@@ -127,8 +128,9 @@
                   <span>No editable</span>
                 </div>
                 <p class="media-notice-text">El archivo de audio/video publicado no se puede reemplazar una vez subido.</p>
-                <div class="media-path-badge">{{ episode.audioPath }}</div>
+                <div class="media-path-badge"><i class="fas fa-check-circle"></i> Archivo multimedia activo</div>
               </div>
+              <div class="field-error-wrapper"></div>
             </div>
 
             @if (errorMessage) {
