@@ -43,9 +43,15 @@
             maxlength="80"
             placeholder="Nombre de la playlist"
             autocomplete="off">
+          <textarea
+            name="playlistDescription"
+            [(ngModel)]="newPlaylistDescription"
+            maxlength="300"
+            placeholder="Descripción opcional"
+            autocomplete="off"></textarea>
           <div class="playlist-form-actions">
-            <button type="button" (click)="cancelCreate($event)">Cancelar</button>
-            <button type="submit" [disabled]="!newPlaylistName.trim()">Crear</button>
+            <button type="button" class="btn-cancel" (click)="cancelCreate($event)">Cancelar</button>
+            <button type="submit" class="btn-submit" [disabled]="!newPlaylistName.trim()">Crear</button>
           </div>
         </form>
       }

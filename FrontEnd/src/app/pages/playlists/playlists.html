@@ -18,10 +18,10 @@
 
   @if (showCreateForm) {
     <form class="create-panel" (submit)="createPlaylist()">
-      <input type="text" name="name" [(ngModel)]="newName" maxlength="30" placeholder="Nombre" required>
-      <textarea name="description" [(ngModel)]="newDescription" maxlength="300" placeholder="Descripción opcional"></textarea>
+      <input type="text" name="name" [(ngModel)]="newName" maxlength="30" placeholder="Nombre de la playlist" required autocomplete="off">
+      <textarea name="description" [(ngModel)]="newDescription" maxlength="300" placeholder="Descripción opcional" autocomplete="off"></textarea>
       <div class="form-actions">
-        <button type="button" (click)="showCreateForm = false">Cancelar</button>
+        <button type="button" class="btn-cancel" (click)="showCreateForm = false">Cancelar</button>
         <button type="submit" class="btn-primary" [disabled]="!newName.trim()">Crear</button>
       </div>
     </form>
