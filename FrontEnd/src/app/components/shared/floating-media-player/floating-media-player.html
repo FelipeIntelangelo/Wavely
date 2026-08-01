@@ -1,7 +1,8 @@
 @if (playerState().isOpen && playerState().episode) {
   <div class="main-music-card" 
        [class.minimized]="playerState().isMinimized"
-       [class.has-video]="isVideo(playerState().episode!.audioPath)">
+       [class.has-video]="isVideo(playerState().episode!.audioPath)"
+       [class.is-playing]="isPlaying()">
     <input 
       type="checkbox" 
       id="play-toggle" 
@@ -24,6 +25,8 @@
           [src]="playerState().episode!.audioPath"
           [autoplay]="playerState().autoplay"
           controls
+          disablePictureInPicture
+          controlsList="nodownload noremoteplayback noplaybackrate"
           (loadedmetadata)="onMetadataLoaded()"
           (timeupdate)="onTimeUpdate()"
           (play)="onPlay()"

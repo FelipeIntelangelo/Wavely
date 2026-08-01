@@ -9,6 +9,7 @@ export interface MediaPlayerState {
   viewCounted: boolean;
   startTime: number;
   autoplay: boolean;
+  currentTime?: number;
 }
 
 @Injectable({
@@ -21,7 +22,8 @@ export class MediaPlayerService {
     isMinimized: false,
     viewCounted: false,
     startTime: 0,
-    autoplay: false
+    autoplay: false,
+    currentTime: 0
   });
 
   constructor(private episodeService: EpisodeService) {}
@@ -48,10 +50,23 @@ export class MediaPlayerService {
       isMinimized: false,
       viewCounted: viewAlreadyCounted,
       startTime,
+      currentTime: startTime,
       autoplay
     }));
     
     // El viewCounted se manejará desde el componente del reproductor
+  }
+
+  updateCurrentTime(time: number) {
+    this.playerState.update(state => ({
+      ...state,
+      currentTime: time
+    }));
+  }
+
+  getCurrentTime(): number {
+    const state = this.playerState();
+    return state.currentTime ?? state.startTime ?? 0;
   }
   
   closePlayer() {
@@ -61,6 +76,7 @@ export class MediaPlayerService {
       isMinimized: false,
       viewCounted: false,
       startTime: 0,
+      currentTime: 0,
       autoplay: false
     });
   }
