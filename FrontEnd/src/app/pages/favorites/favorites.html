@@ -4,69 +4,72 @@
   </header>
 
   @if (isLoading) {
-    <div class="loading-container">
-      <p>Cargando tus podcasts favoritos...</p>
-    </div>
+  <div class="loading-container">
+    <p>Cargando tus podcasts favoritos...</p>
+  </div>
   } @else if (favorites.length === 0) {
-    <div class="empty-state">
-      <h2>No tienes favoritos aún</h2>
-      <p>Empieza a explorar y agrega podcasts a tus favoritos</p>
-    </div>
+  <div class="empty-state">
+    <i class="fas fa-heart"></i>
+    <h2>Aún no tenés favoritos</h2>
+    <p>Buscá podcasts que te gusten desde <a class="empty-state-link" routerLink="/explore">acá</a> y marcalos como
+      favoritos.</p>
+  </div>
   } @else {
-    <div class="podcasts-list">
-      @for (podcast of favorites; track podcast.id) {
-        <article class="podcast-card" (click)="viewPodcast(podcast.id)">
-          <div class="podcast-image">
-            <app-media-image [src]="podcast.imageUrl" [alt]="podcast.title" type="podcast"></app-media-image>
-          </div>
-          
-          <div class="podcast-content">
-            <div class="podcast-header">
-              <div class="podcast-info">
-                <h3 class="podcast-title">{{ podcast.title }}</h3>
-                <div class="podcast-stats">
-                  <div class="stat">
-                    <span class="icon-star-small"></span>
-                    <span>{{ (podcast.averageRating || 0) | number:'1.0-1' }}</span>
-                  </div>
-                  <div class="stat">
-                    <span class="icon-eye-small"></span>
-                    <span>{{ formatViews(podcast.averageViews || 0) }}</span>
-                  </div>
-                </div>
+  <div class="podcasts-list">
+    @for (podcast of favorites; track podcast.id) {
+    <article class="podcast-card" (click)="viewPodcast(podcast.id)">
+      <div class="podcast-image">
+        <app-media-image [src]="podcast.imageUrl" [alt]="podcast.title" type="podcast"></app-media-image>
+      </div>
+
+      <div class="podcast-content">
+        <div class="podcast-header">
+          <div class="podcast-info">
+            <h3 class="podcast-title">{{ podcast.title }}</h3>
+            <div class="podcast-stats">
+              <div class="stat">
+                <span class="icon-star-small"></span>
+                <span>{{ (podcast.averageRating || 0) | number:'1.0-1' }}</span>
               </div>
-              <div class="podcast-actions-main" (click)="$event.stopPropagation()">
-                <input type="checkbox" [id]="'toggle-heart-fav-' + podcast.id" 
-                       [checked]="true" 
-                       (change)="toggleFavorite(podcast.id)" 
-                       style="display: none;">
-                 <label [for]="'toggle-heart-fav-' + podcast.id" 
-                        class="favorite-container"
-                        [attr.aria-label]="'Quitar de favoritos'">
-                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart">
-                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                   </svg>
-                   <div class="action">
-                     <span class="option-1">Quitar de Favoritos</span>
-                   </div>
-                 </label>
+              <div class="stat">
+                <span class="icon-eye-small"></span>
+                <span>{{ formatViews(podcast.averageViews || 0) }}</span>
               </div>
             </div>
-            <p class="podcast-description">{{ podcast.description }}</p>
-            
-            @if (podcast.category && podcast.category.length) {
-              <div class="podcast-categories">
-                @for (cat of podcast.category.slice(0, 3); track $index) {
-                  <span class="chip">{{ cat }}</span>
-                }
-                @if (podcast.category.length > 3) {
-                  <span class="chip chip-more">+{{ podcast.category.length - 3 }}</span>
-                }
-              </div>
-            }
           </div>
-        </article>
-      }
-    </div>
+          <div class="podcast-actions-main" (click)="$event.stopPropagation()">
+            <input type="checkbox" [id]="'toggle-heart-fav-' + podcast.id" [checked]="true"
+              (change)="toggleFavorite(podcast.id)" style="display: none;">
+            <label [for]="'toggle-heart-fav-' + podcast.id" class="favorite-container"
+              [attr.aria-label]="'Quitar de favoritos'">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="feather feather-heart">
+                <path
+                  d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                </path>
+              </svg>
+              <div class="action">
+                <span class="option-1">Quitar de Favoritos</span>
+              </div>
+            </label>
+          </div>
+        </div>
+        <p class="podcast-description">{{ podcast.description }}</p>
+
+        @if (podcast.category && podcast.category.length) {
+        <div class="podcast-categories">
+          @for (cat of podcast.category.slice(0, 3); track $index) {
+          <span class="chip">{{ cat }}</span>
+          }
+          @if (podcast.category.length > 3) {
+          <span class="chip chip-more">+{{ podcast.category.length - 3 }}</span>
+          }
+        </div>
+        }
+      </div>
+    </article>
+    }
+  </div>
   }
 </div>
