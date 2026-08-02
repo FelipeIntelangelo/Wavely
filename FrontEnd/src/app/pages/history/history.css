@@ -9,25 +9,11 @@
   --radius-md: 10px;
   --radius-pill: 999px;
 
-  background-color: var(--bg-root);
   display: block;
-  min-height: 100vh;
 }
 
 .history-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
-.page-header {
-  margin-bottom: 2rem;
-}
-
-.page-header h1 {
-  margin: 0;
-  font-size: 2rem;
-  color: var(--text-primary);
+  /* Inherits standard-page-container layout & background */
 }
 
 .loading-container {

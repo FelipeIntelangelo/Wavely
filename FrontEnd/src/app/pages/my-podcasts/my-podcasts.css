@@ -9,25 +9,11 @@
   --radius-md: 10px;
   --radius-pill: 999px;
 
-  background: radial-gradient(circle at top, #1d1d1d 0%, #0d0d0d 100%);
   display: block;
-  min-height: 100vh;
 }
 
 .my-podcasts-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
-.page-header {
-  margin-bottom: 2rem;
-}
-
-.page-header h1 {
-  margin: 0;
-  font-size: 2rem;
-  color: var(--text-primary);
+  /* Inherits standard-page-container layout & background */
 }
 
 .loading-container {
