@@ -82,8 +82,58 @@ video::-internal-media-controls-overflow-button,
 }
 
 
+/* ============================================
+   PAGE LAYOUT & HEADER STANDARDIZATION
+   ============================================ */
+.standard-page-container {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 2.5rem;
+  max-width: 1280px;
+  margin: 0 auto;
+  min-height: calc(100vh - var(--header-height) - var(--footer-height));
+  background: transparent;
+  color: white;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.standard-page-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.standard-page-title {
+  font-size: 2.75rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+  margin: 0;
+}
+
+.standard-page-subtitle {
+  font-size: 1.15rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .standard-page-container {
+    padding: 1.5rem 1.25rem;
+  }
+  .standard-page-title {
+    font-size: 2rem;
+  }
+}
+
 html, body {
-    background-color: #131313;
+    background: radial-gradient(circle at top, #1d1d1d 0%, #0d0d0d 100%);
+    background-attachment: fixed;
     color: #fff;
     min-height: 100%;
 }

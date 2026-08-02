@@ -5,19 +5,22 @@
 }
 
 .page-header {
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .page-header h1 {
   margin: 0 0 0.5rem 0;
-  font-size: 2.5rem;
+  font-size: 2.75rem;
   font-weight: 700;
   color: white;
+  letter-spacing: -0.5px;
 }
 
 .page-header p {
   color: rgba(255, 255, 255, 0.7);
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   margin: 0;
 }
 
