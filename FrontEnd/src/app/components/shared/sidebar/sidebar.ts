@@ -20,13 +20,13 @@ export interface NavItem {
 })
 export class SidebarComponent implements OnInit, OnDestroy {
   private allNavItems: NavItem[] = [
-    { label: 'Home', route: '/', icon: 'fas fa-home' },
-    { label: 'Explore', route: '/explore', icon: 'fas fa-compass' },
-    { label: 'Following', route: '/following', icon: 'fas fa-users' },
-    { label: 'My Podcasts', route: '/myPodcasts', icon: 'fas fa-microphone' },
-    { label: 'Favorites', route: '/favorites', icon: 'fas fa-heart' },
+    { label: 'Inicio', route: '/', icon: 'fas fa-home' },
+    { label: 'Explorar', route: '/explore', icon: 'fas fa-compass' },
+    { label: 'Siguiendo', route: '/following', icon: 'fas fa-users' },
+    { label: 'Mis Podcasts', route: '/myPodcasts', icon: 'fas fa-microphone' },
+    { label: 'Favoritos', route: '/favorites', icon: 'fas fa-heart' },
     { label: 'Playlists', route: '/playlists', icon: 'fas fa-list-ul' },
-    { label: 'History', route: '/history', icon: 'fas fa-history' }
+    { label: 'Historial', route: '/history', icon: 'fas fa-history' }
   ];
 
   navItems: NavItem[] = [];
@@ -57,7 +57,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     } else {
       // Ocultar rutas protegidas cuando no está logueado
       this.navItems = this.allNavItems.filter(
-        item => !['Following', 'My Podcasts', 'Favorites', 'Playlists', 'History'].includes(item.label)
+        item => !['Siguiendo', 'Mis Podcasts', 'Favoritos', 'Playlists', 'Historial'].includes(item.label)
       );
     }
   }
