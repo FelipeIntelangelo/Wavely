@@ -1,6 +1,6 @@
 <div class="standard-page-container following-container">
   <div class="standard-page-header following-header">
-    <h1 class="standard-page-title">Following</h1>
+    <h1 class="standard-page-title">Siguiendo</h1>
     <p class="standard-page-subtitle">Tus creadores favoritos y sus últimos episodios.</p>
   </div>
 
@@ -9,13 +9,13 @@
       class="tab-button"
       [class.active]="activeTab === 'feed'"
       (click)="activeTab = 'feed'">
-      Feed
+      Novedades
     </button>
     <button
       class="tab-button"
       [class.active]="activeTab === 'creators'"
       (click)="activeTab = 'creators'">
-      Creators
+      Creadores
       @if (following && following.length > 0) {
         <span class="tab-count">({{ following.length }})</span>
       }

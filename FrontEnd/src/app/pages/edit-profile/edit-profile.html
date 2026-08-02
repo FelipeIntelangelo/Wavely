@@ -1,6 +1,6 @@
 <div class="profile-container">
   @if (isLoading) {
-    <div class="loading-spinner">Loading profile...</div>
+    <div class="loading-spinner">Cargando perfil...</div>
   }
 
   <div class="error-message" [class.show]="!!error">{{ error }}</div>
@@ -73,8 +73,8 @@
           </div>
 
           <div class="form-actions desktop-only-actions">
-            <button type="submit" [disabled]="editProfileForm.invalid">Save Changes</button>
-            <button type="button" (click)="onCancel()">Cancel</button>
+            <button type="submit" [disabled]="editProfileForm.invalid">Guardar Cambios</button>
+            <button type="button" (click)="onCancel()">Cancelar</button>
           </div>
         </div>
 
@@ -118,8 +118,8 @@
 
       <!-- Botones para vista Mobile/Tablet (Debajo de todos los inputs) -->
       <div class="form-actions mobile-only-actions">
-        <button type="submit" [disabled]="editProfileForm.invalid">Save Changes</button>
-        <button type="button" (click)="onCancel()">Cancel</button>
+        <button type="submit" [disabled]="editProfileForm.invalid">Guardar Cambios</button>
+        <button type="button" (click)="onCancel()">Cancelar</button>
       </div>
     </form>
   }
