@@ -9,7 +9,7 @@ export class AlertService {
 
     successAlert(){
         Swal.fire({
-            title: "Registration Successful!",
+            title: "¡Registro exitoso!",
             icon: "success",
             draggable: true,
             showConfirmButton: false,
@@ -20,7 +20,7 @@ export class AlertService {
 
     errorAlert(){
         Swal.fire({
-            title: "Registration Failed!",
+            title: "Error en el registro",
             icon: "error",
             draggable: true,
             showConfirmButton: false,
@@ -31,8 +31,8 @@ export class AlertService {
 
     questionAlert(){
         Swal.fire({
-            title: "The Internet?",
-            text: "That thing is still around?",
+            title: "¿Internet?",
+            text: "¿Eso sigue existiendo?",
             icon: "question",
             showConfirmButton: false,
             theme: 'dark',
@@ -42,19 +42,19 @@ export class AlertService {
 
     warningAlert(){
         Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
+            title: "¿Estás seguro?",
+            text: "¡No podrás revertir esta acción!",
             icon: "warning",
             theme: 'dark',
             showCancelButton: true,
             confirmButtonColor: "#3d6e37ff",
             cancelButtonColor: "rgba(187, 49, 49, 1)",
-            confirmButtonText: "Yes, delete it!"
+            confirmButtonText: "Sí, eliminar"
         }).then((result) => {
             if (result.isConfirmed) {
                     Swal.fire({
-                    title: "Deleted!",
-                    text: "Your file has been deleted.",
+                    title: "¡Eliminado!",
+                    text: "El archivo ha sido eliminado.",
                     icon: "success"
                 });
             }

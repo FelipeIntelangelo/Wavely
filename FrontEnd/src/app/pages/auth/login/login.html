@@ -1,16 +1,16 @@
 <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="form-wrapper">
     <div class="form-container">
-        <p class="title">Login</p>
+        <p class="title">Iniciar Sesión</p>
         
         <div class="input-group">
-            <label for="usernameIn">Username</label>
+            <label for="usernameIn">Usuario</label>
             <input type="text" id="usernameIn" formControlName="username"
             [class.error-input]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
             <app-form-error controlName="username" [customMessages]="customErrors['username']" />
         </div>
         
         <div class="input-group">
-            <label for="passwordIn">Password</label>
+            <label for="passwordIn">Contraseña</label>
             <div class="password-input-wrapper">
                 <input [type]="showPassword ? 'text' : 'password'" id="passwordIn" formControlName="password"
                 [class.error-input]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
@@ -21,7 +21,7 @@
             <app-form-error controlName="password" [customMessages]="customErrors['password']" />
         </div>
 
-        <button type="submit" class="sign" [disabled]="loginForm.invalid">Sign in</button>
+        <button type="submit" class="sign" [disabled]="loginForm.invalid">Ingresar</button>
         
         <p class="error-message" [class.show]="!!errorMessage">
             {{ errorMessage }}
@@ -32,7 +32,7 @@
 
         <div class="social-message">
             <div class="line"></div>
-            <p class="message">or login with your google account</p>
+            <p class="message">o ingresá con tu cuenta de Google</p>
             <div class="line"></div>
         </div>
 
@@ -43,9 +43,9 @@
         </div>
 
         @if (isModal) {
-            <p class="signup">Don't have an account? <a href="#" (click)="$event.preventDefault(); switchRegister.emit()" id="registerRoute">Sign up</a></p>
+            <p class="signup">¿No tenés cuenta? <a href="#" (click)="$event.preventDefault(); switchRegister.emit()" id="registerRoute">Registrate</a></p>
         } @else {
-            <p class="signup">Don't have an account? <a routerLink="/auth/register" id="registerRoute">Sign up</a></p>
+            <p class="signup">¿No tenés cuenta? <a routerLink="/auth/register" id="registerRoute">Registrate</a></p>
         }
     </div>
 </form>

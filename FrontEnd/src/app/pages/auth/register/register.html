@@ -1,20 +1,20 @@
 <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="form-wrapper">
     <div class="form-container">
-        <p class="title">Sign Up</p>
-        <p class="subtitle">Signup now and get full access to our web</p>
+        <p class="title">Registrarse</p>
+        <p class="subtitle">Registrate ahora y obtené acceso completo</p>
         
         @if (currentStep === 1) {
             <!-- Fila 1: Name y Last Name -->
             <div class="form-row">
                 <div class="input-group">
-                    <label for="nameIn">Name <span class="required-asterisk">*</span></label>
+                    <label for="nameIn">Nombre <span class="required-asterisk">*</span></label>
                     <input type="text" id="nameIn" formControlName="name"
                     [class.error-input]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">
                     <app-form-error controlName="name" [customMessages]="customErrors['name']" />
                 </div>
                 
                 <div class="input-group">
-                    <label for="lastNameIn">Last Name <span class="required-asterisk">*</span></label>
+                    <label for="lastNameIn">Apellido <span class="required-asterisk">*</span></label>
                     <input type="text" id="lastNameIn" formControlName="lastName"
                     [class.error-input]="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched">
                     <app-form-error controlName="lastName" [customMessages]="customErrors['lastName']" />
@@ -32,12 +32,12 @@
                 !registerForm.get('name')?.valid
                 || !registerForm.get('lastName')?.valid
                 || !registerForm.get('nickname')?.valid"
-                (click)="nextStep()">Next Step</button>
+                (click)="nextStep()">Siguiente Paso</button>
                 
             @if (isModal) {
-                <p class="signup">Have an account? <a href="#" (click)="$event.preventDefault(); switchLogin.emit()" id="loginRoute">Sign in</a></p>
+                <p class="signup">¿Ya tenés cuenta? <a href="#" (click)="$event.preventDefault(); switchLogin.emit()" id="loginRoute">Ingresar</a></p>
             } @else {
-                <p class="signup">Have an account? <a routerLink="/auth/login" id="loginRoute">Sign in</a></p>
+                <p class="signup">¿Ya tenés cuenta? <a routerLink="/auth/login" id="loginRoute">Ingresar</a></p>
             }
         } @else if (currentStep === 2) {
             <div class="input-group">
@@ -48,14 +48,14 @@
             </div>
 
             <div class="input-group">
-                <label for="usernameIn">Username <span class="required-asterisk">*</span></label>
+                <label for="usernameIn">Usuario <span class="required-asterisk">*</span></label>
                 <input type="text" id="usernameIn" formControlName="username"
                 [class.error-input]="registerForm.get('username')?.invalid && registerForm.get('username')?.touched">
                 <app-form-error controlName="username" [customMessages]="customErrors['username']" />
             </div>
             
             <div class="input-group">
-                <label for="passwordIn">Password <span class="required-asterisk">*</span></label>
+                <label for="passwordIn">Contraseña <span class="required-asterisk">*</span></label>
                 <div class="password-input-wrapper">
                     <input [type]="showPassword ? 'text' : 'password'" id="passwordIn" formControlName="password"
                     [class.error-input]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
@@ -67,7 +67,7 @@
             </div>
 
             <div class="input-group">
-                <label for="confirmPasswordIn">Retype Password <span class="required-asterisk">*</span></label>
+                <label for="confirmPasswordIn">Repetir Contraseña <span class="required-asterisk">*</span></label>
                 <div class="password-input-wrapper">
                     <input [type]="showConfirmPassword ? 'text' : 'password'" id="confirmPasswordIn" formControlName="confirmPassword"
                     [class.error-input]="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched">
@@ -79,9 +79,9 @@
             </div>
 
             <div class="step-buttons">
-                <button type="button" class="back-btn" (click)="prevStep()">Back</button>
+                <button type="button" class="back-btn" (click)="prevStep()">Volver</button>
                 <button type="submit" class="sign submit-btn" [disabled]="isSubmitting">
-                    {{ isSubmitting ? 'Registering...' : 'Register' }}
+                    {{ isSubmitting ? 'Registrando...' : 'Registrarse' }}
                 </button>
             </div>
             
@@ -92,9 +92,9 @@
             <p class="error-message" [class.show]="!!errorMessage">{{ errorMessage }}</p>
             
             @if (isModal) {
-                <p class="signup">Have an account? <a href="#" (click)="$event.preventDefault(); switchLogin.emit()" id="loginRoute">Sign in</a></p>
+                <p class="signup">¿Ya tenés cuenta? <a href="#" (click)="$event.preventDefault(); switchLogin.emit()" id="loginRoute">Ingresar</a></p>
             } @else {
-                <p class="signup">Have an account? <a routerLink="/auth/login" id="loginRoute">Sign in</a></p>
+                <p class="signup">¿Ya tenés cuenta? <a routerLink="/auth/login" id="loginRoute">Ingresar</a></p>
             }
         }
     </div>

@@ -11,7 +11,7 @@
         <!-- Desktop Search -->
         <div class="search-wrapper desktop-search">
             <div class="container-input">
-                <input type="search" class="input search-input" placeholder="Search" aria-label="Search podcasts"
+                <input type="search" class="input search-input" placeholder="Buscar" aria-label="Buscar podcasts"
                     [(ngModel)]="searchQuery"
                     (focus)="onSearchFocus()"
                     (input)="onSearchInput($event)"
@@ -67,8 +67,8 @@
                     <div class="mobile-search-popdown-wrapper">
                         <input type="search" 
                                class="mobile-search-popdown-input" 
-                               placeholder="Search" 
-                               aria-label="Search podcasts"
+                               placeholder="Buscar" 
+                               aria-label="Buscar podcasts"
                                [(ngModel)]="searchQuery"
                                (focus)="onSearchFocus()"
                                (input)="onSearchInput($event)"
@@ -135,8 +135,8 @@
                 <div class="mobile-search-wrapper">
                     <input type="search" 
                            class="mobile-search-input" 
-                           placeholder="Search Podcasts or Users" 
-                           aria-label="Search podcasts"
+                           placeholder="Buscar Podcasts o Usuarios" 
+                           aria-label="Buscar podcasts"
                            [(ngModel)]="searchQuery"
                            (focus)="onSearchFocus()"
                            (input)="onSearchInput($event)"
@@ -201,16 +201,16 @@
                 </div>
                 @if (showProfileMenu) {
                     <div class="profile-menu">
-                        <a routerLink="/profile" class="menu-item" (click)="showProfileMenu = false">My Profile</a>
-                        <a routerLink="/history" class="menu-item" (click)="showProfileMenu = false">History</a>
-                        <div (click)="logout()" class="menu-item logout-item">Logout</div>
+                        <a routerLink="/profile" class="menu-item" (click)="showProfileMenu = false">Mi Perfil</a>
+                        <a routerLink="/history" class="menu-item" (click)="showProfileMenu = false">Historial</a>
+                        <div (click)="logout()" class="menu-item logout-item">Cerrar Sesión</div>
                     </div>
                 }
             </div>
         }
         @if (!isLoggedIn) {
             <button id="headerSignIn" (click)="openLoginModal()">
-                Sign In
+                Iniciar Sesión
                 <span class="arrow-wrapper">
                     <span class="arrow"></span>
                 </span>

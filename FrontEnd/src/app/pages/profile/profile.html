@@ -1,6 +1,6 @@
 <div class="profile-container">
   @if (isLoading) {
-    <div class="loading-spinner">Loading profile...</div>
+    <div class="loading-spinner">Cargando perfil...</div>
   }
 
   @if (error) {
@@ -17,7 +17,7 @@
         
         @if (followStatus) {
           <a routerLink="/profile/{{user.id}}/followers" class="followers-count-link">
-            <span class="followers-count">{{ followStatus.followersCount }} {{ followStatus.followersCount === 1 ? 'follower' : 'followers' }}</span>
+            <span class="followers-count">{{ followStatus.followersCount }} {{ followStatus.followersCount === 1 ? 'seguidor' : 'seguidores' }}</span>
           </a>
         }
 
@@ -27,7 +27,7 @@
 
         @if (isOwnProfile && isFullUser(user)) {
           <div class="profile-actions-header">
-            <a routerLink="/profile/edit" class="action-button edit-button">Edit Profile</a>
+            <a routerLink="/profile/edit" class="action-button edit-button">Editar Perfil</a>
           </div>
         }
         @if (!isOwnProfile && currentUserId) {
@@ -40,10 +40,10 @@
               (click)="toggleFollow()">
               @if (followStatus?.isFollowing) {
                 <i class="fas fa-user-check"></i>
-                <span>Following</span>
+                <span>Siguiendo</span>
               } @else {
                 <i class="fas fa-user-plus"></i>
-                <span>Follow</span>
+                <span>Seguir</span>
               }
             </button>
             @if (followStatus?.isFollowing) {
@@ -93,7 +93,7 @@
             [class.active]="activeTab === 'favorites'"
             (click)="setActiveTab('favorites')"
             type="button">
-            Favorites
+            Favoritos
             @if (favoritesData && favoritesData.length > 0) {
               <span class="tab-count">({{ favoritesData.length }})</span>
             }
