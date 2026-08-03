@@ -1,6 +1,6 @@
-# 🎙️ PodcastFront - Wavelly una Podcasts
+# 🎙️ PodcastFront - Wavely
 
-Wavelly es una plataforma web para descubrir, escuchar y gestionar podcasts. Desarrollado con Angular 20, permite a los usuarios explorar contenido, crear sus propios podcasts, gestionar episodios, y disfrutar de una experiencia de audio completa.
+Wavely es una plataforma web para descubrir, escuchar y gestionar podcasts. Desarrollada con Angular 20, permite a los usuarios explorar contenido, crear sus propios podcasts, gestionar episodios y disfrutar de una experiencia multimedia completa.
 
 ## 📋 Tabla de Contenidos
 
@@ -32,6 +32,10 @@ Wavelly es una plataforma web para descubrir, escuchar y gestionar podcasts. Des
 - 🎵 **Reproductor**: Reproductor de audio flotante para episodios
 - 💬 **Comentarios**: Sistema de comentarios en episodios
 - ⭐ **Calificaciones**: Sistema de calificación de 1-10 para episodios
+- 📋 **Playlists**: Creación y gestión de listas con podcasts y episodios
+- 👥 **Seguimiento**: Seguimiento de creadores y consulta de seguidores
+- 🔔 **Notificaciones**: Avisos en tiempo real mediante WebSocket
+- 🎯 **Recomendaciones**: Contenido personalizado, tendencias y descubrimiento aleatorio
 
 ### Para Creadores
 - 🎙️ **Crear Podcasts**: Creación de podcasts con imagen, descripción y categorías
@@ -40,7 +44,8 @@ Wavelly es una plataforma web para descubrir, escuchar y gestionar podcasts. Des
 - ✏️ **Edición**: Edición completa de podcasts y episodios
 
 ### Funcionalidades Adicionales
-- 🖼️ **Cloudinary**: Integración con Cloudinary para gestión de imágenes
+- 🖼️ **Cloudinary**: Integración con Cloudinary para gestión de imágenes, audios y videos
+- 🔑 **Google Identity**: Inicio de sesión mediante una cuenta de Google
 - 📱 **Responsive**: Diseño adaptable a diferentes tamaños de pantalla
 - 🎨 **UI Moderna**: Interfaz con gradientes, efectos glassmorphism y animaciones
 
@@ -55,17 +60,20 @@ Wavelly es una plataforma web para descubrir, escuchar y gestionar podcasts. Des
 - **TypeScript 5.9.2** - Lenguaje de programación
 - **Angular Router** - Sistema de rutas
 - **Angular Forms (Reactive Forms)** - Manejo de formularios
-- **Servicios HTTP**
+- **RxJS 7.8.0** - Programación reactiva
+- **Servicios HTTP** - Consumo de la API REST
+- **STOMP.js y SockJS** - Notificaciones en tiempo real
 
 ### Servicios Externos
 - **Cloudinary 2.8.0** - Almacenamiento y gestión de imágenes/videos/audios
+- **Google Identity Services** - Autenticación con Google
 - **SweetAlert2 11.26.3** - Alertas y notificaciones
 
 ## 📦 Requisitos Previos
 
 Antes de comenzar, asegúrate de tener instalado:
 
-- **Node.js** (versión 18 o superior)
+- **Node.js** (versión 20.19 o superior; el contenedor utiliza Node.js 22)
 - **npm** (viene incluido con Node.js)
 
 ### Verificación
@@ -85,7 +93,7 @@ npm --version
 1. **Clona el repositorio** (si aplica):
    ```bash
    git clone <url-del-repositorio>
-   cd PodcastFront
+   cd Wavely/FrontEnd
    ```
 
 2. **Instala las dependencias del proyecto**:
@@ -111,13 +119,22 @@ npm --version
 
 ### Variables de Entorno
 
-El proyecto utiliza variables de entorno para la configuración de Cloudinary. Estas se configuran en el script de inicio:
+El proyecto utiliza los archivos `src/environments/environment.ts` y `src/environments/environment.prod.ts`. Podés tomar `environment.example.ts` como referencia:
 
-```json
-VITE_CLOUDINARY_CLOUD_NAME=yourCloudName
-VITE_CLOUDINARY_UPLOAD_PRESET=yourPreset
-VITE_CLOUDINARY_API_KEY=YourAPIKEY
+```typescript
+export const environment = {
+  production: false,
+  googleClientId: 'TU_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
+  cloudinary: {
+    cloudName: 'TU_CLOUD_NAME',
+    uploadPreset: 'TU_UPLOAD_PRESET',
+    apiKey: 'TU_API_KEY'
+  },
+  wsUrl: 'http://localhost:8080/ws'
+};
 ```
+
+El `uploadPreset` de Cloudinary debe permitir cargas sin firma. No incluyas secretos de Cloudinary en el frontend.
 
 ### Proxy Configuration
 
@@ -150,6 +167,23 @@ npm start
 
 Esto iniciará la aplicación en `http://localhost:4200`
 
+### Build y testing
+
+```bash
+# Generar el build de producción
+npm run build
+
+# Ejecutar los tests unitarios
+npm test
+
+# Generar builds de desarrollo ante cada cambio
+npm run watch
+```
+
+### Docker
+
+El frontend incluye un `Dockerfile` multi-stage. El build de Angular se publica mediante Nginx, que también redirige `/api` al backend y conserva el routing de la SPA.
+
 ## 📁 Estructura del Proyecto
 
 ```
@@ -162,6 +196,8 @@ src/
 │   │       ├── cloudinary-upload/      # Upload de imágenes
 │   │       ├── floating-media-player/  # Reproductor de audio
 │   │       ├── form-error/            # Mensajes de error
+│   │       ├── media-image/           # Imágenes y fallbacks reutilizables
+│   │       ├── add-to-playlist/       # Agregado de contenido a playlists
 │   │       └── sidebar/               # Barra lateral
 │   │
 │   ├── models/              # Modelos y DTOs TypeScript
@@ -185,6 +221,9 @@ src/
 │   │   ├── edit-episode/   # Editar episodio
 │   │   ├── favorites/      # Favoritos
 │   │   ├── history/        # Historial
+│   │   ├── playlists/      # Listas de reproducción
+│   │   ├── following/      # Creadores seguidos
+│   │   ├── followers/      # Seguidores de un perfil
 │   │   └── ...            # Otras páginas
 │   │
 │   ├── services/          # Servicios Angular
@@ -195,6 +234,10 @@ src/
 │   │   ├── episode/       # Servicio de episodios
 │   │   ├── podcast/       # Servicio de podcasts
 │   │   ├── media-player/  # Reproductor de audio
+│   │   ├── playlist/      # Gestión de playlists
+│   │   ├── recommendation/ # Recomendaciones y tendencias
+│   │   ├── notification/  # Notificaciones HTTP y WebSocket
+│   │   ├── follow/        # Seguimiento de usuarios
 │   │   └── ui/            # Servicios de UI (alertas)
 │   │
 │   ├── app.config.ts      # Configuración de la app
@@ -230,6 +273,11 @@ src/
 | `/myPodcasts` | `MyPodcasts` | Mis podcasts creados |
 | `/favorites` | `FavoritesComponent` | Podcasts favoritos |
 | `/history` | `HistoryComponent` | Historial de reproducción |
+| `/playlists` | `PlaylistsComponent` | Listas de reproducción del usuario |
+| `/following` | `FollowingComponent` | Creadores seguidos por el usuario |
+| `/profile/:id/followers` | `FollowersComponent` | Seguidores de un perfil |
+
+Las rutas de perfil propio, creación y edición, favoritos, historial, playlists, seguidos y podcasts propios están protegidas mediante `authGuard`.
 
 ## 🔧 Servicios Principales
 
@@ -252,7 +300,19 @@ Control del reproductor de audio flotante.
 Muestra alertas y notificaciones usando SweetAlert2.
 
 ### CloudinaryService
-Integración con Cloudinary para subida de imágenes.
+Integración con Cloudinary para subida de imágenes y archivos multimedia.
+
+### PlaylistService
+Gestiona playlists y el contenido agregado a ellas.
+
+### RecommendationService
+Obtiene recomendaciones personalizadas, tendencias y contenido aleatorio.
+
+### NotificationService
+Consulta notificaciones y mantiene la conexión WebSocket autenticada.
+
+### FollowService
+Gestiona el seguimiento de usuarios y las preferencias de notificación.
 
 ## 🧩 Componentes Compartidos
 
@@ -284,7 +344,9 @@ El proyecto utiliza variables CSS para mantener consistencia:
 ## 📝 Notas Adicionales
 
 - El sistema de autenticación utiliza **JWT tokens** almacenados en localStorage
-- Las imágenes se suben directamente a Cloudinary desde el frontend
+- Las imágenes y los archivos multimedia se suben directamente a Cloudinary desde el frontend
+- El interceptor HTTP agrega el JWT a las solicitudes protegidas
+- Las solicitudes `/api` se redirigen a `/podcastUTN/v1` mediante el proxy de desarrollo o Nginx
 
 ## 👥 Integrantes del proyecto
 
