@@ -395,10 +395,6 @@ export class Home implements OnInit, AfterViewInit {
   }
 
   onPlayPodcast(podcastId: number): void {
-    if (!this.isLoggedIn) {
-      this.alertService.warning("Atención", "Inicia sesión para reproducir podcasts");
-      return;
-    }
     this.mediaPlayerService.playPodcast(podcastId);
   }
 

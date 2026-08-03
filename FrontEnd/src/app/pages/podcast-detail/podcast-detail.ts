@@ -354,18 +354,10 @@ export class PodcastDetail implements OnInit{
   }
 
   onPlayPodcast(podcastId: number): void {
-    if (!this.currentUser) {
-      this.alertService.warning("Atención", "Inicia sesión para reproducir podcasts");
-      return;
-    }
     this.mediaPlayerService.playPodcast(podcastId);
   }
 
   onPlayEpisode(episode: EpisodeDTO): void {
-    if (!this.currentUser) {
-      this.alertService.warning("Atención", "Inicia sesión para reproducir episodios");
-      return;
-    }
     this.mediaPlayerService.playEpisode(episode.id);
   }
 
