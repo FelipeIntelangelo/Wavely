@@ -8,22 +8,22 @@
             <div class="form-row">
                 <div class="input-group">
                     <label for="nameIn">Nombre <span class="required-asterisk">*</span></label>
-                    <input type="text" id="nameIn" formControlName="name"
+                    <input type="text" id="nameIn" formControlName="name" maxlength="19"
                     [class.error-input]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">
                     <app-form-error controlName="name" [customMessages]="customErrors['name']" />
                 </div>
                 
                 <div class="input-group">
                     <label for="lastNameIn">Apellido <span class="required-asterisk">*</span></label>
-                    <input type="text" id="lastNameIn" formControlName="lastName"
+                    <input type="text" id="lastNameIn" formControlName="lastName" maxlength="19"
                     [class.error-input]="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched">
                     <app-form-error controlName="lastName" [customMessages]="customErrors['lastName']" />
                 </div>
             </div>
             
             <div class="input-group">
-                <label for="nicknameIn">Nickname <span class="required-asterisk">*</span></label>
-                <input type="text" id="nicknameIn" formControlName="nickname"
+                <label for="nicknameIn">Apodo <span class="required-asterisk">*</span></label>
+                <input type="text" id="nicknameIn" formControlName="nickname" maxlength="20"
                 [class.error-input]="registerForm.get('nickname')?.invalid && registerForm.get('nickname')?.touched">
                 <app-form-error controlName="nickname" [customMessages]="customErrors['nickname']" />
             </div>
@@ -42,14 +42,14 @@
         } @else if (currentStep === 2) {
             <div class="input-group">
                 <label for="emailIn">Email <span class="required-asterisk">*</span></label>
-                <input type="email" id="emailIn" formControlName="email"
+                <input type="email" id="emailIn" formControlName="email" maxlength="50"
                 [class.error-input]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
                 <app-form-error controlName="email" [customMessages]="customErrors['email']"/>
             </div>
 
             <div class="input-group">
-                <label for="usernameIn">Usuario <span class="required-asterisk">*</span></label>
-                <input type="text" id="usernameIn" formControlName="username"
+                <label for="usernameIn">Nombre de usuario <span class="required-asterisk">*</span></label>
+                <input type="text" id="usernameIn" formControlName="username" maxlength="20"
                 [class.error-input]="registerForm.get('username')?.invalid && registerForm.get('username')?.touched">
                 <app-form-error controlName="username" [customMessages]="customErrors['username']" />
             </div>
@@ -57,7 +57,7 @@
             <div class="input-group">
                 <label for="passwordIn">Contraseña <span class="required-asterisk">*</span></label>
                 <div class="password-input-wrapper">
-                    <input [type]="showPassword ? 'text' : 'password'" id="passwordIn" formControlName="password"
+                    <input [type]="showPassword ? 'text' : 'password'" id="passwordIn" formControlName="password" maxlength="30"
                     [class.error-input]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
                     <button type="button" class="password-toggle" (click)="togglePasswordVisibility()" tabindex="-1">
                         <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
@@ -69,7 +69,7 @@
             <div class="input-group">
                 <label for="confirmPasswordIn">Repetir Contraseña <span class="required-asterisk">*</span></label>
                 <div class="password-input-wrapper">
-                    <input [type]="showConfirmPassword ? 'text' : 'password'" id="confirmPasswordIn" formControlName="confirmPassword"
+                    <input [type]="showConfirmPassword ? 'text' : 'password'" id="confirmPasswordIn" formControlName="confirmPassword" maxlength="30"
                     [class.error-input]="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched">
                     <button type="button" class="password-toggle" (click)="toggleConfirmPasswordVisibility()" tabindex="-1">
                         <i [class]="showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>

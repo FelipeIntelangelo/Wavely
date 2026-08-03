@@ -42,8 +42,8 @@
             <!-- Nickname, Name y Last Name -->
             <div class="profile-name-section">
               <div class="form-group">
-                <label for="nickname">Nickname</label>
-                <input type="text" id="nickname" formControlName="nickname"
+                <label for="nickname">Apodo</label>
+                <input type="text" id="nickname" formControlName="nickname" maxlength="20"
                        [class.error-input]="editProfileForm.get('nickname')?.invalid && editProfileForm.get('nickname')?.touched">
                 <app-form-error controlName="nickname" [customMessages]="customErrors['nickname']"></app-form-error>
               </div>
