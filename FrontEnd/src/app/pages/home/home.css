@@ -47,7 +47,7 @@ h2{
     overflow: hidden;
 }
 
-.cardHome:hover .ejampleImg {
+.cardHome:hover:not(:has(.media-play-btn-container:hover)) .ejampleImg {
     opacity: 0.7;
 }
 
@@ -106,7 +106,7 @@ h2{
     display: block;
 }
 
-.cardHome:hover .podcastImage {
+.cardHome:hover:not(:has(.media-play-btn-container:hover)) .podcastImage {
     opacity: 0.7;
 }
 
@@ -128,7 +128,7 @@ h2{
     transition: opacity 0.3s ease;
 }
 
-.cardHome:hover .image-placeholder-home {
+.cardHome:hover:not(:has(.media-play-btn-container:hover)) .image-placeholder-home {
     opacity: 0.7;
 }
 

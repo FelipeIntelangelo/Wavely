@@ -17,4 +17,5 @@ public interface IEpisodeHistoryRepository extends JpaRepository<EpisodeHistory,
     List<EpisodeHistory> findEpisodesByUserId(@Param("userId") Long userId);
 
     void deleteByEpisodeId(Long episodeId);
+    void deleteByUserId(Long userId);
 }

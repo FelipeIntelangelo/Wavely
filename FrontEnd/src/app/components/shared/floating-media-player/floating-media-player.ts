@@ -168,33 +168,7 @@ export class FloatingMediaPlayerComponent {
   }
   
   
-  
-  updateTime() {
-    const element = this.mediaElement?.nativeElement;
-    if (element && 'currentTime' in element && 'duration' in element) {
-      this.currentTime = element.currentTime || 0;
-      this.duration = element.duration || 0;
-      
-      // Registrar vista si pasa de 20 segundos o completa el 80% del audio
-      if (this.currentTime >= 20 || (this.duration > 0 && this.currentTime >= this.duration * 0.8)) {
-        this.mediaPlayerService.registerView();
-      }
 
-      if (this.duration > 0) {
-        this.progressPercentage = (this.currentTime / this.duration) * 100;
-      }
-      const wasPlaying = this.isPlayingState;
-      this.isPlayingState = !element.paused;
-      // Actualizar el checkbox si el estado cambió
-      if (wasPlaying !== this.isPlayingState) {
-        const checkbox = document.getElementById('play-toggle') as HTMLInputElement;
-        if (checkbox) {
-          checkbox.checked = this.isPlayingState;
-        }
-      }
-      this.cdr.markForCheck();
-    }
-  }
   
   isPlaying(): boolean {
     return this.isPlayingState;
@@ -295,6 +269,13 @@ export class FloatingMediaPlayerComponent {
       if ('duration' in element) {
         this.duration = element.duration || 0;
       }
+      
+      // Aplicar el tiempo de inicio si existe (para continuar desde el reproductor inline)
+      const state = this.playerState();
+      if (state.startTime > 0) {
+        element.currentTime = state.startTime;
+      }
+      
       element.volume = this.volume;
       element.muted = this.isMuted;
     }
@@ -305,7 +286,24 @@ export class FloatingMediaPlayerComponent {
     if (element) {
       this.currentTime = element.currentTime;
       this.duration = element.duration || 0;
+      
+      // Registrar vista si pasa de 30 segundos o completa el 80% del audio/video
+      if (this.currentTime >= 30 || (this.duration > 0 && this.currentTime >= this.duration * 0.8)) {
+        this.mediaPlayerService.registerView();
+      }
+
       this.progressPercentage = this.duration > 0 ? (this.currentTime / this.duration) * 100 : 0;
+      
+      // Sincronizar estado de reproducción (para controles nativos o teclas multimedia)
+      const wasPlaying = this.isPlayingState;
+      this.isPlayingState = !element.paused;
+      if (wasPlaying !== this.isPlayingState) {
+        const checkbox = document.getElementById('play-toggle') as HTMLInputElement;
+        if (checkbox) {
+          checkbox.checked = this.isPlayingState;
+        }
+      }
+
       this.mediaPlayerService.updateCurrentTime(this.currentTime);
       this.cdr.markForCheck();
     }

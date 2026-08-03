@@ -7,7 +7,7 @@
     <!-- Header similar a Profile -->
     <div class="podcast-header-main">
       <div class="podcast-image-wrapper">
-        <app-media-image [src]="podcast.imageUrl" [alt]="podcast.title" type="podcast" customClass="podcast-main-image"></app-media-image>
+        <app-media-image [src]="podcast.imageUrl" [alt]="podcast.title" type="podcast" customClass="podcast-main-image" [showPlayButton]="true" (playClick)="onPlayPodcast(podcast.id)" [isPlaying]="isPodcastPlaying(podcast.id)"></app-media-image>
       </div>
       <div class="podcast-info-section">
         <div class="title-actions-wrapper">
@@ -195,7 +195,7 @@
           @for (episode of filteredEpisodes; track episode.id) {
             <article class="episode-card" [class.watched]="isWatched(episode.id)" (click)="viewEpisode(episode.id)">
               <div class="episode-image">
-                <app-media-image [src]="episode.imageUrl || podcast.imageUrl" [alt]="episode.title" type="episode"></app-media-image>
+                <app-media-image [src]="episode.imageUrl || podcast.imageUrl" [alt]="episode.title" type="episode" [showPlayButton]="true" (playClick)="onPlayEpisode(episode)" [isPlaying]="isEpisodePlaying(episode.id)"></app-media-image>
               </div>
               <div class="episode-content">
                 <div class="episode-header">

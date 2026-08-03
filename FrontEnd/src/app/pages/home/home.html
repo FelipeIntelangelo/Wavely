@@ -48,7 +48,7 @@
                                 </div>
                                 @for (podcast of recomendacionesPodcasts; track podcast.id) {
                                     <div class="cardHome" [routerLink]="['/podcast', podcast.id]">
-                                        <app-media-image class="podcastImage" [src]="podcast.imageUrl" [alt]="podcast.title" type="podcast" customClass="podcastImage"></app-media-image>
+                                        <app-media-image class="podcastImage" [src]="podcast.imageUrl" [alt]="podcast.title" type="podcast" customClass="podcastImage" [showPlayButton]="true" (playClick)="onPlayPodcast(podcast.id)" [isPlaying]="isPodcastPlaying(podcast.id)"></app-media-image>
                                         <h3>{{ podcast.title }}</h3>
                                         @if (podcast.description) {
                                             <h4>{{ podcast.description.length > 50 ? (podcast.description.substring(0, 50) + '...') : podcast.description }}</h4>
@@ -109,7 +109,7 @@
                         } @else {
                             @for (podcast of novedadesPodcasts; track podcast.id) {
                                 <div class="cardHome" [routerLink]="['/podcast', podcast.id]">
-                                    <app-media-image class="podcastImage" [src]="podcast.imageUrl" [alt]="podcast.title" type="podcast" customClass="podcastImage"></app-media-image>
+                                    <app-media-image class="podcastImage" [src]="podcast.imageUrl" [alt]="podcast.title" type="podcast" customClass="podcastImage" [showPlayButton]="true" (playClick)="onPlayPodcast(podcast.id)" [isPlaying]="isPodcastPlaying(podcast.id)"></app-media-image>
                                     <h3>{{ podcast.title }}</h3>
                                     @if (podcast.description) {
                                         <h4>{{ podcast.description.length > 50 ? (podcast.description.substring(0, 50) + '...') : podcast.description }}</h4>
@@ -223,7 +223,7 @@
                         } @else {
                             @for (podcast of masEscuchadosPodcasts; track podcast.id) {
                                 <div class="cardHome" [routerLink]="['/podcast', podcast.id]">
-                                    <app-media-image class="podcastImage" [src]="podcast.imageUrl" [alt]="podcast.title" type="podcast" customClass="podcastImage"></app-media-image>
+                                    <app-media-image class="podcastImage" [src]="podcast.imageUrl" [alt]="podcast.title" type="podcast" customClass="podcastImage" [showPlayButton]="true" (playClick)="onPlayPodcast(podcast.id)" [isPlaying]="isPodcastPlaying(podcast.id)"></app-media-image>
                                     <h3>{{ podcast.title }}</h3>
                                     @if (podcast.description) {
                                         <h4>{{ podcast.description.length > 50 ? (podcast.description.substring(0, 50) + '...') : podcast.description }}</h4>
@@ -279,7 +279,7 @@
                         } @else {
                             @for (podcast of mejoresValoradosPodcasts; track podcast.id) {
                                 <div class="cardHome" [routerLink]="['/podcast', podcast.id]">
-                                    <app-media-image class="podcastImage" [src]="podcast.imageUrl" [alt]="podcast.title" type="podcast" customClass="podcastImage"></app-media-image>
+                                    <app-media-image class="podcastImage" [src]="podcast.imageUrl" [alt]="podcast.title" type="podcast" customClass="podcastImage" [showPlayButton]="true" (playClick)="onPlayPodcast(podcast.id)" [isPlaying]="isPodcastPlaying(podcast.id)"></app-media-image>
                                     <h3>{{ podcast.title }}</h3>
                                     @if (podcast.description) {
                                         <h4>{{ podcast.description.length > 50 ? (podcast.description.substring(0, 50) + '...') : podcast.description }}</h4>
@@ -336,7 +336,7 @@
                             } @else {
                                 @for (podcast of favoritosPodcasts; track podcast.id) {
                                     <div class="cardHome" [routerLink]="['/podcast', podcast.id]">
-                                        <app-media-image class="podcastImage" [src]="podcast.imageUrl" [alt]="podcast.title" type="podcast" customClass="podcastImage"></app-media-image>
+                                        <app-media-image class="podcastImage" [src]="podcast.imageUrl" [alt]="podcast.title" type="podcast" customClass="podcastImage" [showPlayButton]="true" (playClick)="onPlayPodcast(podcast.id)" [isPlaying]="isPodcastPlaying(podcast.id)"></app-media-image>
                                         <h3>{{ podcast.title }}</h3>
                                         @if (podcast.description) {
                                             <h4>{{ podcast.description.length > 50 ? (podcast.description.substring(0, 50) + '...') : podcast.description }}</h4>

@@ -33,6 +33,8 @@ interface PodcastForDisplay {
   imageUrl?: string;
 }
 
+import { MediaPlayerService } from '../../services/media-player/media-player.service';
+
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -81,7 +83,8 @@ export class Home implements OnInit, AfterViewInit {
     private podcastService: PodcastService,
     private userService: UserService,
     private authService: AuthService,
-    private recommendationService: RecommendationService
+    private recommendationService: RecommendationService,
+    private mediaPlayerService: MediaPlayerService
   ) { }
 
   ngOnInit(): void {
@@ -389,5 +392,18 @@ export class Home implements OnInit, AfterViewInit {
 
     const wrapper = wrapperMap[key];
     return wrapper ? wrapper.nativeElement : null;
+  }
+
+  onPlayPodcast(podcastId: number): void {
+    if (!this.isLoggedIn) {
+      this.alertService.warning("Atención", "Inicia sesión para reproducir podcasts");
+      return;
+    }
+    this.mediaPlayerService.playPodcast(podcastId);
+  }
+
+  isPodcastPlaying(podcastId: number): boolean {
+    const state = this.mediaPlayerService.playerState();
+    return state.isOpen && state.episode?.podcast?.id === podcastId;
   }
 }

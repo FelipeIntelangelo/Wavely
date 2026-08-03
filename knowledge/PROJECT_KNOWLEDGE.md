@@ -171,3 +171,15 @@ El backend utiliza `@RestControllerAdvice` en `GlobalExceptionHandler` como punt
 Solo los errores 500 (inesperados) se persisten en la base de datos mediante `ErrorLogService`. Los 4xx (errores de negocio esperados) no se auditan.
 
 El contrato completo de error codes, la tabla de excepciones y los tests se encuentran en `knowledge/funcionalities/error_handling_docs.md`.
+
+---
+
+## 7. Soft Delete y Anonimización de Usuarios
+
+Para evitar cuellos de botella de integridad referencial (ej: borrar físicamente un usuario que posee un podcast inactivo), se implementó un modelo de Soft Delete Híbrido en `UserService`.
+
+- **Hard Delete Selectivo**: Al eliminar la cuenta, se borran físicamente asociaciones menores (Playlists, Comentarios, Historial, Valoraciones, Followers).
+- **Anonimización**: La fila de `User` se mantiene pero sus datos PII se sobreescriben (nombre a 'Usuario Eliminado', email/username a 'deleted_id'). La contraseña se invalida.
+- **Podcasts Activos**: El borrado se bloquea si el usuario posee al menos un podcast **activo**. Si tiene podcasts inactivos, el proceso continúa y la cuenta anonimizada actúa como dueña fantasma de los mismos.
+
+Detalles completos en: `knowledge/funcionalities/soft_delete_usuario.md`

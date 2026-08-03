@@ -125,6 +125,12 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponseDTO("ERR_PLAYLIST_LIMIT", ex.getMessage()));
     }
 
+    @ExceptionHandler(CannotDeleteOwnerException.class)
+    public ResponseEntity<ErrorResponseDTO> handleCannotDeleteOwner(CannotDeleteOwnerException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponseDTO(ex.getErrorCode(), ex.getMessage()));
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponseDTO> handleIllegalArgument(IllegalArgumentException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)

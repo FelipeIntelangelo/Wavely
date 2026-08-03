@@ -2,6 +2,10 @@ import { Injectable, signal } from '@angular/core';
 import { Episode } from '../../models/episode/episode';
 import { EpisodeService } from '../episode/episode.service';
 
+import { UserService } from '../client/user-service';
+import { forkJoin, map, switchMap, catchError, of, firstValueFrom } from 'rxjs';
+import { AlertService } from '../ui/alert.service';
+
 export interface MediaPlayerState {
   episode: Episode | null;
   isOpen: boolean;
@@ -26,7 +30,76 @@ export class MediaPlayerService {
     currentTime: 0
   });
 
-  constructor(private episodeService: EpisodeService) {}
+  constructor(
+    private episodeService: EpisodeService,
+    private userService: UserService,
+    private alertService: AlertService
+  ) {}
+
+  playPodcast(podcastId: number) {
+    // 1. Fetch all episodes for the podcast (first 100 should be enough for now)
+    // 2. Fetch user's history
+    // 3. Find the next episode to play
+    forkJoin({
+      episodes: this.episodeService.getAll(undefined, podcastId, 0, 100).pipe(catchError(() => of(null))),
+      history: this.userService.getMyHistory().pipe(catchError(() => of([])))
+    }).subscribe(({ episodes, history }) => {
+      if (!episodes || !episodes.content || episodes.content.length === 0) {
+        this.alertService.error('Error', 'No hay episodios disponibles para este podcast.');
+        return;
+      }
+      
+      const allEpisodes = episodes.content.sort((a, b) => {
+        if (a.season !== b.season) return a.season - b.season;
+        return a.chapter - b.chapter;
+      });
+
+      let episodeToPlay = allEpisodes[0];
+
+      if (history && history.length > 0) {
+        // Find episodes from history that belong to this podcast
+        const podcastHistory = history.filter(h => h.episode.podcastId === podcastId);
+        
+        if (podcastHistory.length > 0) {
+          // Sort history to find the most recently listened
+          podcastHistory.sort((a, b) => new Date(b.listenedAt).getTime() - new Date(a.listenedAt).getTime());
+          const lastListened = podcastHistory[0];
+          
+          // Find the last listened episode in the sorted episodes list
+          const lastIndex = allEpisodes.findIndex(e => e.id === lastListened.episode.id);
+          if (lastIndex !== -1 && lastIndex < allEpisodes.length - 1) {
+            // Play the next one!
+            episodeToPlay = allEpisodes[lastIndex + 1];
+          } else if (lastIndex !== -1) {
+            // Reached the end, maybe play the last one again or the first? 
+            // We'll just play the last one if there is no next.
+            episodeToPlay = allEpisodes[lastIndex];
+          }
+        }
+      }
+
+      // Fetch the full episode to open it in player
+      this.episodeService.getById(episodeToPlay.id).subscribe({
+        next: (fullEpisode) => {
+          this.openPlayer(fullEpisode);
+        },
+        error: () => {
+          this.alertService.error('Error', 'Error al cargar el episodio.');
+        }
+      });
+    });
+  }
+
+  playEpisode(episodeId: number) {
+    this.episodeService.getById(episodeId).subscribe({
+      next: (fullEpisode) => {
+        this.openPlayer(fullEpisode);
+      },
+      error: () => {
+        this.alertService.error('Error', 'Error al cargar el episodio.');
+      }
+    });
+  }
 
   openPlayer(episode: Episode, startTime: number = 0, autoplay: boolean = true, viewAlreadyCounted: boolean = false) {
     const currentState = this.playerState();

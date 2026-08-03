@@ -231,9 +231,9 @@ html, body {
   display: flex;
 }
 
-.podcast-card:hover .podcast-image img,
-.episode-card:hover .episode-image img,
-.media-card:hover .media-image img {
+.podcast-card:hover:not(:has(.media-play-btn-container:hover)) .podcast-image img,
+.episode-card:hover:not(:has(.media-play-btn-container:hover)) .episode-image img,
+.media-card:hover:not(:has(.media-play-btn-container:hover)) .media-image img {
   opacity: 0.7;
 }
 

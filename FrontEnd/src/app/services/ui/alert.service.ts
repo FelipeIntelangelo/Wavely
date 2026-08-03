@@ -144,6 +144,18 @@ export class AlertService {
         });
     }
 
+    // Método genérico de advertencia
+    warning(title: string, text: string): void {
+        Swal.fire({
+            title,
+            text,
+            icon: "warning",
+            showConfirmButton: false,
+            timer: 2000,
+            theme: 'dark'
+        });
+    }
+
     // Método genérico de error
     error(title: string, text: string): void {
         Swal.fire({
