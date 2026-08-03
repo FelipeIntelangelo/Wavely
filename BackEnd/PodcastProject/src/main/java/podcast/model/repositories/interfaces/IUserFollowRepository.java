@@ -25,4 +25,6 @@ public interface IUserFollowRepository extends JpaRepository<UserFollow, Long> {
     Long countByFollowerId(Long followerId);
 
     void deleteByFollowerIdAndFollowedId(Long followerId, Long followedId);
+    void deleteByFollowerId(Long followerId);
+    void deleteByFollowedId(Long followedId);
 }

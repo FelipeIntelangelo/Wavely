@@ -93,7 +93,8 @@ export class MyPodcasts implements OnInit {
       this.podcastService.deletePodcast(id).subscribe({
         next: () => {
           this.alertService.deletePodcastSuccess();
-          this.loadMyPodcasts();
+          // Eliminamos el podcast de la lista local para que la UI se actualice al instante
+          this.myPodcasts = this.myPodcasts.filter(p => p.id !== id);
         },
         error: (err) => {
           console.error('Error deleting podcast:', err);

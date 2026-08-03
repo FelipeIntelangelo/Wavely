@@ -296,7 +296,16 @@ export class EpisodeDetail implements OnInit, OnDestroy {
 
   onVideoLoadedMetadata(event: Event): void {
     const video = event.target as HTMLVideoElement;
-    if (video && !this.hasVideoStarted && video.duration && !this.initialRandomFrameSet) {
+    
+    // Si ya habíamos iniciado el video y tenemos un tiempo guardado (ej. volviendo del reproductor flotante)
+    if (video && this.hasVideoStarted && this.videoCurrentTime > 0) {
+      video.currentTime = this.videoCurrentTime;
+      if (this.isVideoPlaying) {
+        video.play().catch(() => {});
+      }
+    } 
+    // Si es la primera vez que se carga el video, poner un frame aleatorio
+    else if (video && !this.hasVideoStarted && video.duration && !this.initialRandomFrameSet) {
       const randomTime = Math.min(
         Math.max(2, Math.floor(video.duration * (0.15 + Math.random() * 0.45))),
         Math.max(0, video.duration - 1)
@@ -378,6 +387,14 @@ export class EpisodeDetail implements OnInit, OnDestroy {
       if (this.isVideo()) {
         playbackTime = this.videoCurrentTime;
         this.isVideoPlaying = false; // Prevent auto-floating on destroy
+        
+        // Pausar explícitamente el video inline
+        const el = this.videoPlayer?.nativeElement;
+        if (el) {
+          try {
+            el.pause();
+          } catch {}
+        }
       } else {
         const el = this.videoPlayer?.nativeElement;
         if (el) {
@@ -402,12 +419,14 @@ export class EpisodeDetail implements OnInit, OnDestroy {
     this.hideInlinePlayer = false;
     this.hasVideoStarted = true;
     this.isVideoPlaying = true;
+    this.videoCurrentTime = floatingTime; // Guardar para aplicar en onVideoLoadedMetadata
     this.mediaPlayerService.closePlayer();
 
+    // Mantener esto como fallback rápido si el elemento no se destruyó por completo
     setTimeout(() => {
       if (this.videoPlayer?.nativeElement) {
         const video = this.videoPlayer.nativeElement;
-        if (floatingTime > 0) {
+        if (floatingTime > 0 && video.currentTime !== floatingTime) {
           video.currentTime = floatingTime;
         }
         video.play().catch(() => {});

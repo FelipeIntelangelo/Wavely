@@ -15,12 +15,19 @@ import podcast.model.exceptions.PodcastNotFoundException;
 import podcast.model.exceptions.UserNotFoundException;
 import podcast.model.repositories.interfaces.IPodcastRepository;
 import podcast.model.repositories.interfaces.IUserRepository;
+import podcast.model.repositories.interfaces.IPlaylistRepository;
+import podcast.model.repositories.interfaces.ICommentaryRepository;
+import podcast.model.repositories.interfaces.IRatingRepository;
+import podcast.model.repositories.interfaces.IUserFollowRepository;
+import podcast.model.repositories.interfaces.IEpisodeHistoryRepository;
 import podcast.model.entities.enums.NotificationType;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
@@ -31,15 +38,29 @@ public class UserService {
     private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
     private final IPodcastRepository podcastRepository;
     private final NotificationService notificationService;
+    private final IPlaylistRepository playlistRepository;
+    private final ICommentaryRepository commentaryRepository;
+    private final IRatingRepository ratingRepository;
+    private final IUserFollowRepository userFollowRepository;
+    private final IEpisodeHistoryRepository episodeHistoryRepository;
 
     // ── Constructor ──────────────────────────────────────────────────────────────────
 
     @Autowired
-    public UserService(IUserRepository userRepository, PasswordEncoder passwordEncoder, IPodcastRepository podcastRepository, NotificationService notificationService) {
+    public UserService(IUserRepository userRepository, PasswordEncoder passwordEncoder, 
+                       IPodcastRepository podcastRepository, NotificationService notificationService,
+                       IPlaylistRepository playlistRepository, ICommentaryRepository commentaryRepository,
+                       IRatingRepository ratingRepository, IUserFollowRepository userFollowRepository,
+                       IEpisodeHistoryRepository episodeHistoryRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.podcastRepository = podcastRepository;
         this.notificationService = notificationService;
+        this.playlistRepository = playlistRepository;
+        this.commentaryRepository = commentaryRepository;
+        this.ratingRepository = ratingRepository;
+        this.userFollowRepository = userFollowRepository;
+        this.episodeHistoryRepository = episodeHistoryRepository;
     }
 
     // ── Logica De Negocio ────────────────────────────────────────────────────────────
@@ -189,16 +210,17 @@ public class UserService {
 
     // ── Delete ───────────────────────────────────────────────────────────────────────
 
+    @Transactional
     public void deleteAuthenticatedUser(String username) {
         User user = userRepository.findByCredentialUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado con username: " + username));
 
-        boolean isOwnerOfPodcasts = podcastRepository.existsByUserId(user.getId());
-        if (isOwnerOfPodcasts) {
-            throw new IllegalArgumentException("No se puede eliminar el usuario porque es dueño de uno o más podcasts.");
+        boolean hasActivePodcasts = podcastRepository.existsByUserIdAndIsActiveTrue(user.getId());
+        if (hasActivePodcasts) {
+            throw new podcast.model.exceptions.CannotDeleteOwnerException("ERR_CANNOT_DELETE_OWNER", "No se puede eliminar el usuario porque es dueño de uno o más podcasts activos.");
         }
 
-        userRepository.delete(user);
+        performSoftDeleteAndCleanup(user);
     }
 
     public void removePodcastFromFavorites(String username, Long podcastId) {
@@ -215,15 +237,42 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     public void deleteUserById(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado con id: " + userId));
 
-        boolean isOwnerOfPodcasts = podcastRepository.existsByUserId(user.getId());
-        if (isOwnerOfPodcasts) {
-            throw new IllegalArgumentException("No se puede eliminar el usuario porque es dueño de uno o más podcasts.");
+        boolean hasActivePodcasts = podcastRepository.existsByUserIdAndIsActiveTrue(user.getId());
+        if (hasActivePodcasts) {
+            throw new IllegalArgumentException("No se puede eliminar el usuario porque es dueño de uno o más podcasts activos.");
         }
 
-        userRepository.delete(user);
+        performSoftDeleteAndCleanup(user);
+    }
+
+    private void performSoftDeleteAndCleanup(User user) {
+        Long userId = user.getId();
+
+        // Limpiar basura física para no dejar base de datos sucia
+        playlistRepository.deleteByUserId(userId);
+        commentaryRepository.deleteByUserId(userId);
+        ratingRepository.deleteByUserId(userId);
+        episodeHistoryRepository.deleteByUserId(userId);
+        userFollowRepository.deleteByFollowerId(userId);
+        userFollowRepository.deleteByFollowedId(userId);
+        user.getFavorites().clear();
+
+        // Anonimizar el usuario
+        user.setName("Usuario");
+        user.setLastName("Eliminado");
+        user.setNickname("deleted_" + userId);
+        user.setBio(null);
+        user.setProfilePicture(null);
+        
+        user.getCredential().setUsername("deleted_" + userId);
+        user.getCredential().setEmail("deleted_" + userId + "@wavely.com");
+        user.getCredential().setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
+
+        userRepository.save(user);
     }
 }

@@ -9,6 +9,7 @@ import podcast.model.entities.Rating;
 import podcast.model.entities.User;
 
 import java.util.Optional;
+import java.util.List;
 
 @Repository
 public interface IRatingRepository extends JpaRepository<Rating, Long> {
@@ -17,5 +18,8 @@ public interface IRatingRepository extends JpaRepository<Rating, Long> {
 
     @Query("SELECT AVG(r.score) FROM Rating r WHERE r.episode = :episode")
     Double findAverageScoreByEpisode(@Param("episode") Episode episode);
-}
 
+    List<Rating> findByEpisodeId(Long episodeId);
+
+    void deleteByUserId(Long userId);
+}

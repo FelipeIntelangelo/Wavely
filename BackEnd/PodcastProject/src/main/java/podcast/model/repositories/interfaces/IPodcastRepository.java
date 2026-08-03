@@ -36,4 +36,5 @@ public interface IPodcastRepository extends JpaRepository<Podcast, Long> {
     Page<Podcast> findAllByIsActiveTrue(Pageable pageable);
     List<Podcast> findByUser_Credential_Username(String username);
     boolean existsByUserId(Long id);
+    boolean existsByUserIdAndIsActiveTrue(Long id);
 }

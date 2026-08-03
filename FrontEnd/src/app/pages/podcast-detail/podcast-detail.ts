@@ -12,6 +12,7 @@ import { AddToPlaylistComponent } from '../../components/shared/add-to-playlist/
 import { FollowService } from '../../services/follow/follow-service';
 import { FollowStatusDTO } from '../../models/user/follow-status-dto';
 import { MediaImageComponent } from '../../components/shared/media-image/media-image';
+import { MediaPlayerService } from '../../services/media-player/media-player.service';
 
 @Component({
   selector: 'app-podcast-detail',
@@ -41,7 +42,8 @@ export class PodcastDetail implements OnInit{
     private alertService: AlertService,
     private router: Router,
     private episodeService: EpisodeService,
-    private followService: FollowService
+    private followService: FollowService,
+    private mediaPlayerService: MediaPlayerService
   ){}
 
   ngOnInit(): void {
@@ -344,6 +346,37 @@ export class PodcastDetail implements OnInit{
   goToCategory(category: string, event: Event): void {
     event.stopPropagation();
     this.router.navigate(['/explore', category]);
+  }
+
+  viewUser(userId: number, event: Event): void {
+    event.stopPropagation();
+    this.router.navigate(['/profile', userId]);
+  }
+
+  onPlayPodcast(podcastId: number): void {
+    if (!this.currentUser) {
+      this.alertService.warning("Atención", "Inicia sesión para reproducir podcasts");
+      return;
+    }
+    this.mediaPlayerService.playPodcast(podcastId);
+  }
+
+  onPlayEpisode(episode: EpisodeDTO): void {
+    if (!this.currentUser) {
+      this.alertService.warning("Atención", "Inicia sesión para reproducir episodios");
+      return;
+    }
+    this.mediaPlayerService.playEpisode(episode.id);
+  }
+
+  isPodcastPlaying(podcastId: number): boolean {
+    const state = this.mediaPlayerService.playerState();
+    return state.isOpen && state.episode?.podcast?.id === podcastId;
+  }
+
+  isEpisodePlaying(episodeId: number): boolean {
+    const state = this.mediaPlayerService.playerState();
+    return state.isOpen && state.episode?.id === episodeId;
   }
 
   toggleCategoriesPopup(event: Event): void {

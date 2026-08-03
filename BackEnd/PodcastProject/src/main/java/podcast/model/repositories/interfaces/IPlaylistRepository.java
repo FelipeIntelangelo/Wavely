@@ -14,4 +14,5 @@ public interface IPlaylistRepository extends JpaRepository<Playlist, Long> {
     boolean existsByUserIdAndNameIgnoreCase(Long userId, String name);
     boolean existsByUserIdAndNameIgnoreCaseAndIdNot(Long userId, String name, Long id);
     long countByUserId(Long userId);
+    void deleteByUserId(Long userId);
 }

@@ -16,6 +16,7 @@ const ERROR_CODE_DICTIONARY: Record<string, string> = {
   ERR_DUPLICATE_USERNAME:      'El nombre de usuario ya se encuentra en uso.',
   ERR_DUPLICATE_EMAIL:         'El correo electrónico ya está registrado. Si usaste Google, iniciá sesión directamente.',
   ERR_CONFLICT:                'Hubo un conflicto con los datos ingresados.',
+  ERR_CANNOT_DELETE_OWNER:     'No se puede eliminar la cuenta porque eres dueño de uno o más podcasts. Elimínalos primero.',
 
   // No encontrado (404)
   ERR_PODCAST_NOT_FOUND:       'El podcast solicitado no existe.',
