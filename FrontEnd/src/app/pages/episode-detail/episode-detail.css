@@ -554,18 +554,7 @@
   overflow-wrap: anywhere;
   word-break: break-word;
   hyphens: auto;
-}
-
-.episode-description-section p.collapsed {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
-  line-clamp: 4;
-  overflow: hidden;
-}
-
-.episode-description-section p.expanded {
-  display: block;
+  white-space: pre-line;
 }
 
 .toggle-desc-btn {

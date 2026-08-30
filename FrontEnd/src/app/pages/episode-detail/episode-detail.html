@@ -101,8 +101,8 @@
 
     <!-- Descripción del episodio -->
     <div class="episode-description-section">
-      <p [class.collapsed]="!isDescriptionExpanded" [class.expanded]="isDescriptionExpanded">{{ episode.description }}</p>
-      @if (episode.description && episode.description.length > 240) {
+      <p>{{ isDescriptionExpanded ? episode.description : (episode.description && episode.description.length > 220 ? (episode.description | slice:0:220) + '...' : episode.description) }}</p>
+      @if (episode.description && episode.description.length > 220) {
         <button type="button" class="toggle-desc-btn" (click)="toggleDescription()">
           {{ isDescriptionExpanded ? 'Ver menos' : 'Ver más' }}
         </button>
