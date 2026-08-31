@@ -78,8 +78,8 @@ export class NotificationBell implements OnInit, OnDestroy {
       this.router.navigate(['/episode', notification.episodeId]);
     } else if (notification.type === 'NEW_RATING' && notification.episodeId) {
       this.router.navigate(['/episode', notification.episodeId]);
-    } else if (notification.type === 'NEW_FOLLOWER') {
-      this.router.navigate(['/profile', notification.senderName]);
+    } else if (notification.type === 'NEW_FOLLOWER' && notification.senderId) {
+      this.router.navigate(['/profile', notification.senderId]);
     }
   }
 
