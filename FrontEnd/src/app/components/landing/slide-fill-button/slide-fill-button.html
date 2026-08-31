@@ -1,0 +1,78 @@
+@if (!href) {
+  <a
+    [routerLink]="routerLink"
+    class="slide-fill-btn"
+    [class.size-medium]="size === 'medium'"
+    [class.size-large]="size === 'large'"
+    [class.is-hovered]="isHovered"
+    (mouseenter)="onMouseEnter()"
+    (mouseleave)="onMouseLeave()"
+    (focus)="onMouseEnter()"
+    (blur)="onMouseLeave()"
+  >
+    <!-- Liquid fill container -->
+    <div class="water-container" [class.filled]="isHovered">
+      <!-- Wave crest animations -->
+      <div class="wave-crest-wrapper">
+        <div class="wave-back"></div>
+        <div class="wave-front"></div>
+      </div>
+      <div class="water-body"></div>
+    </div>
+
+    <!-- Interactive button content -->
+    <span class="btn-content">
+      <span class="btn-text-group">
+        <span class="btn-label">{{ label }}</span>
+        @if (subLabel) {
+          <span class="btn-sublabel">{{ subLabel }}</span>
+        }
+      </span>
+      @if (showIcon) {
+        <span class="btn-icon">
+          <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3.33 8h9.34M8.67 4l4 4-4 4"/>
+          </svg>
+        </span>
+      }
+    </span>
+  </a>
+} @else {
+  <a
+    [href]="href"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="slide-fill-btn"
+    [class.size-medium]="size === 'medium'"
+    [class.size-large]="size === 'large'"
+    [class.is-hovered]="isHovered"
+    (mouseenter)="onMouseEnter()"
+    (mouseleave)="onMouseLeave()"
+    (focus)="onMouseEnter()"
+    (blur)="onMouseLeave()"
+  >
+    <div class="water-container" [class.filled]="isHovered">
+      <div class="wave-crest-wrapper">
+        <div class="wave-back"></div>
+        <div class="wave-front"></div>
+      </div>
+      <div class="water-body"></div>
+    </div>
+
+    <span class="btn-content">
+      <span class="btn-text-group">
+        <span class="btn-label">{{ label }}</span>
+        @if (subLabel) {
+          <span class="btn-sublabel">{{ subLabel }}</span>
+        }
+      </span>
+      @if (showIcon) {
+        <span class="btn-icon">
+          <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3.33 8h9.34M8.67 4l4 4-4 4"/>
+          </svg>
+        </span>
+      }
+    </span>
+  </a>
+}

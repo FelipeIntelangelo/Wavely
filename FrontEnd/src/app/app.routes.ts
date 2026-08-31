@@ -44,5 +44,6 @@ export const routes: Routes = [
     { path: "history", component: HistoryComponent, canActivate: [authGuard] },
     { path: "playlists", component: PlaylistsComponent, canActivate: [authGuard] },
     { path: "following", component: FollowingComponent, canActivate: [authGuard] },
-    { path: "profile/:id/followers", component: FollowersComponent }
+    { path: "profile/:id/followers", component: FollowersComponent },
+    { path: "landing", loadComponent: () => import('./pages/landing/landing').then(m => m.LandingComponent) }
 ];

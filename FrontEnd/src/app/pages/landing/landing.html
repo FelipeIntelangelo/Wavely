@@ -1,0 +1,263 @@
+<div class="landing-viewport">
+  <!-- Interactive Wave Arcs Canvas as dynamic background -->
+  <div class="background-canvas-wrapper">
+    <app-wave-arcs
+      [backgroundColor]="'#070709'"
+      [lineColor]="'rgb(147, 95, 205)'"
+      [lineWidth]="1.2"
+      [lineCount]="74"
+      [speed]="4.5"
+      [glow]="9"
+      [interactive]="true"
+    ></app-wave-arcs>
+  </div>
+
+  <!-- Floating Navigation Header -->
+  <header class="floating-nav">
+    <div class="nav-brand" (click)="scrollTo('hero')">
+      <img src="assets/isotipo-light.png" alt="Wavely Logo" class="brand-logo-img">
+      <span class="brand-name">Wavely</span>
+      <span class="thesis-badge">UTN FRMDP · 2026</span>
+    </div>
+
+    <nav class="nav-links">
+      <button class="nav-link" [class.active]="activeSection === 'hero'" (click)="scrollTo('hero')">Inicio</button>
+      <button class="nav-link" [class.active]="activeSection === 'stack'" (click)="scrollTo('stack')">Arquitectura</button>
+      <button class="nav-link" [class.active]="activeSection === 'recommendations'" (click)="scrollTo('recommendations')">Recomendación</button>
+      <button class="nav-link" [class.active]="activeSection === 'roles'" (click)="scrollTo('roles')">Roles</button>
+    </nav>
+
+    <div class="nav-action">
+      <app-slide-fill-button
+        [routerLink]="'/home'"
+        [label]="'Ir a la App'"
+        [size]="'medium'"
+        [showIcon]="true"
+      ></app-slide-fill-button>
+    </div>
+  </header>
+
+  <!-- Main Scrollable Content -->
+  <main class="content-container">
+    
+    <!-- ==================== SECTION 1: HERO ==================== -->
+    <section id="hero" class="landing-section hero-section reveal-section">
+      <div class="hero-inner">
+        <!-- Project & Institution Badge -->
+        <div class="hero-tag-badge">
+          <span class="badge-dept">UTN · Facultad Regional Mar del Plata</span>
+          <span class="badge-separator">/</span>
+          <span class="badge-type">Trabajo Final Integrador</span>
+        </div>
+
+        <!-- Main Headline -->
+        <h1 class="hero-title">
+          Plataforma de Streaming y Distribución de Audio
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="hero-subtitle">
+          Sistema integral desacoplado desarrollado con <strong>Spring Boot 3.5</strong> y <strong>Angular 20</strong>, 
+          incorporando un motor de recomendación dinámico de tres capas y streaming continuo sin interrupciones.
+        </p>
+
+        <!-- Team OriginKit Interactive Button Carousel -->
+        <div class="team-carousel-container">
+          <span class="team-label">Equipo de Desarrollo</span>
+          <app-member-carousel
+            [items]="teamMembers"
+            [imageWidth]="210"
+            [imageHeight]="250"
+            [buttonSize]="46"
+            [gap]="18"
+            [cardRadius]="12"
+            [autoplay]="true"
+            [autoplayInterval]="2500"
+          ></app-member-carousel>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SECTION 2: TECH STACK ==================== -->
+    <section id="stack" class="landing-section reveal-section">
+      <div class="section-header">
+        <div class="section-tag">ARQUITECTURA</div>
+        <h2 class="section-title">Stack Tecnológico y Patrones de Diseño</h2>
+        <p class="section-subtitle">
+          Construido con una arquitectura cliente-servidor desacoplada para garantizar rendimiento, seguridad y mantenibilidad.
+        </p>
+      </div>
+
+      <div class="tech-grid">
+        @for (tech of techStack; track tech.title) {
+          <div class="tech-card">
+            <div class="tech-card-header">
+              <div class="tech-icon-wrapper">
+                @if (tech.title.includes('Spring')) {
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M20 7.5a9.5 9.5 0 0 1-16 0M4 16.5a9.5 9.5 0 0 0 16 0M12 2v20"/></svg>
+                } @else if (tech.title.includes('Angular')) {
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75"><polygon points="12 2 2 7 4 18 12 22 20 18 22 7 12 2"/><polygon points="12 6 7 15 9.5 15 10.5 13 13.5 13 14.5 15 17 15 12 6"/></svg>
+                } @else if (tech.title.includes('MySQL')) {
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                } @else if (tech.title.includes('WebSockets')) {
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                } @else if (tech.title.includes('Cloudinary')) {
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+                } @else {
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                }
+              </div>
+              <div class="tech-meta">
+                <span class="tech-category">{{ tech.category }}</span>
+                <span class="tech-version-badge">{{ tech.version }}</span>
+              </div>
+            </div>
+
+            <h3 class="tech-title">{{ tech.title }}</h3>
+            <p class="tech-desc">{{ tech.description }}</p>
+
+            <div class="tech-highlights">
+              @for (item of tech.highlights; track item) {
+                <div class="highlight-item">
+                  <span class="highlight-dash">—</span>
+                  <span>{{ item }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- ==================== SECTION 3: RECOMMENDATION ENGINE ==================== -->
+    <section id="recommendations" class="landing-section reveal-section">
+      <div class="section-header">
+        <div class="section-tag">MOTOR DE RECOMENDACIÓN</div>
+        <h2 class="section-title">Algoritmo Híbrido de Selección Dinámica</h2>
+        <p class="section-subtitle">
+          Evaluación del perfil de usuario en tiempo de ejecución para mitigar el problema del <em>Cold Start</em> y optimizar la precisión de sugerencia.
+        </p>
+      </div>
+
+      <div class="engine-architecture-card">
+        <div class="engine-pipeline">
+          <!-- Stage 1 -->
+          <div class="stage-card">
+            <div class="stage-meta">
+              <span class="stage-label">Condición: 0 Favoritos</span>
+              <span class="stage-type">Estrategia 1</span>
+            </div>
+            <h4 class="stage-title">Trending (Popularidad Ponderada)</h4>
+            <p class="stage-desc">
+              Computa métricas globales de audiencia combinando volumen de reproducción y promedio de calificaciones de la comunidad.
+            </p>
+            <div class="formula-box">
+              <code>Score = (0.60 × Reproducciones) + (0.40 × Promedio ★)</code>
+            </div>
+          </div>
+
+          <div class="pipeline-flow-indicator">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14M19 12l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Transición al acumular entre 1 y 5 favoritos</span>
+          </div>
+
+          <!-- Stage 2 -->
+          <div class="stage-card">
+            <div class="stage-meta">
+              <span class="stage-label">Condición: 1 a 5 Favoritos</span>
+              <span class="stage-type">Estrategia 2</span>
+            </div>
+            <h4 class="stage-title">Content-Based (Afinidad por Categorías)</h4>
+            <p class="stage-desc">
+              Analiza la distribución taxonómica de los canales guardados por el usuario y prioriza podcasts pertenecientes a esas mismas categorías temáticas.
+            </p>
+            <div class="meta-note">
+              <span>Optimización mediante consultas nativas SQL con agregación ponderada.</span>
+            </div>
+          </div>
+
+          <div class="pipeline-flow-indicator">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14M19 12l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Transición al superar los 5 favoritos</span>
+          </div>
+
+          <!-- Stage 3 -->
+          <div class="stage-card">
+            <div class="stage-meta">
+              <span class="stage-label">Condición: &gt; 5 Favoritos</span>
+              <span class="stage-type">Estrategia 3</span>
+            </div>
+            <h4 class="stage-title">Filtrado Colaborativo Cruzado</h4>
+            <p class="stage-desc">
+              Descubre usuarios con perfiles de suscripción coincidentes y extrae recomendaciones directas de sus listas de favoritos compartidas.
+            </p>
+            <div class="meta-note">
+              <span>Análisis de co-ocurrencia y minería de afinidad comunitaria.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SECTION 4: ROLES HIERARCHY ==================== -->
+    <section id="roles" class="landing-section reveal-section">
+      <div class="section-header">
+        <div class="section-tag">SEGURIDAD Y CONTROL</div>
+        <h2 class="section-title">Jerarquía de Roles Progresiva</h2>
+        <p class="section-subtitle">
+          Estructura de permisos acumulativa donde cada rol hereda las capacidades previas y desbloquea módulos dedicados.
+        </p>
+      </div>
+
+      <div class="roles-hierarchy-grid">
+        @for (role of roles; track role.id) {
+          <div class="role-tier-card">
+            <div class="tier-top">
+              <span class="tier-badge">{{ role.badge }}</span>
+              <h3 class="tier-title">{{ role.title }}</h3>
+            </div>
+
+            <p class="tier-desc">{{ role.description }}</p>
+
+            <div class="tier-divider"></div>
+
+            <ul class="tier-features">
+              @for (feat of role.features; track feat) {
+                <li>
+                  <span class="tier-dash">—</span>
+                  <span>{{ feat }}</span>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- ==================== SECTION 5: LAUNCH ==================== -->
+    <section class="landing-section launch-section reveal-section">
+      <div class="launch-card">
+        <div class="launch-tag">DEMOSTRACIÓN PRÁCTICA</div>
+
+        <div class="launch-action">
+          <app-slide-fill-button
+            [routerLink]="'/home'"
+            [label]="'Iniciar Recorrido'"
+            [size]="'large'"
+            [showIcon]="true"
+          ></app-slide-fill-button>
+        </div>
+
+        <div class="launch-meta">
+          <span>Universidad Tecnológica Nacional · Facultad Regional Mar del Plata</span>
+          <span>Carrera de Ingeniería en Sistemas de Información / TUP · 2026</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>

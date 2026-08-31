@@ -1,0 +1,68 @@
+<div class="carousel-container">
+  <!-- Active Member Main Showcase Card -->
+  <div
+    class="main-card-wrapper"
+    [style.width.px]="imageWidth"
+    [style.height.px]="imageHeight"
+    [style.border-radius.px]="cardRadius"
+  >
+    <div class="main-card-inner">
+      @if (items[active]?.image) {
+        <img
+          [src]="items[active].image"
+          [alt]="items[active].name"
+          class="main-card-img"
+          draggable="false"
+        />
+      } @else {
+        <div class="main-card-placeholder">
+          <span class="placeholder-initials">{{ items[active].name.charAt(0) }}</span>
+        </div>
+      }
+
+      <!-- Glass overlay with active info -->
+      <div class="main-card-info">
+        <span class="active-member-role">{{ items[active]?.role }}</span>
+        <h4 class="active-member-name">{{ items[active]?.name }}</h4>
+      </div>
+    </div>
+  </div>
+
+  <!-- Curved Thumbnails Arc Selector -->
+  <div class="arc-strip-container" [style.height.px]="stripHeight">
+    @for (slot of renderedSlots; track slot.itemIdx) {
+      <div
+        class="arc-button-slot"
+        [style.left]="'50%'"
+        [style.top.px]="baseTop"
+        [style.margin-left.px]="-buttonSize / 2"
+        [style.margin-top.px]="-buttonSize / 2"
+        [style.width.px]="buttonSize"
+        [style.height.px]="buttonSize"
+        [style.transform]="'translate(' + slot.x + 'px, ' + slot.y + 'px) rotate(' + slot.deg + 'deg) scale(' + slot.scale + ')'"
+        [style.opacity]="slot.opacity"
+        [style.z-index]="slot.zIndex"
+      >
+        <button
+          type="button"
+          class="arc-thumbnail-btn"
+          [class.is-active]="slot.isActive"
+          [style.transform]="'rotate(' + -slot.deg + 'deg)'"
+          (click)="select(slot.itemIdx)"
+          [attr.aria-label]="slot.item.name"
+        >
+          @if (slot.item.buttonImage || slot.item.image) {
+            <img
+              [src]="slot.item.buttonImage || slot.item.image"
+              [alt]="slot.item.name"
+              class="thumbnail-img"
+              draggable="false"
+            />
+          } @else {
+            <span class="thumbnail-initials">{{ slot.item.name.charAt(0) }}</span>
+          }
+        </button>
+      </div>
+    }
+  </div>
+</div>
