@@ -1,126 +1,118 @@
 <div class="standard-page-container following-container">
   <div class="standard-page-header following-header">
     <h1 class="standard-page-title">Siguiendo</h1>
-    <p class="standard-page-subtitle">Tus creadores favoritos y sus últimos episodios.</p>
+    <p class="standard-page-subtitle">Tus Usuarios favoritos y sus últimos episodios.</p>
   </div>
 
   <div class="following-tabs">
-    <button
-      class="tab-button"
-      [class.active]="activeTab === 'feed'"
-      (click)="activeTab = 'feed'">
+    <button class="tab-button" [class.active]="activeTab === 'feed'" (click)="activeTab = 'feed'">
       Novedades
     </button>
-    <button
-      class="tab-button"
-      [class.active]="activeTab === 'creators'"
-      (click)="activeTab = 'creators'">
-      Creadores
+    <button class="tab-button" [class.active]="activeTab === 'creators'" (click)="activeTab = 'creators'">
+      Usuarios
       @if (following && following.length > 0) {
-        <span class="tab-count">({{ following.length }})</span>
+      <span class="tab-count">({{ following.length }})</span>
       }
     </button>
   </div>
 
   <!-- Tab Feed -->
   @if (activeTab === 'feed') {
-    <div class="tab-content">
-      @if (isLoadingEpisodes) {
-        <div class="loading-state">
-          <i class="fas fa-spinner fa-spin"></i> Cargando feed...
+  <div class="tab-content">
+    @if (isLoadingEpisodes) {
+    <div class="loading-state">
+      <i class="fas fa-spinner fa-spin"></i> Cargando feed...
+    </div>
+    } @else if (episodes.length === 0) {
+    <div class="empty-state">
+      <i class="fas fa-rss"></i>
+      <h2>No hay episodios recientes</h2>
+      <p>Seguí a más creadores desde <a class="empty-state-link" routerLink="/home">acá</a> para ver sus últimos
+        lanzamientos.</p>
+    </div>
+    } @else {
+    <p class="section-description">Ultimos episodios publicados por los creadores a los que seguís.</p>
+    <div class="episodes-list">
+      @for (episode of episodes; track episode.id) {
+      <article class="episode-card" (click)="goToEpisode(episode.id)">
+        <div class="episode-image">
+          <app-media-image [src]="episode.imageUrl" [alt]="episode.title" type="episode"></app-media-image>
         </div>
-      } @else if (episodes.length === 0) {
-        <div class="empty-state">
-          <i class="fas fa-rss"></i>
-          <h2>No hay episodios recientes</h2>
-          <p>Seguí a más creadores desde <a class="empty-state-link" routerLink="/home">acá</a> para ver sus últimos lanzamientos.</p>
+        <div class="episode-content">
+          <div class="episode-header">
+            <div class="episode-info">
+              <h3 class="episode-title">{{ episode.title }}</h3>
+              <span class="episode-meta">{{ episode.podcastTitle }} • {{ episode.publicationDate | date:'mediumDate'
+                }}</span>
+            </div>
+            <app-add-to-playlist contentType="EPISODE" [contentId]="episode.id"></app-add-to-playlist>
+          </div>
+          <p class="episode-description">{{ episode.description }}</p>
+          <div class="episode-footer">
+            <span class="episode-duration">
+              <span class="icon-clock"></span>
+              {{ episode.duration | duration }}
+            </span>
+            <span class="episode-views">
+              <span class="icon-eye-small"></span>
+              {{ episode.views }}
+            </span>
+          </div>
         </div>
-      } @else {
-        <p class="section-description">Ultimos episodios publicados por los creadores a los que seguís.</p>
-        <div class="episodes-list">
-          @for (episode of episodes; track episode.id) {
-            <article class="episode-card" (click)="goToEpisode(episode.id)">
-              <div class="episode-image">
-                <app-media-image [src]="episode.imageUrl" [alt]="episode.title" type="episode"></app-media-image>
-              </div>
-              <div class="episode-content">
-                <div class="episode-header">
-                  <div class="episode-info">
-                    <h3 class="episode-title">{{ episode.title }}</h3>
-                    <span class="episode-meta">{{ episode.podcastTitle }} • {{ episode.publicationDate | date:'mediumDate' }}</span>
-                  </div>
-                  <app-add-to-playlist contentType="EPISODE" [contentId]="episode.id"></app-add-to-playlist>
-                </div>
-                <p class="episode-description">{{ episode.description }}</p>
-                <div class="episode-footer">
-                  <span class="episode-duration">
-                    <span class="icon-clock"></span>
-                    {{ episode.duration | duration }}
-                  </span>
-                  <span class="episode-views">
-                    <span class="icon-eye-small"></span>
-                    {{ episode.views }}
-                  </span>
-                </div>
-              </div>
-            </article>
-          }
-        </div>
+      </article>
       }
     </div>
+    }
+  </div>
   }
 
   <!-- Tab Creators -->
   @if (activeTab === 'creators') {
-    <div class="tab-content">
-      @if (isLoadingFollowing) {
-        <div class="loading-state">
-          <i class="fas fa-spinner fa-spin"></i> Cargando creadores...
+  <div class="tab-content">
+    @if (isLoadingFollowing) {
+    <div class="loading-state">
+      <i class="fas fa-spinner fa-spin"></i> Cargando creadores...
+    </div>
+    } @else if (following.length === 0) {
+    <div class="empty-state">
+      <i class="fas fa-users"></i>
+      <h2>Aún no seguís a ningún creador</h2>
+      <p>Buscá y seguí a tus creadores favoritos desde <a class="empty-state-link" routerLink="/home">acá</a>.</p>
+    </div>
+    } @else {
+    <p class="section-description">Gestioná a los creadores que seguís y sus notificaciones.</p>
+    <div class="creators-grid">
+      @for (creator of following; track creator.followedUserId) {
+      <div class="creator-card" (click)="goToProfile(creator.followedUserId)">
+        <div class="creator-avatar">
+          <app-media-image [src]="creator.followedProfilePicture" [alt]="creator.followedNickname"
+            type="user"></app-media-image>
         </div>
-      } @else if (following.length === 0) {
-        <div class="empty-state">
-          <i class="fas fa-users"></i>
-          <h2>Aún no seguís a ningún creador</h2>
-          <p>Buscá y seguí a tus creadores favoritos desde <a class="empty-state-link" routerLink="/home">acá</a>.</p>
+        <div class="creator-info">
+          <h3 class="creator-name">{{ creator.followedNickname }}</h3>
+          <span class="followers-count-text">{{ creator.followersCount }} {{ creator.followersCount === 1 ? 'seguidor' :
+            'seguidores' }}</span>
+          <span class="following-since">Siguiendo desde {{ creator.followedSince | date:'shortDate' }}</span>
         </div>
-      } @else {
-        <p class="section-description">Gestioná a los creadores que seguís y sus notificaciones.</p>
-        <div class="creators-grid">
-          @for (creator of following; track creator.followedUserId) {
-            <div class="creator-card" (click)="goToProfile(creator.followedUserId)">
-              <div class="creator-avatar">
-                <app-media-image [src]="creator.followedProfilePicture" [alt]="creator.followedNickname" type="user"></app-media-image>
-              </div>
-              <div class="creator-info">
-                <h3 class="creator-name">{{ creator.followedNickname }}</h3>
-                <span class="followers-count-text">{{ creator.followersCount }} {{ creator.followersCount === 1 ? 'seguidor' : 'seguidores' }}</span>
-                <span class="following-since">Siguiendo desde {{ creator.followedSince | date:'shortDate' }}</span>
-              </div>
-              <div class="creator-actions">
-                <button
-                  type="button"
-                  class="bell-button"
-                  [class.active]="creator.bellEnabled"
-                  [title]="creator.bellEnabled ? 'Silenciar' : 'Notificar'"
-                  (click)="toggleBell(creator.followedUserId, $event)">
-                  @if (creator.bellEnabled) {
-                    <i class="fas fa-bell"></i>
-                  } @else {
-                    <i class="far fa-bell"></i>
-                  }
-                </button>
-                <button
-                  type="button"
-                  class="unfollow-button"
-                  title="Dejar de seguir"
-                  (click)="unfollow(creator.followedUserId, $event)">
-                  <i class="fas fa-user-times"></i>
-                </button>
-              </div>
-            </div>
-          }
+        <div class="creator-actions">
+          <button type="button" class="bell-button" [class.active]="creator.bellEnabled"
+            [title]="creator.bellEnabled ? 'Silenciar' : 'Notificar'"
+            (click)="toggleBell(creator.followedUserId, $event)">
+            @if (creator.bellEnabled) {
+            <i class="fas fa-bell"></i>
+            } @else {
+            <i class="far fa-bell"></i>
+            }
+          </button>
+          <button type="button" class="unfollow-button" title="Dejar de seguir"
+            (click)="unfollow(creator.followedUserId, $event)">
+            <i class="fas fa-user-times"></i>
+          </button>
         </div>
+      </div>
       }
     </div>
+    }
+  </div>
   }
 </div>
