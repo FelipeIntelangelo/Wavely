@@ -275,6 +275,7 @@ private final INotificationRepository notificationRepository;
             throw new UnauthorizedException("You are not authorized to delete this comment");
         }
         
+        notificationRepository.deleteByCommentary(commentary);
         commentaryRepository.delete(commentary);
     }
 }

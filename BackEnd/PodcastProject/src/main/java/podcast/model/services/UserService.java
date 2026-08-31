@@ -20,6 +20,7 @@ import podcast.model.repositories.interfaces.ICommentaryRepository;
 import podcast.model.repositories.interfaces.IRatingRepository;
 import podcast.model.repositories.interfaces.IUserFollowRepository;
 import podcast.model.repositories.interfaces.IEpisodeHistoryRepository;
+import podcast.model.repositories.interfaces.INotificationRepository;
 import podcast.model.entities.enums.NotificationType;
 
 import java.time.LocalDateTime;
@@ -43,6 +44,7 @@ public class UserService {
     private final IRatingRepository ratingRepository;
     private final IUserFollowRepository userFollowRepository;
     private final IEpisodeHistoryRepository episodeHistoryRepository;
+    private final INotificationRepository notificationRepository;
 
     // ── Constructor ──────────────────────────────────────────────────────────────────
 
@@ -51,7 +53,8 @@ public class UserService {
                        IPodcastRepository podcastRepository, NotificationService notificationService,
                        IPlaylistRepository playlistRepository, ICommentaryRepository commentaryRepository,
                        IRatingRepository ratingRepository, IUserFollowRepository userFollowRepository,
-                       IEpisodeHistoryRepository episodeHistoryRepository) {
+                       IEpisodeHistoryRepository episodeHistoryRepository,
+                       INotificationRepository notificationRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.podcastRepository = podcastRepository;
@@ -61,6 +64,7 @@ public class UserService {
         this.ratingRepository = ratingRepository;
         this.userFollowRepository = userFollowRepository;
         this.episodeHistoryRepository = episodeHistoryRepository;
+        this.notificationRepository = notificationRepository;
     }
 
     // ── Logica De Negocio ────────────────────────────────────────────────────────────
@@ -255,6 +259,7 @@ public class UserService {
 
         // Limpiar basura física para no dejar base de datos sucia
         playlistRepository.deleteByUserId(userId);
+        notificationRepository.deleteByCommentaryUserId(userId);
         commentaryRepository.deleteByUserId(userId);
         ratingRepository.deleteByUserId(userId);
         episodeHistoryRepository.deleteByUserId(userId);
