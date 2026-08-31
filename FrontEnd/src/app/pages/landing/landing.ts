@@ -10,15 +10,12 @@ interface TechCard {
   category: string;
   version: string;
   description: string;
-  highlights: string[];
 }
 
 interface RoleTier {
   id: string;
   title: string;
-  badge: string;
   description: string;
-  features: string[];
 }
 
 @Component({
@@ -64,96 +61,62 @@ export class LandingComponent implements AfterViewInit, OnDestroy {
   techStack: TechCard[] = [
     {
       title: 'Spring Boot 3.5',
-      category: 'Backend Core',
+      category: 'Backend',
       version: 'Java 21 LTS',
-      description: 'API RESTful estructurada con Spring Data JPA, Hibernate, manejo centralizado de excepciones y catálogo de ErrorCodes declarativos.',
-      highlights: ['Arquitectura modular en capas', 'Autenticación Stateless JWT', 'GlobalExceptionHandler tipado']
+      description: 'API RESTful modular con Spring Data JPA y manejo global de excepciones.'
     },
     {
-      title: 'Angular 20',
-      category: 'Frontend SPA',
-      version: 'TypeScript & RxJS',
-      description: 'Single Page Application con arquitectura basada en componentes Standalone, gestión reactiva con RxJS y reproductor desacoplado.',
-      highlights: ['Audio Streaming continuo en SPA', 'Gestión reactiva de estado', 'Componentes Standalone puros']
-    },
-    {
-      title: 'MySQL & Hibernate',
-      category: 'Persistencia Relacional',
-      version: 'Spring Data JPA',
-      description: 'Modelo relacional gestionado por el ORM de Spring Boot con Hibernate, soporte de soft-delete híbrido y consultas nativas SQL.',
-      highlights: ['Mapeo relacional con JPA / ORM', 'Queries nativas optimizadas', 'Soft Delete con anonimización']
-    },
-    {
-      title: 'WebSockets & STOMP',
-      category: 'Tiempo Real',
-      version: 'Spring STOMP Broker',
-      description: 'Canal de mensajería bidireccional sobre WebSockets para la emisión inmediata de notificaciones a suscriptores y seguidores.',
-      highlights: ['Destinos privados /queue/notifications', 'Push instantáneo sin polling', 'Sincronización de interfaz']
-    },
-    {
-      title: 'Cloudinary CDN',
-      category: 'Almacenamiento Multimedia',
-      version: 'Cloud Media API',
-      description: 'Infraestructura en la nube para procesamiento, almacenamiento y distribución optimizada de audios MP3 y portadas gráficas.',
-      highlights: ['Streaming directo desde CDN', 'Normalización de duraciones ISO 8601', 'Desacoplamiento de binarios']
+      title: 'MySQL & Docker',
+      category: 'Persistencia',
+      version: 'Hibernate / JPA',
+      description: 'Modelo relacional con soporte de soft-delete híbrido y consultas nativas SQL.'
     },
     {
       title: 'Seguridad & RBAC',
       category: 'Autenticación',
-      version: 'Spring Security 6',
-      description: 'Esquema de autenticación dual con credenciales locales y Google OAuth 2.0, administrado mediante Role-Based Access Control.',
-      highlights: ['Google Sign-In OAuth 2.0', 'Filtro JwtAuthFilter stateless', 'Control de acceso jerárquico']
+      version: 'Spring Security',
+      description: 'Autenticación dual con JWT local y Google OAuth 2.0.'
+    },
+    {
+      title: 'Angular 20',
+      category: 'Frontend',
+      version: 'SPA & RxJS',
+      description: 'Arquitectura Standalone reactiva con streaming de audio continuo.'
+    },
+    {
+      title: 'WebSockets & STOMP',
+      category: 'Tiempo Real',
+      version: 'Broker Push',
+      description: 'Canal de mensajería bidireccional para despacho instantáneo de notificaciones.'
+    },
+    {
+      title: 'Cloudinary CDN',
+      category: 'Multimedia',
+      version: 'Cloud Media',
+      description: 'Almacenamiento y distribución en la nube de audios MP3 y portadas.'
     }
   ];
 
   roles: RoleTier[] = [
     {
       id: 'visitor',
-      title: 'Visitante / Invitado',
-      badge: 'Nivel 1',
-      description: 'Consumo libre sin autenticación previa. Descubrimiento, streaming continuo y exploración completa del catálogo.',
-      features: [
-        'Acceso al catálogo público y tendencias',
-        'Motor de búsqueda global en tiempo real',
-        'Reproductor multimedia persistente sin cortes',
-        'Exploración por taxonomía de categorías'
-      ]
+      title: 'Visitante',
+      description: 'Exploración, catálogo público y streaming libre sin autenticación previa.'
     },
     {
       id: 'user',
-      title: 'Usuario Registrado',
-      badge: 'Nivel 2',
-      description: 'Desbloqueo de personalización, almacenamiento privado e interacción social con la comunidad de creadores.',
-      features: [
-        'Gestión de Favoritos y suscripciones a canales',
-        'Historial cronológico de reproducciones',
-        'Playlists privadas mixtas con Drag & Drop',
-        'Valoraciones con estrellas y comentarios públicos'
-      ]
+      title: 'Usuario',
+      description: 'Personalización, favoritos, playlists privadas, historial y comentarios.'
     },
     {
       id: 'creator',
-      title: 'Creador de Contenido',
-      badge: 'Nivel 3',
-      description: 'Herramientas de autoría y distribución multimedia para la gestión integral de canales de podcasts.',
-      features: [
-        'Creación y categorización temática de canales',
-        'Subida y recorte de imágenes de portada',
-        'Publicación de episodios con audio binario',
-        'Panel centralizado con métricas de audiencia'
-      ]
+      title: 'Creador',
+      description: 'Creación de canales, subida de audios MP3 y métricas de audiencia.'
     },
     {
       id: 'admin',
       title: 'Administrador',
-      badge: 'Nivel 4',
-      description: 'Superpoderes de moderación in-situ con capacidad de anular restricciones de autoría en toda la plataforma.',
-      features: [
-        'Override global de permisos sobre recursos (RBAC)',
-        'Edición y baja forzada de contenido infractor',
-        'Moderación directa sobre las vistas estándar',
-        'Gestión y auditoría de integridad de usuarios'
-      ]
+      description: 'Superpoderes de moderación in-situ con override global sobre recursos.'
     }
   ];
 
